@@ -31,11 +31,26 @@
 #   The FreeSWITCH, FusionPBX and PostgreSQL Crews without them, none of this would be possible
 #  
 ###############################################
-VERSION="0.3"
+VERSION="0.6"
+
+###########################################
+##  Set Defaults for Variables
+
+defSUPPORTNAME='Helia Technologies'
+defSUPPORTEMAIL='support@helia.ca'
+defPUBLICHOSTNAME='voice.mexi-can.ca'
+defDOMAINNAME='mexi-can.ca'
+
+###########################################
+
+
+
 
 cat <<EOT
-This Script will install and create base line configs for FreeSWITCH, FusionPBX, Fail2Ban, Monit and PostgreSQL.
-It is designed to run on a Centos6 Minimal Install. EPEL will also be temporarily Enabled to get a few packages
+
+
+This Script will install and create base line configs for FreeSWITCH, FusionPBX, Fail2Ban, Monit and PostgreSQL, TLS.
+It is designed to run on a Centos6.2 I386 "Basic Server" Install. EPEL will also be temporarily Enabled to get a few packages
 not in the main Centos Repositories.
 
 As with anything you will want to review the configs after the installer to make sure they are what you want.
@@ -43,6 +58,41 @@ As with anything you will want to review the configs after the installer to make
 This is Version $VERSION of this script.
 
 EOT
+
+read -p "SNMP Support Name [$defSUPPORTNAME]: " -e t1
+if [ -n "$t1" ]
+then
+SUPPORTNAME="$t1"
+else
+SUPPORTNAME="$defSUPPORTNAME"
+fi
+
+
+read -p "Support Email [$defSUPPORTEMAIL]: " -e t1
+if [ -n "$t1" ]
+then
+SUPPORTEMAIL="$t1"
+else
+SUPPORTEMAIL="$defSUPPORTEMAIL"
+fi
+
+read -p "Public Hostname [$defPUBLICHOSTNAME]: " -e t1
+if [ -n "$t1" ]
+then
+PUBLICHOSTNAME="$t1"
+else
+PUBLICHOSTNAME="$defPUBLICHOSTNAME"
+fi
+
+read -p "Domain Name [$defDOMAINNAME]: " -e t1
+if [ -n "$t1" ]
+then
+DOMAINNAME="$t1"
+else
+DOMAINNAME="$defDOMAINNAME"
+fi
+
+
 
 read -r -p "Are you sure? [Y/n] " response
 if [[ $response =~ ^([yY][eE][sS]|[yY])$ ]]
@@ -55,23 +105,26 @@ fi
 
 
 
+###########################################3
+#dz  Install OpenSSL for TLS and SRTP support
+yum -y install openssl-devel
+
+
 ###############
 
 #dz  Install SNMP to support mod_snmp
 #dz  net-snmp-devel necessary to install net-snmp-config script
 yum -y install net-snmp net-snmp-utils net-snmp-devel
 
-mv /etc/snmp/snmpd.conf /etc/snmp/snmpd.conf.old 
+mv /etc/snmp/snmpd.conf /etc/snmp/snmpd.conf.org 
 
 #Create a new config file.
 
 #Add Settings to freeswitch sysconfig filed
 cat >> /etc/snmp/snmpd.conf <<EOT
 rocommunity  public
-syslocation  "Helia Technologies"
-syscontact  support@helia.ca
-master agentx
-agentXPerms     0755 0755 freeswitch freeswitch
+syslocation  ${SUPPORTNAME}
+syscontact  ${SUPPORTEMAIL}
 EOT
 
 #Start the snmpd service
@@ -166,12 +219,11 @@ cd freeswitch
 /bin/sed -i -e s,'#endpoints/mod_dingaling','endpoints/mod_dingaling', /usr/src/freeswitch/modules.conf
 /bin/sed -i -e s,'#applications/mod_lcr','applications/mod_lcr', /usr/src/freeswitch/modules.conf
 /bin/sed -i -e s,'#applications/mod_blacklist','applications/mod_blacklist', /usr/src/freeswitch/modules.conf
-#dz mod_cidlookup requires additional configuration which is not yet in this script
+mod_cidlookup requires additional configuration which is not yet in this script
 /bin/sed -i -e s,'#applications/mod_cidlookup','applications/mod_cidlookup', /usr/src/freeswitch/modules.conf
 #/bin/sed -i -e s,'#asr_tts/mod_pocketsphinx','asr_tts/mod_pocketsphinx', /usr/src/freeswitch/modules.conf
 /bin/sed -i -e s,'#applications/mod_voicemail_ivr','applications/mod_voicemail_ivr', /usr/src/freeswitch/modules.conf
 
-#dz mod_snmp is building with errors.  Will need to resolve first.  Currently this causes sophia not to build
 /bin/sed -i -e s,'#event_handlers/mod_snmp','event_handlers/mod_snmp', /usr/src/freeswitch/modules.conf
 /bin/sed -i -e s,'#formats/mod_shout','formats/mod_shout', /usr/src/freeswitch/modules.conf
 /bin/sed -i -e s,'#asr_tts/mod_tts_commandline','asr_tts/mod_tts_commandline', /usr/src/freeswitch/modules.conf
@@ -202,7 +254,6 @@ FS_HOME=/usr/local/freeswitch
 EOT
 
 
-
 #configure mod_cidlookup
 #dz need to install UnixODBC first
 # see http://wiki.freeswitch.org/wiki/Using_ODBC_in_the_core
@@ -224,11 +275,10 @@ LIMIT 1
 </configuration>
 EOT
 
-chown  apache:apache /usr/local/freeswitch/conf/autoload_configs/cidlookup.conf.xml 
-
-#dz 20120401  Change Freeswitch core to use Postgres
 /bin/sed -i -e s,'<!-- <param name="core-db-dsn" value="dsn:username:password" /> -->','<param name="core-db-dsn" value="freeswitch:freeswitch:" />', /usr/local/freeswitch/conf/autoload_configs/switch.conf.xml
 
+
+chown  apache:apache /usr/local/freeswitch/conf/autoload_configs/cidlookup.conf.xml 
 
 #dz Change Sofia to use Postgres
 /bin/sed -i -e s,'<!--<param name="odbc-dsn" value="dsn:user:pass"/>-->','<param name="odbc-dsn" value="freeswitch:freeswitch:"/>','/usr/local/freeswitch/conf/sip_profiles/internal.xml'
@@ -236,9 +286,6 @@ chown  apache:apache /usr/local/freeswitch/conf/autoload_configs/cidlookup.conf.
 
 #dz Use Postgres for voicemail
 /bin/sed -i -e s,'<!--<param name="odbc-dsn" value="dsn:user:pass"/>-->','<param name="odbc-dsn" value="freeswitch:freeswitch:"/>','/usr/local/freeswitch/conf/autoload_configs/voicemail.conf.xml'
-
-      
-
 
 
 # sym link fs_cli into /usr/local/bin so we don't have to adjust paths
@@ -268,11 +315,10 @@ chmod 770 `find . -type d`
 chmod 660 `find . -type f`
 
 # add apache to the freeswitch Group
-# usermod -a -G freeswitch apache  # dz20120415  apache is always public and should not have access to core pbx files 
-usermod -a -G apache freeswitch  # Add freeswitch to the apache group.  Fusionpbx files that are modified or inserted are in the apache group
+usermod -a -G freeswitch apache
 
 ## Install EPEL so we can get monit and ngrep 
-rpm -Uvh http://download.fedoraproject.org/pub/epel/6/i386/epel-release-6-5.noarch.rpm
+rpm -Uvh http://download.fedoraproject.org/pub/epel/6/i386/epel-release-6-7.noarch.rpm
 
 #Install Monit, Fail2Ban, and ngrep 
 yum install -y monit ngrep fail2ban
@@ -414,13 +460,6 @@ sudo -u postgres createuser -s -e fusionpbx
 sudo -u postgres createdb -E UTF8 -O fusionpbx fusionpbx
 
 
-# start up some services and set them to run at boot
-service freeswitch start
-service httpd restart
-chkconfig freeswitch on
-chkconfig httpd on
-service monit start
-chkconfig monit on
 
 
 #disable epel repo for normal use. Leaving it enabled canhave unintended consequences
@@ -476,6 +515,13 @@ iptables -I INPUT -p tcp -m tcp --dport 5060 -j ACCEPT
 iptables -I INPUT -p udp -m udp --dport 5080 -j ACCEPT
 iptables -I INPUT -p tcp -m tcp --dport 5080 -j ACCEPT
 
+
+# FreeSwitch ports internal SIPS profile
+iptables -I INPUT -p tcp -m tcp --dport 5061 -j ACCEPT
+
+# FreeSwitch ports external SIPS profile
+iptables -I INPUT -p tcp -m tcp --dport 5081 -j ACCEPT
+
 # RTP Traffic 16384-32768
 iptables -I INPUT -p udp -m udp --dport 16384:32768 -j ACCEPT
 
@@ -492,7 +538,65 @@ service iptables save
 
 
 
+#################################
+#generate cert for TLS
+#NOTE: the domain name here
+/usr/local/freeswitch/bin/gentls_cert setup -cn ${PUBLICHOSTNAME} -alt DNS:${PUBLICHOSTNAME} -org ${DOMAINNAME}
+# Creates file cafile.pem and CA/cacert.pem, CA/cakey.pem, CA/config.tpl
 
+cat <<EOT
+
+
+
+******************************
+
+Almost done!   Now certificates for encryption of TLS and SRTP will be created.  Answer yes when asked to create the certificates.
+
+******************************
+
+
+
+EOT
+
+/usr/local/freeswitch/bin/gentls_cert create_server -cn ${PUBLICHOSTNAME} -alt DNS:${PUBLICHOSTNAME} -org ${DOMAINNAME}
+# Creates file agent.pem CA/cacert.srl
+
+#review the cert
+#openssl x509 -noout -inform pem -text -in /usr/local/freeswitch/conf/ssl/agent.pem
+
+chown freeswitch:freeswitch /usr/local/freeswitch/conf/ssl/agent.pem
+#chown freeswitch:freeswitch /usr/local/freeswitch/conf/ssl/cacert.pem  # This file is the orig but doesn't exist
+chown freeswitch:freeswitch /usr/local/freeswitch/conf/ssl/CA/cacert.pem  # right file name in a CA folder
+chown freeswitch:freeswitch /usr/local/freeswitch/conf/ssl/cafile.pem	# file name is wrong
+
+
+chmod 640 /usr/local/freeswitch/conf/ssl/agent.pem
+#chmod 640 /usr/local/freeswitch/conf/ssl/cacert.pem	# This file is the orig but doesn't exist
+chmod 640 /usr/local/freeswitch/conf/ssl/CA/cacert.pem	# right filename in the CA folder
+# file name is wrong
+chmod 640 /usr/local/freeswitch/conf/ssl/cafile.pem 
+
+
+/bin/sed -i -e s,'<X-PRE-PROCESS cmd="set" data="external_ssl_enable=false"/>','<X-PRE-PROCESS cmd="set" data="external_ssl_enable=true"/>', /usr/local/freeswitch/conf/vars.xml
+/bin/sed -i -e s,'<X-PRE-PROCESS cmd="set" data="internal_ssl_enable=false"/>','<X-PRE-PROCESS cmd="set" data="internal_ssl_enable=true"/>', /usr/local/freeswitch/conf/vars.xml
+
+# Generate client certificate
+/usr/local/freeswitch/bin/gentls_cert create_client -cn client.${DOMAINNAME} -out phone
+
+
+#######################################################
+
+
+
+
+
+# start up some services and set them to run at boot
+service freeswitch start
+service httpd restart
+chkconfig freeswitch on
+chkconfig httpd on
+service monit start
+chkconfig monit on
 
 
 
