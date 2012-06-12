@@ -31,7 +31,7 @@
 #   The FreeSWITCH, FusionPBX and PostgreSQL Crews without them, none of this would be possible
 #  
 ###############################################
-VERSION="0.6"
+VERSION="0.7"
 
 ###########################################
 ##  Set Defaults for Variables
@@ -460,9 +460,17 @@ sudo -u postgres createuser -s -e fusionpbx
 sudo -u postgres createdb -E UTF8 -O fusionpbx fusionpbx
 
 
+# dz create a script to do a backup of the postgres databases (to disk).  Assuming you have another
+# script that backs the freeswitch and fusionpbx folder up
+wget -P /usr/local/freeswitch/scripts/ http://helia.ca/a/fusionpbx/pb_backup_rotated.sh
+chmod 755 /usr/local/freeswitch/scripts/pb_backup_rotated.sh
 
+# dz  Create a cron job to backup the postgres dbs to disk every day at 5 minutes past midnight
+cat >> /var/spool/cron/root << EOT
+5 0 * * * /usr/local/freeswitch/scripts/pb_backup_rotated.sh
+EOT
 
-#disable epel repo for normal use. Leaving it enabled canhave unintended consequences
+#disable epel repo for normal use. Leaving it enabled can have unintended consequences
 /bin/sed -i -e s,'enabled=1','enabled=0', /etc/yum.repos.d/epel.repo
 
 #Make the Prompt Pretty and add a few aliases that come in handy
