@@ -35,7 +35,7 @@ else {
 }
 
 //user defined settings
-	$export_type = "sql"; //default sql;
+	$export_type = "sql"; //sql, db (for sqlite)
 	$debug = false;
 	$invoices = false; //default false;
 	$db_type = "sqlite"; //pgsql, sqlite, mysql
@@ -43,6 +43,11 @@ else {
 //used for debugging
 	if ($debug) {
 		echo "<pre>\n";
+	}
+
+//create the destination database object
+	if ($export_type == "db") {
+		$dest_db = new PDO('sqlite:/tmp/fusionpbx.db');
 	}
 
 //set the headers
