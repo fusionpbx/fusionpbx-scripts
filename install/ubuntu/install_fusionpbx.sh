@@ -35,7 +35,7 @@ SQLITEMYSQL=s
 
 # for postgresql v 9.0 (from ppa) set to 9, otherwise stick with 8
 # must set SQLITEMYSQL to p
-POSTGRES9=8
+POSTGRES9=9
 
 # to start FreeSWITCH with -nonat option set SETNONAT to y
 SETNONAT=n
@@ -56,9 +56,9 @@ DISTRO=precise
 #PAY ATTENTION TO THE SPACES POST AND PRE PARENTHESIS
 #  mod_shout removed
 if [ $DO_DAHDI == "y" ]; then
-	modules_add=( ../../libs/freetdm/mod_freetdm mod_spandsp mod_dingaling mod_portaudio mod_callcenter mod_lcr mod_cidlookup mod_directory mod_flite mod_pocketsphinx mod_xml_rpc mod_xml_cdr mod_xml_curl mod_say_es )
+	modules_add=( ../../libs/freetdm/mod_freetdm mod_spandsp mod_dingaling mod_portaudio mod_callcenter mod_lcr mod_cidlookup mod_directory mod_flite mod_pocketsphinx mod_xml_cdr mod_say_es )
 else
-	modules_add=( mod_spandsp mod_dingaling mod_portaudio mod_callcenter mod_lcr mod_cidlookup mod_directory mod_flite mod_pocketsphinx mod_xml_rpc mod_xml_cdr mod_xml_curl mod_say_es )
+	modules_add=( mod_spandsp mod_dingaling mod_portaudio mod_callcenter mod_lcr mod_cidlookup mod_directory mod_flite mod_pocketsphinx mod_xml_cdr mod_say_es )
 fi
 
 #-------
@@ -76,6 +76,8 @@ VERSION="Version - using subversion, no longer keeping track. WAF License"
 #staying with default repository, feel free to change this to github. Some report faster downloads.
 FSGIT=git://git.freeswitch.org/freeswitch.git
 #FSGIT=git://github.com/FreeSWITCH/FreeSWITCH.git
+FSSTABLE=true
+FSStableVer="v1.2.stable"
 
 #right now, make -j not working. see: jira FS-3005
 #CORES=$(/bin/grep processor -c /proc/cpuinfo)
@@ -826,11 +828,18 @@ if [ $DO_DAHDI == "y" ]; then
 		/bin/echo "Git Already Done. Skipping"	
 	else
 		cd /usr/src
-		/usr/bin/time /usr/bin/git clone $FSGIT
-		if [ $? -ne 0 ]; then
-			#git had an error
-			/bin/echo "GIT ERROR"
-			exit 1
+		if [ "$FSSTABLE" == true ]; then
+			echo "installing stable $FSStableVer of FreeSWITCH"
+			/usr/bin/time /usr/bin/git clone $FSGIT
+			cd /usr/src/freeswitch
+			/usr/bin/git checkout $FSStableVer
+			if [ $? -ne 0 ]; then
+				#git had an error
+				/bin/echo "GIT ERROR"
+				exit 1
+			fi			
+			
+		
 		else
 			if [ $FSCHECKOUTVER == true ]; then
 				echo "OK we'll check out FreeSWITCH version $FSREV"
@@ -839,6 +848,14 @@ if [ $DO_DAHDI == "y" ]; then
 				if [ $? -ne 0 ]; then
 					#git checkout had an error
 					/bin/echo "GIT CHECKOUT ERROR"
+					exit 1
+				fi
+			else
+				echo "going dev branch.  Hope this works for you."
+				/usr/bin/time /usr/bin/git clone $FSGIT
+				if [ $? -ne 0 ]; then
+					#git had an error
+					/bin/echo "GIT ERROR"
 					exit 1
 				fi
 			fi
@@ -2366,12 +2383,91 @@ if [ $UPGFREESWITCH -eq 1 ]; then
 		cd /usr/src/freeswitch
 		if [ $? -ne 0 ]; then
 			#previous had an error
-			/bin/echo "/usr/local/freeswitch does not exist"
+			/bin/echo "/usr/src/freeswitch does not exist"
 			/bin/echo "you probably installed from a FusionPBX ISO which deleted this"
 			/bin/echo "Directory to save space.  rerun with install-freeswitch option"
 			exit 1
 		fi
 		cd /usr/src/freeswitch
+		
+		#get on the 1.2.x release first...
+		echo
+		echo
+		echo "Checking to see which version of FreeSWITCH you are on"
+		git status |grep "1.2"
+		if [ $? -ne 0 ]; then
+			echo "It appears that you are currently on the FreeSWITCH Git Master branch, or no branch."
+			echo "  We currently recommend that you switch to the 1.2.x branch,"
+			echo "  since 1.4 [master] may not be very stable."
+			echo
+			read -p "Shall we change to the 1.2.x branch [Y/n]? " YESNO
+		else
+			YESNO="no"
+		fi
+		
+		case $YESNO in
+                [Nn]*)
+                        echo "OK, staying on current...."
+                        FSSTABLE=false
+                ;;
+
+                *)
+                        echo "OK, switching to 1.2.x."
+                        FSSTABLE=true
+                ;;
+        esac
+		
+		if [ $FSSTABLE == true ]; then
+			echo "OK we'll now use the 1.2.x stable branch"
+			cd /usr/src/freeswitch
+			
+			#odd edge case, I think from a specific version checkout
+				# git status
+				# Not currently on any branch.
+				# Untracked files:
+				#   (use "git add <file>..." to include in what will be committed)
+				#
+				#       src/mod/applications/mod_httapi/Makefile
+			
+			git status |grep -i "not currently"
+			if [ $? -eq 0 ]; then
+				echo "You are not on master branch.  We have to fix that first"
+				/usr/bin/git checkout master
+				if [ $? -ne 0 ]; then
+					#git checkout had an error
+					/bin/echo "GIT CHECKOUT to 1.2.x ERROR"
+					exit 1
+				fi
+			fi
+			
+			#/usr/bin/time /usr/bin/git clone -b $FSStableVer git://git.freeswitch.org/freeswitch.git
+			/usr/bin/git pull
+			if [ $? -ne 0 ]; then
+				#git checkout had an error
+				/bin/echo "GIT PULL to 1.2.x ERROR"
+				exit 1
+			fi
+			/usr/bin/git checkout $FSStableVer
+			if [ $? -ne 0 ]; then
+				#git checkout had an error
+				/bin/echo "GIT CHECKOUT to 1.2.x ERROR"
+				exit 1
+			fi
+			#/usr/bin/git checkout master
+			#if [ $? -ne 0 ]; then
+			#	#git checkout had an error
+			#	/bin/echo "GIT CHECKOUT to 1.2.x ERROR"
+			#	exit 1
+			#fi
+			
+		else
+			echo "staying on dev branch.  Hope this works for you."
+		fi
+		
+		cd /usr/src/freeswitch
+		echo "reconfiguring mod_spandsp"
+		make spandsp-reconf
+		
 		if [ $CORES > "1" ]; then 
 			/bin/echo "  multicore processor detected. Upgrading with -j $CORES"
 			/usr/bin/time /usr/bin/make -j $CORES current
@@ -2385,6 +2481,21 @@ if [ $UPGFREESWITCH -eq 1 ]; then
 			/bin/echo "make current error"
 			exit 1
 		fi			
+		
+		if [ $DEBUG -eq 1 ]; then
+			/bin/echo
+			/bin/echo "I'm going to stop here and wait.  FreeSWITCH has now been compiled and is ready to install"
+			/bin/echo "but in order to do this we need to stop FreeSWITCH [which will dump any active calls]."
+			/bin/echo "This should not take too long to finish, but we should try and time things correctly."
+			/bin/echo "The current status of your switch is:"
+			/bin/echo
+			/usr/local/freeswitch/bin/fs_cli -x status
+			/bin/echo
+			/bin/echo -n "Press Enter to continue the upgrade."
+			
+			read
+		fi
+		
 		/etc/init.d/freeswitch stop
 		if [ $? -ne 0 ]; then
 			#previous had an error
@@ -2399,7 +2510,7 @@ if [ $UPGFREESWITCH -eq 1 ]; then
 		else 
 			/bin/echo "made_current" >> /tmp/install_fusion_status
 		fi
-		/etc/init.d/freeswitch start
+		
 	fi
 	
 	#------------------------
@@ -2435,6 +2546,15 @@ if [ $UPGFREESWITCH -eq 1 ]; then
 		/etc/init.d/logrotate restart
 		freeswitch_logfiles
 	fi
+	
+	if [ -e $WWW_PATH/$GUI_NAME ]; then
+		echo "I noticed that FusionPBX is installed too"
+		echo "now going to fix freeswitch permissions from upgrade to be safe"
+		www_permissions
+	else
+		echo "Standalone FreeSWITCH installation, no permissions to change"
+	fi
+	/etc/init.d/freeswitch start
 fi
 #------------------------------------
 #    DONE UPGRADING FREESWITCH
@@ -2450,6 +2570,7 @@ if [ $UPGFUSION -eq 1 ]; then
 	/bin/echo "Resetting FreeSWITCH permissions to www-data in case you did"
 	/bin/echo "  a FreeSWITCH upgrade as well."
 	www_permissions
+	cd $WWW_PATH/$GUI_NAME
 	/bin/echo
 	/bin/echo "STOP! Make sure you are logged into fusionpbx as the superadmin (via browser)!!!"
 	read -p "Have you done this yet (y/n)? " YESNO
