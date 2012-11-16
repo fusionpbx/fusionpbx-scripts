@@ -80,4 +80,5 @@ Migration Instructions
 	At <param name="url" remove /mod/ and replace it with /app/
 	Status -> SIP Status press 'reloadxml'
 	System -> Modules restart XML CDR.
+
 23. Upgrade is complete.
