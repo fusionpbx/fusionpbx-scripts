@@ -18,7 +18,8 @@ Migration Instructions
 	Any database name you want to use will work for these instructions we will use a database name of fusionpbx3.
 
 6. Download the export PHP Script
-	http://code.google.com/p/fusionpbx/source/browse/trunk/scripts/upgrade/r1877-export.php
+	cd /var/www/fusionpbx
+	wget http://fusionpbx.googlecode.com/svn/trunk/scripts/upgrade/r1877-export.php
 
 7. Make a backup of the FusionPBX PHP directory and the FreeSWITCH conf directory.
 	cp -R /var/www/fusionpbx var/www/fusionpbx-bak
@@ -45,7 +46,9 @@ Migration Instructions
 		2. Move the old database to a new name
 			mv /var/www/fusionpbx/secure/fusionpbx.db /var/www/fusionpbx/secure/fusionpbx-version2.db
 		3. Import the sql file into the sqlite database
-			sqlite /var/www/fusionpbx/secure/fusionpbx.db < /tmp/database_backup.sql
+			Debian / Ubuntu Server
+			apt-get install sqlite3
+			sqlite3 /var/www/fusionpbx/secure/fusionpbx.db < /tmp/database_backup.sql
 		4. Make sure the database is writeable
 
 14. Edit fusionpbx/includes/config.php change the database name to the new database.
@@ -67,10 +70,11 @@ Migration Instructions
 20. For multi-tenant systems delete the domain based dialplan xml files in.
 	rm /usr/local/freeswitch/conf/dialplans/replace_with_the_domain_name.xml
 
-21. Log back into the web interface and run.
-	Advanced -> Upgrade Schema (this will create new dialplans xml files for each domain)
+21. Upgrade FusionPBX
+	cd /var/www/fusionpbx
+	/usr/bin/php /var/www/fusionpbx/core/upgrade/upgrade.php
 
-22.  Go to Advanced -> XML Editor
+22. Go to Advanced -> XML Editor
 	Expand 'autoload_configs'
 	Click on xml_cdr.conf.xml
 	At <param name="url" remove /mod/ and replace it with /app/

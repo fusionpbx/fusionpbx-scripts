@@ -56,6 +56,9 @@ else {
 		header('Content-Disposition: attachment; filename=database_backup.sql');
 	}
 
+//set the timeout to two hours
+	set_time_limit(7200);
+
 //add an rfc compliant version 4 uuid function
 	if (!function_exists('uuid')) {
 		function uuid() {
@@ -4052,7 +4055,7 @@ EOD;
 		$dialplan_detail_inline = check_str($row["field_inline"]);
 		$dialplan_detail_group = check_str($row["field_group"]);
 		$dialplan_detail_order = check_str($row["field_order"]);
-		$dialplan_detail_data = str_replace("\\\\", "\\", $dialplan_detail_data);
+		//	$dialplan_detail_data = str_replace("\\\\", "\\", $dialplan_detail_data);
 
 		//get the dialplan_uuid
 		$dialplan_uuid = $dialplan_array[$dialplan_include_id]['dialplan_uuid'];
@@ -5137,7 +5140,8 @@ EOD;
 		$ivr_menu_option_param = check_str($row["ivr_menu_options_param"]);
 		$ivr_menu_option_order = check_str($row["ivr_menu_options_order"]);
 		$ivr_menu_option_description = check_str($row["ivr_menu_options_desc"]);
-		$ivr_menu_options_action = str_replace("\\\\", "\\", $ivr_menu_options_action);
+		//$ivr_menu_options_action = str_replace("\\\\", "\\", $ivr_menu_options_action);
+
 
 		//get the ivr_menu_uuid
 		$ivr_menu_uuid = $ivr_menu_array[$ivr_menu_id]['ivr_menu_uuid'];
