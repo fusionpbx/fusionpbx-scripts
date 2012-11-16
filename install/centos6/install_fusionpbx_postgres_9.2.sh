@@ -26,31 +26,32 @@
 #   Contributor(s):
 #   
 #   Ken Rice <krice@tollfreegateway.com>
-#  
+#   Dar Zuch <support@helia.ca>
+#   Mark J Crane <mark@fusionpbx.com>
 #   Also thanks to:
 #   The FreeSWITCH, FusionPBX and PostgreSQL Crews without them, none of this would be possible
 #  
 ###############################################
-VERSION="0.8"
+VERSION="0.9"
 
 ###########################################
 ##  Set Defaults for Variables
 
-defSUPPORTNAME='Helia Technologies'
-defSUPPORTEMAIL='support@helia.ca'
+defSUPPORTNAME='Company Name'
+defSUPPORTEMAIL='support@example.com'
 defPUBLICHOSTNAME='voice.example.com'
 defDOMAINNAME='example.com'
 
 ###########################################
 
-
+#get the machine type x86_64
+MACHINE_TYPE=`uname -m`
 
 
 cat <<EOT
 
-
 This Script will install and create base line configs for FreeSWITCH, FusionPBX, Fail2Ban, Monit and PostgreSQL, TLS.
-It is designed to run on a Centos6.2 I386 "Basic Server" Install. EPEL will also be temporarily Enabled to get a few packages
+It is designed to run on a Centos6.2 I386/x86_64 "Basic Server" Install. EPEL will also be temporarily Enabled to get a few packages
 not in the main Centos Repositories.
 
 As with anything you will want to review the configs after the installer to make sure they are what you want.
@@ -94,7 +95,6 @@ else
 PUBLICHOSTNAME="$defPUBLICHOSTNAME"
 fi
 
-
 read -r -p "Are you sure? [Y/n] " response
 if [[ $response =~ ^([yY][eE][sS]|[yY])$ ]]
 then
@@ -116,7 +116,7 @@ yum -y install openssl-devel
 #dz  net-snmp-devel necessary to install net-snmp-config script
 yum -y install net-snmp net-snmp-utils net-snmp-devel
 
-mv /etc/snmp/snmpd.conf /etc/snmp/snmpd.conf.org 
+mv /etc/snmp/snmpd.conf /etc/snmp/snmpd.conf.org
 
 #Create a new config file.
 
@@ -144,11 +144,15 @@ mkdir fusionpbxinstall
 cd fusionpbxinstall
 
 
-# dz add the postgresql 9.1 repository so it can be installed via yum
-wget http://yum.pgrpms.org/9.1/redhat/rhel-6-i386/pgdg-centos91-9.1-4.noarch.rpm
-rpm -ivh pgdg-centos91-9.1-4.noarch.rpm
+# dz add the postgresql 9.2 repository so it can be installed via yum
+if [ ${MACHINE_TYPE} == 'x86_64' ]; then
+  wget http://yum.pgrpms.org/9.2/redhat/rhel-6-x86_64/pgdg-centos92-9.2-6.noarch.rpm
+else
+  wget http://yum.pgrpms.org/9.2/redhat/rhel-6-i386/pgdg-centos92-9.2-6.noarch.rpm
+fi
+rpm -ivh pgdg-centos92-9.2-6.noarch.rpm
 
-# Do a Yum Update to update the system and then install all other required modules 
+# Do a Yum Update to update the system and then install all other required modules
 yum update -y
 yum -y install autoconf automake gcc-c++ git-core libjpeg-devel libtool make ncurses-devel pkgconfig unixODBC-devel openssl-devel gnutls-devel libogg-devel libvorbis-devel curl-devel libtiff-devel libjpeg-devel python-devel expat-devel zlib zlib-devel bzip2 which postgresql91-devel postgresql91-odbc postgresql91-server subversion screen vim php* ntp
 
@@ -162,7 +166,7 @@ cat >> /etc/odbc.ini << EOT
 ; WARNING: The old psql odbc driver psqlodbc.so is now renamed psqlodbcw.so
 ; in version 08.x. Note that the library can also be installed under an other
 ; path than /usr/local/lib/ following your installation.
-Driver		= /usr/lib/psqlodbcw.so
+Driver = /usr/lib/psqlodbcw.so
 Description=Connection to LDAP/POSTGRESQL
 Servername=127.0.0.1
 Port=5432
@@ -170,13 +174,13 @@ Port=5432
 FetchBufferSize=99
 Username=freeswitch
 ;Password=password
-Database=freeswitch 
+Database=freeswitch
 ReadOnly=no
 Debug=1
 CommLog=1
 
 [fusionpbx]
-Driver		= /usr/lib/psqlodbcw.so
+Driver = /usr/lib/psqlodbcw.so
 Description=Connection to FusionPBX used for mod_CDR
 Servername=127.0.0.1
 Port=5432
@@ -184,12 +188,11 @@ Port=5432
 FetchBufferSize=99
 Username=fusionpbx
 ;Password=password
-Database=fusionpbx 
+Database=fusionpbx
 ReadOnly=no
 Debug=1
 CommLog=1
 EOT
-
 
 #users for Postgres are added after Postgres is started
 
@@ -198,7 +201,7 @@ ntpdate pool.ntp.org
 service ntpd start
 chkconfig ntpd on
 
-#Disable SELinux (Ken hates this thing)
+#Disable SELinux
 if [ -x /usr/sbin/setenforce ]
 	then
 		/usr/sbin/setenforce 0
@@ -211,6 +214,7 @@ fi
 cd /usr/src
 git clone git://git.freeswitch.org/freeswitch.git
 cd freeswitch
+git checkout v1.2.stable
 ./bootstrap.sh -j
 
 #dz modify the /usr/src/freeswitch/modules.conf file here  dz120308
@@ -236,13 +240,13 @@ make cd-moh-install && make cd-sounds-install
 #add a user for freeswitch
 useradd freeswitch
 
-#set ownership, perms, and install init scripts 
+#set ownership, perms, and install init scripts
 cd /usr/local/
 chown -R freeswitch:freeswitch freeswitch
 chmod -R g+w freeswitch
 cd /usr/src/freeswitch/build
 cp freeswitch.init.redhat /etc/init.d/freeswitch
-chmod +x /etc/init.d/freeswitch 
+chmod +x /etc/init.d/freeswitch
 cp freeswitch.sysconfig /etc/sysconfig/freeswitch
 
 #Add Settings to freeswitch sysconfig filed
@@ -252,7 +256,6 @@ FS_USER=freeswitch
 FS_FILE=/usr/local/freeswitch/bin/freeswitch
 FS_HOME=/usr/local/freeswitch
 EOT
-
 
 configure mod_cidlookup
 #dz need to install UnixODBC first
@@ -277,8 +280,7 @@ EOT
 
 /bin/sed -i -e s,'<!-- <param name="core-db-dsn" value="dsn:username:password" /> -->','<param name="core-db-dsn" value="freeswitch:freeswitch:" />', /usr/local/freeswitch/conf/autoload_configs/switch.conf.xml
 
-
-chown  apache:apache /usr/local/freeswitch/conf/autoload_configs/cidlookup.conf.xml 
+chown  apache:apache /usr/local/freeswitch/conf/autoload_configs/cidlookup.conf.xml
 
 #dz Change Sofia to use Postgres
 /bin/sed -i -e s,'</settings>','<param name="odbc-dsn" value="freeswitch:freeswitch:"/></settings>', /usr/local/freeswitch/conf/sip_profiles/internal.xml
@@ -317,20 +319,23 @@ chmod 660 `find . -type f`
 # add apache to the freeswitch Group
 usermod -a -G freeswitch apache
 
-# dz20120614  Freeswitch should be in the apache group.  Freeswitch is a 
-#    more critical service and apache is more public.  Therefore we should 
-#   not allow apache access to the freeswitch files.  Conf files that 
-#   are modified by the web interface should be owned by the apache group 
+# dz20120614  Freeswitch should be in the apache group.  Freeswitch is a
+#    more critical service and apache is more public.  Therefore we should
+#   not allow apache access to the freeswitch files.  Conf files that
+#   are modified by the web interface should be owned by the apache group
 #   and freeswitch should have access to it.
 
 # add freeswitch to the apache group
 usermod -a -G apache freeswitch
 
+## Install EPEL so we can get monit and ngrep
+if [ ${MACHINE_TYPE} == 'x86_64' ]; then
+	rpm -Uvh http://download.fedoraproject.org/pub/epel/6/x86_64/epel-release-6-7.noarch.rpm
+else
+	rpm -Uvh http://download.fedoraproject.org/pub/epel/6/i386/epel-release-6-7.noarch.rpm
+fi
 
-## Install EPEL so we can get monit and ngrep 
-rpm -Uvh http://download.fedoraproject.org/pub/epel/6/i386/epel-release-6-7.noarch.rpm
-
-#Install Monit, Fail2Ban, and ngrep 
+#Install Monit, Fail2Ban, and ngrep
 yum install -y monit ngrep fail2ban
 
 #Drop monit configs in the right spot
@@ -359,7 +364,7 @@ cat > /etc/monit.d/freeswitch <<EOT
 
 EOT
 
-#Add Fail2Ban configs for 
+#Add Fail2Ban configs for
 echo > /etc/fail2ban/filter.d/freeswitch.conf << EOT
 # Fail2Ban configuration file
 #
@@ -443,7 +448,7 @@ protocol = tcp
 filter   = fusionpbx
 logpath  = /var/log/messages
 action   = iptables-allports[name=fusionpbx, protocol=all]
-           sendmail-whois[name=FusionPBX, dest=root, sender=fail2ban@example.org] 
+           sendmail-whois[name=FusionPBX, dest=root, sender=fail2ban@example.org]
 
 EOT
 
@@ -468,7 +473,6 @@ sudo -u postgres createdb -E UTF8 -O freeswitch freeswitch
 cd /var/tmp
 sudo -u postgres createuser -s -e fusionpbx
 sudo -u postgres createdb -E UTF8 -O fusionpbx fusionpbx
-
 
 # dz create a script to do a backup of the postgre databases (to disk).  Assuming you have another
 # script that backs the freeswitch and fusionpbx folder up
@@ -515,7 +519,6 @@ hardstatus string "%{.bW}%-w%{.rW}%f%n %t%{-}%+w %=%{..G}[%H %l] %{..Y} %m/%d %c
 termcapinfo xterm \'is=\E[r\E[m\E[2J\E[H\E[?7h\E[?1;4;6l\'
 EOT
 
-
 # and finally lets fix up IPTables so things works correctly
 
 #Block 'friendly-scanner' AKA sipvicious
@@ -535,7 +538,6 @@ iptables -I INPUT -p tcp -m tcp --dport 5080 -j ACCEPT
 
 # NTP time port for phones
 iptables -I INPUT -p udp -m udp --dport 123 -j ACCEPT
-
 
 # FreeSwitch ports internal SIPS profile
 iptables -I INPUT -p tcp -m tcp --dport 5061 -j ACCEPT
@@ -557,8 +559,6 @@ iptables -I INPUT -p udp -m udp --dport 162 -j ACCEPT
 #save the IPTables rules for later
 service iptables save
 
-
-
 #################################
 #generate cert for TLS
 #NOTE: the domain name here
@@ -567,15 +567,11 @@ service iptables save
 
 cat <<EOT
 
-
-
 ******************************
 
 Almost done!   Now certificates for encryption of TLS and SRTP will be created.  Answer yes when asked to create the certificates.
 
 ******************************
-
-
 
 EOT
 
@@ -595,7 +591,7 @@ chmod 640 /usr/local/freeswitch/conf/ssl/agent.pem
 #chmod 640 /usr/local/freeswitch/conf/ssl/cacert.pem	# This file is the orig but doesn't exist
 chmod 640 /usr/local/freeswitch/conf/ssl/CA/cacert.pem	# right filename in the CA folder
 # file name is wrong
-chmod 640 /usr/local/freeswitch/conf/ssl/cafile.pem 
+chmod 640 /usr/local/freeswitch/conf/ssl/cafile.pem
 
 
 /bin/sed -i -e s,'<X-PRE-PROCESS cmd="set" data="external_ssl_enable=false"/>','<X-PRE-PROCESS cmd="set" data="external_ssl_enable=true"/>', /usr/local/freeswitch/conf/vars.xml
@@ -608,9 +604,6 @@ chmod 640 /usr/local/freeswitch/conf/ssl/cafile.pem
 #######################################################
 
 
-
-
-
 # start up some services and set them to run at boot
 service freeswitch start
 service httpd restart
@@ -618,7 +611,6 @@ chkconfig freeswitch on
 chkconfig httpd on
 service monit start
 chkconfig monit on
-
 
 
 LOCAL_IP=`ifconfig eth0 | head -n2 | tail -n1 | cut -d' ' -f12 | cut -c 6-`

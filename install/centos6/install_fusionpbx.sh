@@ -31,7 +31,10 @@
 #   The FreeSWITCH, FusionPBX and PostgreSQL Crews without them, none of this would be possible
 #  
 ###############################################
-VERSION="0.2"
+VERSION="0.3"
+
+#get the machine type x86_64
+MACHINE_TYPE=`uname -m`
 
 cat <<EOT
 This Script will install and create base line configs for FreeSWITCH, FusionPBX, Fail2Ban, Monit and PostgreSQL.
@@ -116,7 +119,11 @@ chmod 660 `find . -type f`
 usermod -a -G freeswitch apache
 
 ## Install EPEL so we can get monit and ngrep 
-rpm -Uvh http://download.fedoraproject.org/pub/epel/6/i386/epel-release-6-5.noarch.rpm
+if [ ${MACHINE_TYPE} == 'x86_64' ]; then
+	rpm -Uvh http://download.fedoraproject.org/pub/epel/6/x86_64/epel-release-6-7.noarch.rpm
+else
+	rpm -Uvh http://download.fedoraproject.org/pub/epel/6/i386/epel-release-6-7.noarch.rpm
+fi
 
 #Install Monit, Fail2Ban, and ngrep 
 yum install -y monit ngrep fail2ban
