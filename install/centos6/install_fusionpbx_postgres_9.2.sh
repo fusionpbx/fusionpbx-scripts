@@ -154,7 +154,7 @@ rpm -ivh pgdg-centos92-9.2-6.noarch.rpm
 
 # Do a Yum Update to update the system and then install all other required modules
 yum update -y
-yum -y install autoconf automake gcc-c++ git-core libjpeg-devel libtool make ncurses-devel pkgconfig unixODBC-devel openssl-devel gnutls-devel libogg-devel libvorbis-devel curl-devel libtiff-devel libjpeg-devel python-devel expat-devel zlib zlib-devel bzip2 which postgresql91-devel postgresql91-odbc postgresql91-server subversion screen vim php* ntp
+yum -y install autoconf automake gcc-c++ git-core libjpeg-devel libtool make ncurses-devel pkgconfig unixODBC-devel openssl-devel gnutls-devel libogg-devel libvorbis-devel curl-devel libtiff-devel libjpeg-devel python-devel expat-devel zlib zlib-devel bzip2 which postgresql92-devel postgresql92-odbc postgresql92-server subversion screen vim php* ntp
 
 
 # dz Install unixodbc so we can switch from the default sqllite db to postgresql for Freeswitch
