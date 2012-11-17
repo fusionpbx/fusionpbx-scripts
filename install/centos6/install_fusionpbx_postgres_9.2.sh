@@ -455,24 +455,25 @@ EOT
 
 # INIT Postgresql, and set it for easyness
 #quick hack to postgresql init script to init the DB with trust access **** YOU MAY NOT WANT THIS FOR PRODUCTION ****
- /bin/sed -i -e s,'ident','trust', /etc/init.d/postgresql-9.1
-service postgresql-9.1 initdb
-chkconfig postgresql-9.1 on
-service postgresql-9.1 start
+ /bin/sed -i -e s,'ident','trust', /etc/init.d/postgresql-9.2
+cd /etc/init.d/
+./postgresql-9.2 initdb
+chkconfig postgresql-9.2 on
+service postgresql-9.2 start
 
 #set this back to normal
-/bin/sed -i -e s,'trust','ident', /etc/init.d/postgresql-9.1
-service postgresql-9.1 restart
+/bin/sed -i -e s,'trust','ident', /etc/init.d/postgresql-9.2
+service postgresql-9.2 restart
 
 #create users for core Freeswitch
 cd /var/tmp
-sudo -u postgres createuser -s -e freeswitch
-sudo -u postgres createdb -E UTF8 -O freeswitch freeswitch
+sudo -u postgres /usr/pgsql-9.2/bin/createuser -s -e freeswitch
+sudo -u postgres /usr/pgsql-9.2/bin/createdb -E UTF8 -O freeswitch freeswitch
 
 # dz create a fusionpbx user and a fusionpbx database.
 cd /var/tmp
-sudo -u postgres createuser -s -e fusionpbx
-sudo -u postgres createdb -E UTF8 -O fusionpbx fusionpbx
+sudo -u postgres /usr/pgsql-9.2/bin/createuser -s -e fusionpbx
+sudo -u postgres /usr/pgsql-9.2/bin/createdb -E UTF8 -O fusionpbx fusionpbx
 
 # dz create a script to do a backup of the postgre databases (to disk).  Assuming you have another
 # script that backs the freeswitch and fusionpbx folder up
@@ -521,11 +522,14 @@ EOT
 
 # and finally lets fix up IPTables so things works correctly
 
-#Block 'friendly-scanner' AKA sipvicious
+# SSH port
+iptables -I INPUT -p tcp -m tcp --dport 22 -j ACCEPT
+
+# Block 'friendly-scanner' AKA sipvicious
 iptables -I INPUT -p udp --dport 5060 -m string --string "friendly-scanner" --algo bm -j DROP
 iptables -I INPUT -p udp --dport 5080 -m string --string "friendly-scanner" --algo bm -j DROP
 
-#rate limit registrations to keep us from getting hammered on
+# rate limit registrations to keep us from getting hammered on
 iptables -I INPUT -m string --string "REGISTER sip:" --algo bm --to 65 -m hashlimit --hashlimit 4/minute --hashlimit-burst 1 --hashlimit-mode srcip,dstport --hashlimit-name sip_r_limit -j ACCEPT
 
 # FreeSwitch ports internal SIP profile
