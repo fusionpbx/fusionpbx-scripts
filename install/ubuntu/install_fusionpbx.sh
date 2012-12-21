@@ -147,6 +147,7 @@ server{
 
         location ~ \.php$ {
             fastcgi_pass 127.0.0.1:9000;
+            #fastcgi_pass /var/run/php5-fpm.sock;
             fastcgi_index index.php;
             include fastcgi_params;
             fastcgi_param   SCRIPT_FILENAME $WWW_PATH/$GUI_NAME\$fastcgi_script_name;
