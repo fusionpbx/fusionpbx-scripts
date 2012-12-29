@@ -125,7 +125,7 @@ function nginxconfig {
 	ln -s /etc/ssl/private/ssl-cert-snakeoil.key /etc/ssl/private/nginx.key
 	ln -s /etc/ssl/certs/ssl-cert-snakeoil.pem /etc/ssl/certs/nginx.crt
 	ln -s /etc/ssl/certs/nginx.crt $WWW_PATH/$GUI_NAME/$HOSTNAME.crt
-	
+
 	#don't forget to escape 'DELIM'. otherwise the $fastcgi part
 	#gets escaped.
 	#manually escaping now. needs variables....
@@ -244,19 +244,19 @@ server{
 }
 DELIM
 		/bin/ln -s /etc/nginx/sites-available/$GUI_NAME /etc/nginx/sites-enabled/$GUI_NAME
-		
+
 		/bin/echo "document root for nginx is:"
 		/bin/echo "  $WWW_PATH/$GUI_NAME"
 		/bin/echo "  php has an upload file size limit of 10 MegaBytes"
 		/bin/echo
 		/bin/echo "now install FusionPBX. This should go fast."
 		/bin/echo
-	
+
 		#nginx install doesn't create /var/www
 		/bin/mkdir $WWW_PATH
 		/bin/chown -R www-data:www-data $WWW_PATH
 		/bin/chmod -R 775 $WWW_PATH
-	
+
 	/etc/init.d/php5-fpm
 	/etc/init.d/nginx restart
 }
@@ -361,7 +361,7 @@ function finish_fpbx_install_permissions {
 		sleep 1
 		let "SLEEPTIME = $SLEEPTIME + 1"
 	done
-	
+
 	/bin/echo "   Fixing..."
 	/usr/bin/find /usr/local/freeswitch -type f -exec /bin/chmod g+w {} \;
 	/usr/bin/find /usr/local/freeswitch -type d -exec /bin/chmod g+w {} \;
@@ -415,7 +415,7 @@ function build_modules {
 					/bin/echo ${modules_compile[$index]} >> $SRCPATH/modules.conf
 					/bin/echo "     [ADDED] ${modules_compile[$index]}"
 			fi
-	
+
 			let "index = $index + 1"
 	done
 	#--------------
@@ -462,7 +462,7 @@ function enable_modules {
 
 		let "index = $index + 1"
 	done
-	
+
 	#--------------
 	#end new way v2
 	#--------------
@@ -501,12 +501,12 @@ fi
 DELIM
 
 	/bin/chmod 755 /etc/cron.daily/freeswitch_log_rotation
-	
+
 	/bin/echo "Now dropping 10MB limit from FreeSWITCH"
 	/bin/echo "  This is so the rotation/compression part of the cron script"
 	/bin/echo "  will work properly."
 	/bin/echo "  SEE: /usr/local/freeswitch/conf/autoload_configs/logfile.conf.xml"
-	
+
 	# <param name="rollover" value="10485760"/>
 	/bin/sed /usr/local/freeswitch/conf/autoload_configs/logfile.conf.xml -i -e s,\<param.*name\=\"rollover\".*value\=\"10485760\".*/\>,\<\!\-\-\<param\ name\=\"rollover\"\ value\=\"10485760\"/\>\ INSTALL_SCRIPT\-\-\>,g
 }
@@ -515,13 +515,13 @@ case $1 in
 	fix-https)
 		nginxconfig
 	;;
-	
+
 	fix-permissions)
 		/etc/init.d/freeswitch stop
 		www_permissions
 		/etc/init.d/freeswitch start
 	;;
-	
+
 	install-freeswitch)
 		INSFUSION=0
 		INSFREESWITCH=1
@@ -529,21 +529,21 @@ case $1 in
 		UPGFREESWITCH=0
 	
 	;;
-	
+
 	install-fusionpbx)
 		INSFUSION=1
 		INSFREESWITCH=0
 		UPGFUSION=0
 		UPGFREESWITCH=0
 	;;
-	
+
 	install-both)
 		INSFUSION=1
 		INSFREESWITCH=1
 		UPGFUSION=0
 		UPGFREESWITCH=0
 	;;
-	
+
 	upgrade-fusionpbx)
 		INSFUSION=0
 		INSFREESWITCH=0
@@ -557,36 +557,34 @@ case $1 in
 		UPGFUSION=0
 		UPGFREESWITCH=1
 	;;
-	
+
 	upgrade-both)
 		INSFUSION=0
 		INSFREESWITCH=0
 		UPGFUSION=1
 		UPGFREESWITCH=1
+	;;
 
-	;;	
-	
 	version)
 		/bin/echo "  "$VERSION
 		/bin/echo
 		/bin/echo "$LICENSE"
 		exit 0
 	;;
-	
+
 	-v)
 		/bin/echo "  "$VERSION
 		/bin/echo
 		/bin/echo "$LICENSE"
 		exit 0
 	;;
-	
+
 	--version)
 		/bin/echo "  "$VERSION
 		/bin/echo
 		/bin/echo "$LICENSE"
 		exit 0
 	;;
-	
 	*)
 		/bin/echo
 		/bin/echo "This script should be called as:"
@@ -615,15 +613,13 @@ case $1 in
 	;;
 esac
 
-case $2 in	
+case $2 in
 	user)
 		DEBUG=1
 	;;
-	
 	auto)
 		DEBUG=0
 	;;
-	
 		*)
 		/bin/echo
 		/bin/echo "This script should be called as:"
@@ -668,7 +664,7 @@ if [ ! -s /usr/bin/lsb_release ]; then
 	/bin/echo
 	apt-get upgrade && apt-get -y install lsb-release
 fi
-	
+
 #check for internet connection
 /usr/bin/wget -q --tries=10 --timeout=5 http://www.google.com -O /tmp/index.google &> /dev/null
 if [ ! -s /tmp/index.google ];then
@@ -714,13 +710,13 @@ else
 		/bin/echo "Your OS appears to be:"
 		lsb_release -a
 		read -p "Do you want to continue [y|n]? " CONTINUE
-	
+
 		case "$CONTINUE" in
 		[yY]*)
 			/bin/echo "Ok, this doesn't always work..,"
 			/bin/echo "  but we'll give it a go."
 		;;
-	
+
 		*)
 			/bin/echo "Quitting."
 			exit 1
@@ -778,7 +774,7 @@ if [ $INSFREESWITCH -eq 1 ]; then
 
 	/usr/bin/apt-get update
 	/usr/bin/apt-get -y upgrade
-	
+
 	if [ $DISTRO = "precise" ]; then
 		/usr/bin/apt-get -y install ssh vim git-core subversion build-essential \
 		autoconf automake libtool libncurses5 libncurses5-dev libjpeg-dev ssh \
@@ -792,7 +788,7 @@ if [ $INSFREESWITCH -eq 1 ]; then
 			time bison libssl-dev \
 			unixodbc libmyodbc unixodbc-dev libtiff-tools
 	fi
-	
+
 	#added libgnutls-dev libgnutls26 for dingaling...
 	#gnutls no longer required for dingaling (git around oct 17 per mailing list..)
 	# removed libgnutls-dev libgnutls26
@@ -817,17 +813,16 @@ if [ $DO_DAHDI == "y" ]; then
 	/bin/echo
 	/bin/echo "ldconfig is finished"
 	/bin/echo
-	
+
 	if [ ! -e /tmp/install_fusion_status ]; then
 		touch /tmp/install_fusion_status
-	fi	
+	fi
 
 	if [ $DEBUG -eq 1 ]; then
 		/bin/echo
 		read -p "Press Enter to continue (check for errors)"
 	fi
 
-	
 	#------------------------
 	# GIT FREESWITCH
 	#------------------------
@@ -845,9 +840,7 @@ if [ $DO_DAHDI == "y" ]; then
 				#git had an error
 				/bin/echo "GIT ERROR"
 				exit 1
-			fi			
-			
-		
+			fi
 		else
 			if [ $FSCHECKOUTVER == true ]; then
 				echo "OK we'll check out FreeSWITCH version $FSREV"
@@ -869,19 +862,18 @@ if [ $DO_DAHDI == "y" ]; then
 			fi
 			/bin/echo "git_done" >> /tmp/install_fusion_status
 		fi
-		
 	fi
-	
+
 	if [ -e /usr/src/FreeSWITCH ]; then
 		/bin/ln -s /usr/src/FreeSWITCH /usr/src/freeswitch
 	elif [ -e /usr/src/freeswitch.git ]; then
 		/bin/ln -s /usr/src/freeswitch.git /usr/src/freeswitch
 	fi
-	
+
 	if [ $DEBUG -eq 1 ]; then
 		/bin/echo
 		read -p "Press Enter to continue (check for errors)"
-	fi	
+	fi
 
 	#------------------------
 	# BOOTSTRAP FREESWITCH
@@ -913,7 +905,7 @@ if [ $DO_DAHDI == "y" ]; then
 			if [ $DEBUG -eq 1 ]; then
 				/bin/echo
 				read -p "Press Enter to continue (check for errors)"
-			fi			
+			fi
 			/usr/bin/time /usr/src/freeswitch/bootstrap.sh
 		fi
 
@@ -925,7 +917,7 @@ if [ $DO_DAHDI == "y" ]; then
 			/bin/echo "bootstrap_done" >> /tmp/install_fusion_status
 		fi
 	fi
-	
+
 	if [ $DEBUG -eq 1 ]; then
 		/bin/echo
 		read -p "Press Enter to continue (check for errors)"
@@ -948,8 +940,8 @@ if [ $DO_DAHDI == "y" ]; then
 		else
 			/bin/echo "build_modules" >> /tmp/install_fusion_status
 		fi
-	fi	
-	
+	fi
+
 	if [ $DEBUG -eq 1 ]; then
 		/bin/echo
 		read -p "Press Enter to continue (check for errors)"
@@ -971,7 +963,7 @@ if [ $DO_DAHDI == "y" ]; then
 		/bin/sleep 1
 		/bin/echo -ne " ."
 		/usr/bin/time /usr/src/freeswitch/configure
-		
+
 		if [ $? -ne 0 ]; then
 			#previous had an error
 			/bin/echo "ERROR: FreeSWITCH Configure ERROR."
@@ -980,12 +972,12 @@ if [ $DO_DAHDI == "y" ]; then
 			/bin/echo "config_done" >> /tmp/install_fusion_status
 		fi
 	fi
-		
+
 	if [ $DEBUG -eq 1 ]; then
 		/bin/echo
 		read -p "Press Enter to continue (check for errors)"
 	fi
-	
+
 	if [ -a /etc/init.d/freeswitch ]; then
 		/bin/echo " In case of an install where FS exists (iso), stop FS"
 		/etc/init.d/freeswitch stop
@@ -994,13 +986,13 @@ if [ $DO_DAHDI == "y" ]; then
 
 	#------------------------
 	# COMPILE FREESWITCH 
-	#------------------------	
+	#------------------------
 	/bin/grep 'compile_done' /tmp/install_fusion_status > /dev/null
 	if [ $? -eq 0 ]; then
 		/bin/echo "FreeSWITCH already Compiled! Skipping."
 	else
 		#might see about -j cores option to make...
-		
+
 		/bin/echo
 		/bin/echo -ne "Compiling FreeSWITCH. This might take a LONG while [~30 minutes]"
 		/bin/sleep 1
@@ -1009,7 +1001,7 @@ if [ $DO_DAHDI == "y" ]; then
 		/bin/echo -ne "."
 		/bin/sleep 1
 		/bin/echo -ne "."
-	
+
 		#making sure pwd is correct
 		cd /usr/src/freeswitch
 		if [ $CORES -gt 1 ]; then 
@@ -1021,8 +1013,7 @@ if [ $DO_DAHDI == "y" ]; then
 			/bin/echo "  singlecore processor detected. Starting compile sans -j"
 			/usr/bin/time /usr/bin/make 
 		fi
-		
-	
+
 		if [ $? -ne 0 ]; then
 			#previous had an error
 			/bin/echo "ERROR: FreeSWITCH Build Failure."
@@ -1031,7 +1022,7 @@ if [ $DO_DAHDI == "y" ]; then
 			/bin/echo "compile_done" >> /tmp/install_fusion_status
 		fi
 	fi
-	
+
 	if [ $DEBUG -eq 1 ]; then
 		/bin/echo
 		read -p "Press Enter to continue (check for errors)"
@@ -1039,14 +1030,14 @@ if [ $DO_DAHDI == "y" ]; then
 
 	#------------------------
 	# INSTALL FREESWITCH 
-	#------------------------	
+	#------------------------
 	/bin/grep 'install_done' /tmp/install_fusion_status > /dev/null
 	if [ $? -eq 0 ]; then
 		/bin/echo "FreeSWITCH already Installed! Skipping."
 	else
 		#dingaling/ubuntu has an issue. let's edit the file...
 		#"--mode=relink gcc" --> "--mode=relink gcc -lgnutls" 
-		
+
 		#tls no longer required for dingaling, so this weird issue doesn't happen. now uses openssl.
 #		/bin/grep 'lgnutls' /usr/src/freeswitch/src/mod/endpoints/mod_dingaling/mod_dingaling.la > /dev/null
 #		if [ $? -eq 0 ]; then
@@ -1063,7 +1054,7 @@ if [ $DO_DAHDI == "y" ]; then
 			/usr/bin/time /usr/bin/make install
 		fi
 		#/usr/bin/time /usr/bin/make install
-	
+
 		if [ $? -ne 0 ]; then
 			#previous had an error
 			/bin/echo "ERROR: FreeSWITCH INSTALL Failure."
@@ -1071,11 +1062,11 @@ if [ $DO_DAHDI == "y" ]; then
 		else
 			/bin/echo "install_done" >> /tmp/install_fusion_status
 		fi
-	fi	
-	
+	fi
+
 	#------------------------
 	# FREESWITCH  HD SOUNDS
-	#------------------------	
+	#------------------------
 	/bin/grep 'sounds_done' /tmp/install_fusion_status > /dev/null
 	if [ $? -eq 0 ]; then
 		/bin/echo "FreeSWITCH HD SOUNDS DONE! Skipping."
@@ -1097,7 +1088,7 @@ if [ $DO_DAHDI == "y" ]; then
 			/usr/bin/time /usr/bin/make hd-sounds-install
 		fi
 		#/usr/bin/time /usr/bin/make hd-sounds-install
-	
+
 		if [ $? -ne 0 ]; then
 			#previous had an error
 			/bin/echo "ERROR: FreeSWITCH make cdsounds-install ERROR."
@@ -1106,16 +1097,16 @@ if [ $DO_DAHDI == "y" ]; then
 			/bin/echo "sounds_done" >> /tmp/install_fusion_status
 		fi
 	fi
-	
+
 	if [ $DEBUG -eq 1 ]; then
 		/bin/echo
 		read -p "Press Enter to continue (check for errors)"
 	fi
-	
+
 
 	#------------------------
 	# FREESWITCH  MOH
-	#------------------------	
+	#------------------------
 	/bin/grep 'moh_done' /tmp/install_fusion_status > /dev/null
 	if [ $? -eq 0 ]; then
 		/bin/echo "FreeSWITCH MOH DONE! Skipping."
@@ -1128,7 +1119,7 @@ if [ $DO_DAHDI == "y" ]; then
 		/bin/echo -ne "."
 		/bin/sleep 1
 		/bin/echo "."
-		
+
 		cd /usr/src/freeswitch
 		if [ $CORES -gt 1 ]; then 
 			/bin/echo "  multicore processor detected. Installing with -j $CORES"
@@ -1138,7 +1129,7 @@ if [ $DO_DAHDI == "y" ]; then
 			/usr/bin/time /usr/bin/make hd-moh-install
 		fi
 		#/usr/bin/make hd-moh-install
-		
+
 		if [ $? -ne 0 ]; then
 			#previous had an error
 			/bin/echo "ERROR: FreeSWITCH make cd-moh-install ERROR."
@@ -1147,31 +1138,30 @@ if [ $DO_DAHDI == "y" ]; then
 			/bin/echo "moh_done" >> /tmp/install_fusion_status
 		fi
 	fi
-	
+
 	if [ $DEBUG -eq 1 ]; then
 		/bin/echo
 		read -p "Press Enter to continue (check for errors)"
 	fi
-	
+
 	#------------------------
 	# FREESWITCH INIT
 	#------------------------
 	#no need for tmp file. already handled...
 	/bin/echo
 	/bin/echo "Configuring /etc/init.d/freeswitch"
-	
+
 	/bin/grep local /etc/init.d/freeswitch > /dev/null
 	if [ $? -eq 0 ]; then
 		#file exists and has been edited
 		/bin/echo "/etc/init.d/freeswitch already edited, skipping"
 	elif [ -e /usr/src/freeswitch/debian/freeswitch.init ]; then
-		
 		/bin/sed /usr/src/freeswitch/debian/freeswitch.init -e s,opt,usr/local, >/etc/init.d/freeswitch
 	else
 		/bin/sed /usr/src/freeswitch/debian/freeswitch-sysvinit.freeswitch.init  -e s,opt,usr/local, >/etc/init.d/freeswitch
 		#DAEMON
 		/bin/sed -i /etc/init.d/freeswitch -e s,^DAEMON=.*,DAEMON=/usr/local/freeswitch/bin/freeswitch,
-					
+
 		#DAEMON_ARGS
 		/bin/sed -i /etc/init.d/freeswitch -e s,'^DAEMON_ARGS=.*','DAEMON_ARGS="-u www-data -g www-data -rp -nc -nonat"',
 
@@ -1181,30 +1171,28 @@ if [ $DO_DAHDI == "y" ]; then
 		#WORKDIR
 		/bin/sed -i /etc/init.d/freeswitch -e s,^WORKDIR=.*,WORKDIR=/usr/local/freeswitch/lib/,
 	fi
-	
+
 	if [ $? -ne 0 ]; then
 		#previous had an error
 		/bin/echo "ERROR: Couldn't edit FreeSWITCH init script."
 		exit 1
 	fi
-	
+
 	/bin/chmod 755 /etc/init.d/freeswitch
 	/bin/echo "enabling FreeSWITCH to start at boot"
-	
+
 	/bin/grep true /etc/default/freeswitch > /dev/null
 	if [ $? -eq 0 ]; then
 		#file exists and has been edited
 		/bin/echo "/etc/default/freeswitch already edited, skipping"
-		
 	else
 		if [ -e /usr/src/freeswitch/debian/freeswitch-sysvinit.freeswitch.default ]; then
-                        /bin/sed /usr/src/freeswitch/debian/freeswitch-sysvinit.freeswitch.default -e s,false,true, > /etc/default/freeswitch
-                        if [ $? -ne 0 ]; then
-                                #previous had an error
-                                /bin/echo "ERROR: Couldn't edit freeswitch RC script."
-                                exit 1
-                        fi
-						
+			/bin/sed /usr/src/freeswitch/debian/freeswitch-sysvinit.freeswitch.default -e s,false,true, > /etc/default/freeswitch
+			if [ $? -ne 0 ]; then
+					#previous had an error
+					/bin/echo "ERROR: Couldn't edit freeswitch RC script."
+					exit 1
+			fi
 		else
 			/bin/sed /usr/src/freeswitch/debian/freeswitch.default -e s,false,true, > /etc/default/freeswitch
 			if [ $? -ne 0 ]; then
@@ -1215,9 +1203,9 @@ if [ $DO_DAHDI == "y" ]; then
 		fi
 		if [ $DEBUG -eq 1 ]; then
 			/bin/echo "Checking for a public IP Address..."
-			
+
 			PUBLICIP=no
-			
+
 			#turn off the auto-nat when we start freeswitch.
 			#nasty syntax. searches for 10.a.b.c or 192.168.x.y addresses in ifconfig.
 			/sbin/ifconfig | \
@@ -1230,12 +1218,12 @@ if [ $DO_DAHDI == "y" ]; then
 					-e '^192\.168\.[0-9]\{1,3\}\.[0-9]\{1,3\}$' \
 					-e '^127.0.0.1$'
 					#-e '^172\.[16-31]\.[0-9]\{1,3\}\.[0-9]\{1,3\}' \
-				
+
 				if [ $? -ne 0 ]; then
 					PUBLICIP=yes
 				fi
 			done
-			
+
 			case "$PUBLICIP" in 
 				[Yy]*)
 					if [ $DEBUG -eq 1 ]; then  
@@ -1247,20 +1235,20 @@ if [ $DO_DAHDI == "y" ]; then
 					fi
 				
 				;;
-		
+
 				*)
 					/bin/echo "Dynamic IP. leaving FreeSWITCH for aggressive nat"
 					SETNONAT=no
 				;;
 			esac
 		fi
-		
+
 		case "$SETNONAT" in
 			[Yy]*)
 				/bin/sed /etc/default/freeswitch -i -e s,'FREESWITCH_PARAMS="-nc"','FREESWITCH_PARAMS="-nc -nonat"',
 				/bin/echo "init script set to start 'freeswitch -nc -nonat'"
 			;;
-				
+
 			*)
 						/bin/echo "OK, not using -nonat option."
 			;;
@@ -1268,10 +1256,9 @@ if [ $DO_DAHDI == "y" ]; then
 		/bin/echo
 		/usr/sbin/update-rc.d -f freeswitch defaults
 	fi
-	
-	
+
 	/bin/echo
-	
+
 	#don't do this.  If freeswitch is a machine name, it really screws this test.  It
 	#won't hurt to adduser a second time anyhow.
 	#/bin/grep freeswitch /etc/passwd > /dev/null
@@ -1298,9 +1285,9 @@ if [ $DO_DAHDI == "y" ]; then
 		#dialout for dahdi
 		/usr/sbin/adduser freeswitch dialout
 	fi
-	
+
 	/bin/chown -R freeswitch:daemon /usr/local/freeswitch/
-	
+
 	/bin/echo "removing 'other' permissions on freeswitch"
 	/bin/chmod -R o-rwx /usr/local/freeswitch/
 	/bin/echo
@@ -1320,7 +1307,7 @@ if [ $DO_DAHDI == "y" ]; then
 	#let's try removing opt altogether...
 	#/bin/echo
 	/bin/ln -s /usr/local/freeswitch/bin/fs_cli /usr/local/bin/
-	
+
 	#if [ $DEBUG -eq 1 ]; then  
 	#	/bin/echo "FreeSWITCH was installed to /usr/local."
 	#	/bin/echo " normally we don't want to see /opt"
@@ -1333,31 +1320,31 @@ if [ $DO_DAHDI == "y" ]; then
 	#	/bin/echo
 	#	read -p "Can I 'rm -Rf /opt (Y/n)? " RMOPT
 	#fi
-	
+
 	#case "$RMOPT" in
 	#[Yy]*)
 	#	/bin/rm -Rf /opt
 	#;;
-		
+
 	#*)
 		#/bin/echo "OK, linking /usr/local/freeswitch to /opt/freeswitch"
 		#/bin/ln -s /usr/local/freeswitch /opt/freeswitch
 	#;;
-	
+
 	#esac
-	
+
 	if [ $DEBUG -eq 1 ]; then
 		/bin/echo
 		/bin/echo "Press Enter to continue (check for errors)"
 		read
 	fi
-	
+
 	#------------------------
 	# enable modules.conf.xml
 	#------------------------
 	/bin/grep 'enable_modules' /tmp/install_fusion_status > /dev/null
 	if [ $? -eq 0 ]; then
-		/bin/echo "Modules.conf.xml Already enabled"	
+		/bin/echo "Modules.conf.xml Already enabled"
 	else
 		#file exists and has been edited
 		enable_modules
@@ -1370,7 +1357,7 @@ if [ $DO_DAHDI == "y" ]; then
 			/bin/echo "enable_modules" >> /tmp/install_fusion_status
 		fi
 	fi
-	
+
 	if [ $DEBUG -eq 1 ]; then
 		/bin/echo
 		read -p "Press Enter to continue (check for errors)"
@@ -1378,7 +1365,7 @@ if [ $DO_DAHDI == "y" ]; then
 
 	#-----------------
 	#Setup logrotate
-	#-----------------	
+	#-----------------
 #	if [ -a /etc/logrotate.d/freeswitch ]; then
 	if [ -a /etc/cron.daily/freeswitch_log_rotation ]; then
 		/bin/echo "Logrotate for FreeSWITCH Already Done!"
@@ -1397,7 +1384,7 @@ if [ $DO_DAHDI == "y" ]; then
 	/bin/echo -ne " ."
 	sleep 1
 	/bin/echo -ne " ."
-	
+
 	/usr/bin/apt-get -y install fail2ban
 	/bin/echo
 	/bin/echo "Checking log-auth-failures"
@@ -1556,11 +1543,11 @@ DELIM
 	#/bin/sed -i ‘s/RepeatedMsgReduction\ on/RepeatedMsgReduction\ off/’ /etc/rsyslog.conf
 	/bin/sed -i 's/RepeatedMsgReduction\ on/RepeatedMsgReduction\ off/' /etc/rsyslog.conf
 	/etc/init.d/rsyslog restart
-	
+
 	#bug in fail2ban.  If you see this error
 	#2011-02-27 14:11:42,326 fail2ban.actions.action: ERROR  iptables -N fail2ban-freeswitch-tcp
 	#http://www.fail2ban.org/wiki/index.php/Fail2ban_talk:Community_Portal#fail2ban.action.action_ERROR_on_startup.2Frestart
-	
+
 	/bin/grep -A 1 'time.sleep(0\.1)' /usr/bin/fail2ban-client |/bin/grep beautifier > /dev/null
 	if [ $? -ne 0 ]; then
 		/bin/sed -i -e s,beautifier\.setInputCmd\(c\),'time.sleep\(0\.1\)\n\t\t\tbeautifier.setInputCmd\(c\)', /usr/bin/fail2ban-client
@@ -1573,11 +1560,11 @@ DELIM
 	#2011-02-13 06:37:59,889 fail2ban.filter : INFO   Log rotation detected for /usr/local/freeswitch/log/freeswitch.log
 	/etc/init.d/freeswitch start
 	/etc/init.d/fail2ban restart
-	
+
 	/bin/echo "     fail2ban for ssh enabled by default"
 	/bin/echo "     Default is 3 failures before your IP gets blocked for 600 seconds"
 	/bin/echo "      SEE http://wiki.freeswitch.org/wiki/Fail2ban"
-	
+
 	/bin/echo
 	/bin/echo
 	/bin/echo "FreeSWITCH Installation Completed. Have Fun!"
@@ -1588,7 +1575,7 @@ fi
 #---------------------------------------
 #     DONE INSTALLING FREESWITCH
 #---------------------------------------
-	
+
   
 #---------------------------------------
 #        INSTALL FUSIONPBX
@@ -1624,7 +1611,7 @@ if [ $INSFUSION -eq 1 ]; then
 		/bin/echo "New Option..."
 		read -p "Would you prefer Apache or Ngnix [nginx and php-fpm from ppa repos] (a/N)? " APACHENGINX
 	fi
-	
+
 	#remastersys iso ditches the apt data. have to update
 	/usr/bin/apt-get update
 	#get reqs for both
@@ -1636,7 +1623,7 @@ if [ $INSFUSION -eq 1 ]; then
 		/usr/bin/wget http://us.archive.ubuntu.com/ubuntu/pool/universe/p/ppa-purge/ppa-purge_0+bzr46.1~lucid1_all.deb -O /var/cache/apt/archives/ppa-purge_0+bzr46.1~lucid1_all.deb
 		/usr/bin/dpkg -i /var/cache/apt/archives/ppa-purge_0+bzr46.1~lucid1_all.deb
 	fi
-	
+
 	/usr/bin/apt-get -y install sqlite php5-cli php5-sqlite php5-odbc 
 	if [ $DISTRO = "precise" ]; then
 		/usr/bin/apt-get -y install php-db
@@ -1644,11 +1631,10 @@ if [ $INSFUSION -eq 1 ]; then
 
 	#-----------------
 	# Apache
-	#-----------------	
+	#-----------------
 	case "$APACHENGINX" in
 	[Aa]*)
 	#if [ $APACHENGINX == "a" ]; then
-		
 		if [ -e /usr/sbin/nginx ]; then
 			#nginx is installed.
 			/bin/echo
@@ -1662,7 +1648,6 @@ if [ $INSFUSION -eq 1 ]; then
 			else 
 				YESNO=y
 			fi
-			
 				case "$YESNO" in 
 					[Yy]*)
 						/bin/grep brianmercer /etc/apt/sources.list > /dev/null
@@ -1691,14 +1676,13 @@ if [ $INSFUSION -eq 1 ]; then
 						/usr/bin/apt-get -y install libgd2-noxpm
 						/bin/echo "  NGINX/PHP5-FPM REMOVED!"
 					;;
-					
 					*)
 						/bin/echo "OK. We'll stop. Exiting!"
 						exit 1
 					;;
 				esac
 		fi
-		
+
 		/usr/bin/apt-get -y install apache2 libapache2-mod-php5 
 		#installs:
 		#apache2 apache2-mpm-prefork apache2-utils apache2.2-bin apache2.2-common libapache2-mod-php5 libapr1 libaprutil1 libaprutil1-dbd-sqlite3 libaprutil1-ldap
@@ -1767,7 +1751,7 @@ DELIM
 #			/bin/sed -i -e s,"DocumentRoot /var/www","DocumentRoot /var/www/fusionpbx", \
 #				-e s,"<Directory /var/www/>","<Directory /var/www/fusionpbx/>", \
 #				/etc/apache2/sites-enabled/000-default
-		
+
 			if [ $? -ne 0 ]; then
 				#previous had an error
 #				/bin/echo "ERROR: Failed edit of /etc/apache2/sites-enabled/000-default"
@@ -1783,7 +1767,7 @@ DELIM
 			#/bin/echo "/etc/apache2/sites-enabled/000-default already edited. Skipping..."
 			/bin/echo "/etc/apache2/sites-enabled/$GUI_NAME already there. Skipping..."
 		fi
-		
+
 		/bin/grep 10M /etc/php5/apache2/php.ini > /dev/null
 		if [ $? -ne 0 ]; then
 			/bin/sed -i -e s,"upload_max_filesize = 2M","upload_max_filesize = 10M", /etc/php5/apache2/php.ini
@@ -1796,7 +1780,7 @@ DELIM
 			/bin/echo
 			/bin/echo "/etc/php5/apache2/php.ini already edited. Skipping..."
 		fi
-		
+
 		/bin/echo "document root for apache2 is:"
 		/bin/echo "  $WWW_PATH/$GUI_NAME"
 		/bin/echo "  php has an upload file size limit of 10 MegaBytes"
@@ -1806,12 +1790,12 @@ DELIM
 	;;
 	#-----------------
 	# Apache Done
-	#-----------------	
+	#-----------------
 
 
 	#-----------------
 	# NGINX
-	#-----------------		
+	#-----------------
 	*)
 	#elif [ $APACHENGINX == "n" ] || [ $APACHENGINX == "N" ] || [ $APACHENGINX == "" ]; then
 	# ^ would be almost there. empty read isn't caught. switching to case. more flexible...
@@ -1829,7 +1813,6 @@ DELIM
 			else 
 				YESNO=y
 			fi
-			
 				case "$YESNO" in 
 					[Yy]*)
 						#remove packages
@@ -1841,7 +1824,6 @@ DELIM
 						#removing libapr removes subversion!
 						/usr/bin/apt-get -y install subversion
 					;;
-					
 					*)
 						/bin/echo "OK. We'll stop. Exiting!"
 						exit 1
@@ -1857,12 +1839,9 @@ DELIM
 			/bin/cat /tmp/dotdeb.gpg | apt-key add - 
 			/bin/rm /tmp/dotdeb.gpg
 			/usr/bin/apt-get update
-			
 		elif [ $DISTRO = "precise" ]; then
 			#included in main repo we have nginx [nginx-full] and php5-fpm
 			echo "already in 12.04 LTS [precise], nothing to add."
-			
-
 		else
 			#add-apt-repository ppa:brianmercer/php  // apt-get -y install python-software-properties	
 			#Add php5-fpm ppa to the list
@@ -1871,39 +1850,35 @@ DELIM
 				/bin/echo "php-fpm ppa already add the old way. Fixing"
 				/bin/sed -i -e s,'deb http://ppa.launchpad.net/brianmercer/php/ubuntu lucid main',, /etc/apt/sources.list
 				/usr/bin/apt-add-repository ppa:brianmercer/php
-			
 			elif [ ! -e /etc/apt/sources.list.d./brianmercer-php-lucid.list ]; then
 				/bin/echo "Adding PPA for php-fpm"
 				#/bin/echo "deb http://ppa.launchpad.net/brianmercer/php/ubuntu lucidmain" >> /etc/apt/sources.list
 				#/usr/bin/apt-key adv --keyserver keyserver.ubuntu.com --recv-keys 8D0DC64F
 				/usr/bin/apt-add-repository ppa:brianmercer/php
-			
 			else
 				/bin/echo "php-fpm ppa already added."
 			fi
-		
+
 			#Add NGINX-ppa to src list.
 			/bin/grep nginx /etc/apt/sources.list > /dev/null
 			if [ $? -ne 0 ]; then
 				/bin/echo "nginx ppa already add the old way. Fixing"
 				/bin/sed -i -e s,'deb http://ppa.launchpad.net/nginx/stable/ubuntu lucid main',, /etc/apt/sources.list
 				/usr/bin/apt-add-repository ppa:nginx/stable
-			
 			elif [ ! -e /etc/apt/sources.list.d./nginx-stable-lucid.list ]; then 
 				/bin/echo "Adding PPA for latest nginx"
 				/usr/bin/apt-add-repository ppa:nginx/stable
 				#/bin/echo "deb http://ppa.launchpad.net/nginx/stable/ubuntu lucid main" >> /etc/apt/sources.list	
 				#/usr/bin/apt-key adv --keyserver keyserver.ubuntu.com --recv-keys C300EE8C
-
 			else
 				/bin/echo "nginx ppa already added"
 			fi
 		fi
-					
+
 		/usr/bin/apt-get update && /usr/bin/apt-get upgrade -y
 		/usr/bin/apt-get -y install nginx
 			#installs libgd2-noxpm libxslt1.1 nginx nginx-full
-		
+
 		if [ $DISTRO = "squeeze" ]; then
 			/usr/bin/apt-get -y install php5-fpm php5-common php5-gd php-pear php5-memcache php5-apc php5-sqlite
 		else
@@ -1920,7 +1895,6 @@ DELIM
 			#PHPCONFFILE="/etc/php5/fpm/php-fpm.conf"
 			#max_children set in /etc/php5/fpm/pool.d/www.conf
 			PHPCONFFILE="/etc/php5/fpm/pool.d/www.conf"
-				
 		else
 			PHPINIFILE="/etc/php5/fpm/php.ini"
 			PHPCONFFILE="/etc/php5/fpm/php5-fpm.conf"
@@ -1937,7 +1911,7 @@ DELIM
 			/bin/echo
 			/bin/echo "/etc/php5/fpm/php.ini already edited. Skipping..."
 		fi
-		
+
 		##Applying fix for cgi.fix_pathinfo
 		/bin/grep 'cgi\.fix_pathinfo=0' $PHPINIFILE > /dev/null
 		if [ $? -ne 0 ]; then
@@ -1950,10 +1924,10 @@ DELIM
 			/bin/echo
 			/bin/echo "/etc/php5/fpm/php.ini already edited for cgi.fix_pathinfo. Skipping..."
 		fi
-		
+
 		#We don't need so many php children. 1 per core should be fine FOR NOW.
 		#/bin/sed -i -e s,"pm.max_children = 10","pm.max_children = 4", /etc/php5/fpm/php5-fpm.conf
-		
+
 		/bin/grep "pm.max_children = 4" $PHPCONFFILE > /dev/null
 		if [ $? -ne 0 ]; then
 			/bin/sed -i -e s,"pm.max_children = 10","pm.max_children = 4", $PHPCONFFILE
@@ -1966,7 +1940,7 @@ DELIM
 			/bin/echo
 			/bin/echo "$PHPCONFFILE [children] already edited. Skipping..."
 		fi
-		
+
 		#max_servers must be <= max_children
 		/bin/grep "pm.max_spare_servers = 4" $PHPCONFFILE > /dev/null
 		if [ $? -ne 0 ]; then
@@ -1976,7 +1950,6 @@ DELIM
 				/bin/echo "ERROR: failed edit of $PHPCONFFILE pm.max_spare_servers = 4"
 				exit 1
 			fi
-			
 		else
 			/bin/echo
 			/bin/echo "pm.max_spare_servers not changed"
@@ -1991,9 +1964,9 @@ DELIM
 		/etc/init.d/nginx start
 
 		#NGINX server config:
-	
+
 		rm /etc/nginx/sites-enabled/default
-		
+
 		/bin/grep '.db' /etc/nginx/sites-available/$GUI_NAME >> /dev/null
 		if [ $? -ne 0 ]; then
 			/bin/echo "Nginx insecure previous installation"
@@ -2001,7 +1974,7 @@ DELIM
 			/bin/echo "  FIXING..."
 			/bin/rm /etc/nginx/sites-available/$GUI_NAME
 		fi
-		
+
 		if [ -a /etc/nginx/sites-available/$GUI_NAME ]; then
 			/bin/echo "/etc/nginx/sites-available/$GUI_NAME already exists... skipping"
 		else
@@ -2019,7 +1992,7 @@ DELIM
 			fi
 		fi
 	;;
-	
+
 	esac
 	#-----------------
 	# NGINX Done
@@ -2029,37 +2002,32 @@ DELIM
 	#	/bin/echo "Didn't catch that. exiting"
 	#	exit 1
 	#fi
-			
+
 	cd $WWW_PATH
 
 	if [ $DEBUG -eq 1 ]; then
 		/bin/echo
 		/bin/echo "Press Enter to continue (check for errors)"
 		read
-	fi	
-	
+	fi
+
 	/bin/echo "Stopping FreeSWITCH..."
 	#/etc/init.d/freeswitch stop
-	
 	if [[ "$INST_FPBX" == "svn" ]]; then
-			
 			if [ $FBPXCHECKOUTVER == true ]; then
 				/bin/echo "Going to install FusionPBX SVN Rev $FPBXREV"
 				/usr/bin/svn checkout -r r$FPBXREV http://fusionpbx.googlecode.com/svn/trunk/fusionpbx $WWW_PATH/$GUI_NAME
-			else	
+			else
 				/bin/echo "Going to install FusionPBX latest SVN!"
 				#removed -r r1877 r1877 from new install
 				/usr/bin/svn checkout http://fusionpbx.googlecode.com/svn/trunk/fusionpbx $WWW_PATH/$GUI_NAME
 			fi
-			
-			
-        elif [ $INST_FPBX == tgz ]; then
+	elif [ $INST_FPBX == tgz ]; then
 			/bin/tar -C $WWW_PATH -xzvf $TGZ_FILE
 	fi
 	if [ ! -e $WWW_PATH/$GUI_NAME ]; then
 		/bin/mv $WWW_PATH/fusionpbx $WWW_PATH/$GUI_NAME
 	fi
-
 
 	/usr/sbin/adduser freeswitch www-data
 	/usr/sbin/adduser www-data daemon
@@ -2092,14 +2060,14 @@ DELIM
 	/bin/echo "  however; FusionPBX won't be able to make changes anymore"
 	/usr/bin/find /usr/local/freeswitch -type f -exec /bin/chmod g+w {} \;
 	/usr/bin/find /usr/local/freeswitch -type d -exec /bin/chmod g+w {} \;
-	
+
 #	/bin/echo "go to the web address in your browser to finish configuration"
 #	/bin/echo '  http://'`/sbin/ifconfig eth0 | /bin/grep 'inet addr:' | /usr/bin/cut -d: -f2 | /usr/bin/awk '{ print $1}'`
-	
+
 #	/bin/echo "don't forget to start FreeSWITCH after the install!"
 #	/bin/echo "/etc/init.d/freeswitch start"
-	
-	
+
+
 	#FreeSWITCH needs read access to scripts in /var/www/fusionpbx/secure
 	#per mcrane on IRC
 	#mcrane: the easiest way to get it to work is have FreeSWITCH and the web server run under the same user
@@ -2114,19 +2082,18 @@ DELIM
 	/bin/echo "renaming default FreeSWITCH extensions .noload"
 	for i in /usr/local/freeswitch/conf/directory/default/1*.xml;do mv $i $i.noload ; done
 
-	
 
 	if [ $DEBUG -eq 1 ]; then
 		/bin/echo
 		/bin/echo "Press Enter to continue (check for errors)"
 		read
 	fi
-	
+
 	/bin/echo
 	/bin/echo "Finishing Up FusionPBX installation."
 	/bin/echo "Now for a database..."
 	/bin/echo
-	
+
 
 	#-----------------
 	# MySQL
@@ -2152,9 +2119,8 @@ DELIM
 			echo
 		  ;;
 		esac
-		
 	fi
-	
+
 	case "$SQLITEMYSQL" in
 	[Mm]*)
 	#if [ $SQLITEMYSQL == "m" ]; then
@@ -2181,11 +2147,11 @@ DELIM
 		/bin/echo -ne "  When MySQL is configured come back and press enter. "
 		read
 	;;
-	
+
 	[Pp]*)
 	#elif [ $SQLITEMYSQL == "p" ]; then	
 		/bin/echo -ne "Installing PostgeSQL"
-		
+
 		if [ $POSTGRES9 == "9" ]; then
 			/bin/echo " version 9.1"
 			if [ $DISTRO = "squeeze" ]; then
@@ -2210,7 +2176,7 @@ DELIM
 			#  libpq5 php5-pgsql postgresql postgresql-8.4 postgresql-client-8.4
 			#  postgresql-client-common postgresql-common
 		fi
-		
+
 		/bin/su -l postgres -c "/usr/bin/createuser -s -e $GUI_NAME"
 		#/bin/su -l postgres -c "/usr/bin/createdb -E UTF8 -O $GUI_NAME $GUI_NAME"
 		/bin/su -l postgres -c "/usr/bin/createdb -E UTF8 -T template0 -O $GUI_NAME $GUI_NAME"
@@ -2239,12 +2205,12 @@ DELIM
 		/bin/echo
 		#/bin/stty echo
 		done
-		
+
 		/bin/su -l postgres -c "/bin/echo \"ALTER USER $GUI_NAME with PASSWORD '$PGSQLPASSWORD';\" | /usr/bin/psql $GUI_NAME"
 		/bin/echo "overwriting pgsql password variable with random data"
 		PGSQLPASSWORD=$(/usr/bin/head -c 512 /dev/urandom)
 		PGSQLPASSWORD2=$(/usr/bin/head -c 512 /dev/urandom)
-		
+
 		if [ -e /usr/sbin/nginx ]; then
 			#nginx is installed.
 			/etc/init.d/php5-fpm restart
@@ -2269,8 +2235,6 @@ DELIM
 		/bin/echo -ne "  When PostgreSQL is configured come back and press enter. "
 		read
 	;;
-	
-	
 	*)
 	#elif [ $SQLITEMYSQL == "s" || $SQLITEMYSQL == "S" || $SQLITEMYSQL == "" ]; then
 		/bin/echo "SQLITE is chosen. already done. nothing left to install..."
@@ -2285,11 +2249,11 @@ DELIM
 		#with $GUI_NAME in there, it's really hosing things up and how.
 #		/usr/bin/curl -s -d "db_type=sqlite&install_switch_base_dir=%2Fusr%2Flocal%2Ffreeswitch&install_php_dir=%2Fvar%2Fwww%2F$GUI_NAME&install_tmp_dir=%2Ftmp&install_backup_dir=%2Ftmp&install_step=2&submit=Next" http://localhost/install.php > /dev/null
 #		/usr/bin/curl -s -d "db_filename=$GUI_NAME.db&db_filepath=%2Fvar%2Fwww%2F$GUI_NAME%2Fsecure&db_type=sqlite&install_secure_dir=%2Fvar%2Fwww%2F$GUI_NAME%2Fsecure&install_switch_base_dir=%2Fusr%2Flocal%2Ffreeswitch&install_php_dir=%2Fvar%2Fwww%2F$GUI_NAME&install_tmp_dir=%2Ftmp&install_backup_dir=%2Ftmp&install_step=3&submit=Next" http://localhost/install.php > /dev/null
-		
+
 		#do for https too!
 #		/usr/bin/curl -k -s -d "db_type=sqlite&install_switch_base_dir=%2Fusr%2Flocal%2Ffreeswitch&install_php_dir=%2Fvar%2Fwww%2F$GUI_NAME&install_tmp_dir=%2Ftmp&install_backup_dir=%2Ftmp&install_step=2&submit=Next" https://localhost/install.php > /dev/null
 #		/usr/bin/curl -k -s -d "db_filename=$GUI_NAME.db&db_filepath=%2Fvar%2Fwww%2F$GUI_NAME%2Fsecure&db_type=sqlite&install_secure_dir=%2Fvar%2Fwww%2F$GUI_NAME%2Fsecure&install_switch_base_dir=%2Fusr%2Flocal%2Ffreeswitch&install_php_dir=%2Fvar%2Fwww%2F$GUI_NAME&install_tmp_dir=%2Ftmp&install_backup_dir=%2Ftmp&install_step=3&submit=Next" https://localhost/install.php > /dev/null
-		
+
 		/bin/echo "FusionPBX install.php was done automatically"
 		/bin/echo "  when sqlite was selected. "
 		/bin/echo "  FreeSWITCH Directory: /usr/local/freeswitch"
@@ -2304,15 +2268,13 @@ DELIM
 		/bin/echo "Default login is (whatever you picked in the GUI install):"
 		/bin/echo "  User: WhateverUsernameYouPicked"
 		/bin/echo "  Passwd: YourPasswordYouPicked"
-		
-	
 	;;
 	esac
 	#else
 	#	/bin/echo "Didn't catch that. exiting"
 	#	exit 1
 	#fi
-	
+
 	finish_fpbx_install_permissions
 	#/bin/echo
 	#/bin/echo "The FusionPBX installation messed up permissions of /usr/local/freeswitch/storage"
@@ -2320,13 +2282,13 @@ DELIM
 #	read
 	#/usr/bin/find /usr/local/freeswitch -type f -exec /bin/chmod g+w {} \;
 	#/usr/bin/find /usr/local/freeswitch -type d -exec /bin/chmod g+w {} \;
-	
+
 	#/bin/echo "Starting FreeSWITCH..."
 	#/etc/init.d/freeswitch start
 	/bin/echo "Setting up Fail2Ban for FusionPBX"
 	fusionfail2ban
 	/etc/init.d/fail2ban restart
-	
+
 	/bin/echo
 	/bin/echo
 	/bin/echo "Installation Completed.  Now configure FreeSWITCH via the FusionPBX browser interface"
@@ -2335,8 +2297,7 @@ DELIM
 	/bin/echo "Default login is (whatever you picked in the GUI install):"
 	/bin/echo "  User: WhateverUsernameYouPicked"
 	/bin/echo "  Passwd: YourPasswordYouPicked"
-	
-	
+
 fi
 #------------------------------------
 #    DONE INSTALLING FUSIONPBX
@@ -2366,8 +2327,7 @@ if [ $UPGFREESWITCH -eq 1 ]; then
 		else
 			/bin/echo "build_modules" >> /tmp/install_fusion_status
 		fi
-	fi	
-	
+	fi
 	if [ $DEBUG -eq 1 ]; then
 		/bin/echo
 		/bin/echo "Press Enter to continue (check for errors)"
@@ -2380,7 +2340,7 @@ if [ $UPGFREESWITCH -eq 1 ]; then
 	/bin/grep 'made_current' /tmp/install_fusion_status > /dev/null
 	if [ $? -eq 0 ]; then
 		/bin/echo "Modules.conf Already edited"	
-	else	
+	else
 		/bin/echo
 		/bin/echo ' going to run make curent'
 		/bin/echo "   Make current completely cleans the build environment and rebuilds FreeSWITCH™"
@@ -2397,7 +2357,7 @@ if [ $UPGFREESWITCH -eq 1 ]; then
 			exit 1
 		fi
 		cd /usr/src/freeswitch
-		
+
 		#get on the 1.2.x release first...
 		echo
 		echo
@@ -2412,19 +2372,19 @@ if [ $UPGFREESWITCH -eq 1 ]; then
 		else
 			YESNO="no"
 		fi
-		
-		case $YESNO in
-                [Nn]*)
-                        echo "OK, staying on current...."
-                        FSSTABLE=false
-                ;;
 
-                *)
-                        echo "OK, switching to 1.2.x."
-                        FSSTABLE=true
-                ;;
-        esac
-		
+		case $YESNO in
+				[Nn]*)
+						echo "OK, staying on current...."
+						FSSTABLE=false
+				;;
+
+				*)
+						echo "OK, switching to 1.2.x."
+						FSSTABLE=true
+				;;
+		esac
+
 		if [ $FSSTABLE == true ]; then
 			echo "OK we'll now use the 1.2.x stable branch"
 			cd /usr/src/freeswitch
@@ -2436,7 +2396,7 @@ if [ $UPGFREESWITCH -eq 1 ]; then
 				#   (use "git add <file>..." to include in what will be committed)
 				#
 				#       src/mod/applications/mod_httapi/Makefile
-			
+
 			git status |grep -i "not currently"
 			if [ $? -eq 0 ]; then
 				echo "You are not on master branch.  We have to fix that first"
@@ -2447,7 +2407,7 @@ if [ $UPGFREESWITCH -eq 1 ]; then
 					exit 1
 				fi
 			fi
-			
+
 			#/usr/bin/time /usr/bin/git clone -b $FSStableVer git://git.freeswitch.org/freeswitch.git
 			/usr/bin/git pull
 			if [ $? -ne 0 ]; then
@@ -2467,15 +2427,15 @@ if [ $UPGFREESWITCH -eq 1 ]; then
 			#	/bin/echo "GIT CHECKOUT to 1.2.x ERROR"
 			#	exit 1
 			#fi
-			
+
 		else
 			echo "staying on dev branch.  Hope this works for you."
 		fi
-		
+
 		cd /usr/src/freeswitch
 		echo "reconfiguring mod_spandsp"
 		make spandsp-reconf
-		
+
 		if [ $CORES > "1" ]; then 
 			/bin/echo "  multicore processor detected. Upgrading with -j $CORES"
 			/usr/bin/time /usr/bin/make -j $CORES current
@@ -2488,8 +2448,8 @@ if [ $UPGFREESWITCH -eq 1 ]; then
 			#previous had an error
 			/bin/echo "make current error"
 			exit 1
-		fi			
-		
+		fi
+
 		if [ $DEBUG -eq 1 ]; then
 			/bin/echo
 			/bin/echo "I'm going to stop here and wait.  FreeSWITCH has now been compiled and is ready to install"
@@ -2500,10 +2460,9 @@ if [ $UPGFREESWITCH -eq 1 ]; then
 			/usr/local/freeswitch/bin/fs_cli -x status
 			/bin/echo
 			/bin/echo -n "Press Enter to continue the upgrade."
-			
 			read
 		fi
-		
+
 		/etc/init.d/freeswitch stop
 		if [ $? -ne 0 ]; then
 			#previous had an error
@@ -2518,15 +2477,14 @@ if [ $UPGFREESWITCH -eq 1 ]; then
 		else 
 			/bin/echo "made_current" >> /tmp/install_fusion_status
 		fi
-		
 	fi
-	
+
 	#------------------------
 	# enable modules.conf.xml
 	#------------------------
 	/bin/grep 'enable_modules' /tmp/install_fusion_status > /dev/null
 	if [ $? -eq 0 ]; then
-		/bin/echo "Modules.conf.xml Already enabled"	
+		/bin/echo "Modules.conf.xml Already enabled"
 	else
 		#file exists and has been edited
 		enable_modules
@@ -2539,13 +2497,13 @@ if [ $UPGFREESWITCH -eq 1 ]; then
 			/bin/echo "enable_modules" >> /tmp/install_fusion_status
 		fi
 	fi
-	
+
 	if [ $DEBUG -eq 1 ]; then
 		/bin/echo
 		/bin/echo "Press Enter to continue (check for errors)"
 		read
 	fi
-	
+
 	#check for logrotate and change to cron.daily
 	if [ -a /etc/logrotate.d/freeswitch ]; then
 		/bin/echo "System configured for logrotate, changing"
@@ -2554,7 +2512,7 @@ if [ $UPGFREESWITCH -eq 1 ]; then
 		/etc/init.d/logrotate restart
 		freeswitch_logfiles
 	fi
-	
+
 	if [ -e $WWW_PATH/$GUI_NAME ]; then
 		echo "I noticed that FusionPBX is installed too"
 		echo "now going to fix freeswitch permissions from upgrade to be safe"
@@ -2567,7 +2525,6 @@ fi
 #------------------------------------
 #    DONE UPGRADING FREESWITCH
 #------------------------------------
-	
 
 
 #------------------------------------
@@ -2590,7 +2547,7 @@ if [ $UPGFUSION -eq 1 ]; then
 		/bin/echo "If you haven't done this you risk not being able to Upgrade->Schema"
 		/bin/echo "  which will toast your database"
 		/bin/echo
-		
+
 		FUSIONREV=$(svn info $WWW_PATH/$GUI_NAME |grep -i revision|sed -e s/Revision:\ //)
 		if [ $FUSIONREV -le 1877 ]; then
 			echo "The project is still working on an upgrade tool"
@@ -2602,13 +2559,13 @@ if [ $UPGFUSION -eq 1 ]; then
 		else
 				read -p "Ready to upgrade (y/n)? " YESNO2
 		fi
-		
+
 		case $YESNO2 in 
-		
+
 		[YylL]*)
-		
+
 			#svn...
-			
+
 			/usr/bin/svn update http://fusionpbx.googlecode.com/svn/trunk/fusionpbx $WWW_PATH/$GUI_NAME
 			/bin/chown -R www-data:www-data $WWW_PATH/$GUI_NAME
 			#print message saying to hit advanced->upgrade schema
@@ -2616,7 +2573,7 @@ if [ $UPGFUSION -eq 1 ]; then
 			/bin/echo "For the Upgrade to finish you MUST login to FusionPBX as superadmin"
 			/bin/echo "and select Advanced -> Upgrade Schema"
 		;;
-		
+
 		[1]*)
 			/usr/bin/svn update -r r1877 http://fusionpbx.googlecode.com/svn/trunk/fusionpbx $WWW_PATH/$GUI_NAME
 			/bin/chown -R www-data:www-data $WWW_PATH/$GUI_NAME
@@ -2663,7 +2620,6 @@ if [ $? -ne 0 ]; then
 else
 	/bin/echo "    DONE!"
 fi
-
 
 exit 0
 
