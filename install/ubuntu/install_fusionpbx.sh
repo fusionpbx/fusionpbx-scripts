@@ -100,7 +100,7 @@ FSREV="187abe02af4d64cdedc598bd3dfb1cd3ed0f4a91"
 FSCHECKOUTVER=false
 FPBXREV="1876"
 FBPXCHECKOUTVER=false
-URLSCRIPT="http://fusionpbx.googlecode.com/svn/trunk/scripts/install/ubuntu/install_fusionpbx.sh"
+URLSCRIPT="http://fusionpbx.googlecode.com/svn/branches/dev/scripts/install/ubuntu/install_fusionpbx.sh"
 INSFUSION=0
 INSFREESWITCH=0
 UPGFUSION=0
@@ -2016,7 +2016,7 @@ DELIM
 	if [[ "$INST_FPBX" == "svn" ]]; then
 			if [ $FBPXCHECKOUTVER == true ]; then
 				/bin/echo "Going to install FusionPBX SVN Rev $FPBXREV"
-				/usr/bin/svn checkout -r r$FPBXREV http://fusionpbx.googlecode.com/svn/trunk/fusionpbx $WWW_PATH/$GUI_NAME
+				/usr/bin/svn checkout -r r$FPBXREV http://fusionpbx.googlecode.com/svn/branches/dev/fusionpbx $WWW_PATH/$GUI_NAME
 			else
 				/bin/echo "Going to install FusionPBX latest SVN!"
 				#removed -r r1877 r1877 from new install
@@ -2566,7 +2566,7 @@ if [ $UPGFUSION -eq 1 ]; then
 
 			#svn...
 
-			/usr/bin/svn update http://fusionpbx.googlecode.com/svn/trunk/fusionpbx $WWW_PATH/$GUI_NAME
+			/usr/bin/svn update http://fusionpbx.googlecode.com/svn/branches/dev/fusionpbx $WWW_PATH/$GUI_NAME
 			/bin/chown -R www-data:www-data $WWW_PATH/$GUI_NAME
 			#print message saying to hit advanced->upgrade schema
 			/bin/echo "Done upgrading Files"
