@@ -2020,7 +2020,7 @@ DELIM
 			else
 				/bin/echo "Going to install FusionPBX latest SVN!"
 				#removed -r r1877 r1877 from new install
-				/usr/bin/svn checkout http://fusionpbx.googlecode.com/svn/trunk/fusionpbx $WWW_PATH/$GUI_NAME
+				/usr/bin/svn checkout http://fusionpbx.googlecode.com/svn/branches/dev/fusionpbx $WWW_PATH/$GUI_NAME
 			fi
 	elif [ $INST_FPBX == tgz ]; then
 			/bin/tar -C $WWW_PATH -xzvf $TGZ_FILE
@@ -2575,7 +2575,7 @@ if [ $UPGFUSION -eq 1 ]; then
 		;;
 
 		[1]*)
-			/usr/bin/svn update -r r1877 http://fusionpbx.googlecode.com/svn/trunk/fusionpbx $WWW_PATH/$GUI_NAME
+			/usr/bin/svn update -r r1877 http://fusionpbx.googlecode.com/svn/branches/dev/fusionpbx $WWW_PATH/$GUI_NAME
 			/bin/chown -R www-data:www-data $WWW_PATH/$GUI_NAME
 			#print message saying to hit advanced->upgrade schema
 			/bin/echo "Done upgrading Files"
