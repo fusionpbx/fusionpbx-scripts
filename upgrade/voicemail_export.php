@@ -90,6 +90,17 @@ else {
 			$voicemail_description = $row['description'];
 			//print_r($row);
 
+			//set default values
+			if (strlen($voicemail_enabled) == 0) {
+				$voicemail_enabled = "true";
+			}
+			if (strlen($voicemail_attach_file) == 0) {
+				$voicemail_attach_file = "true";
+			}
+			if (strlen($voicemail_local_after_email) == 0) {
+				$voicemail_local_after_email = "true";
+			}
+
 			//map the voicemail_id to the voicemail_uuid
 			$voicemail_uuid = uuid();
 			$mailbox[$voicemail_id]['voicemail_uuid'] = $voicemail_uuid;
