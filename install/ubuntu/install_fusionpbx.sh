@@ -1895,6 +1895,10 @@ DELIM
 			#PHPCONFFILE="/etc/php5/fpm/php-fpm.conf"
 			#max_children set in /etc/php5/fpm/pool.d/www.conf
 			PHPCONFFILE="/etc/php5/fpm/pool.d/www.conf"
+		else [ $DISTRO = "lucid" ]; then 
+			#lucid ppa conf files changed 1/20/13
+			PHPINIFILE="/etc/php5/fpm/php.ini"
+			PHPCONFFILE="/etc/php5/fpm/pool.d/www.conf"
 		else
 			PHPINIFILE="/etc/php5/fpm/php.ini"
 			PHPCONFFILE="/etc/php5/fpm/php5-fpm.conf"
