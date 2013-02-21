@@ -217,7 +217,6 @@ else {
 			$voicemail_status = $row['flags'];
 			$voicemail_priority = $row['read_flags']; // B_NORMAL
 			//$forwarded_by = $row['forwarded_by'];
-			//print_r($row);
 
 			//get the domain_uuid
 			foreach($_SESSION['domains'] as $tmp) {
@@ -229,6 +228,15 @@ else {
 			//get the voicemail_uuid
 			$voicemail_uuid = $mailbox[$voicemail_id]['voicemail_uuid'];
 
+			//update the message status using read_epoch
+			if ($read_epoch > 0) {
+				$message_status = 'saved';
+			}
+			else {
+				$message_status = '';
+			}
+
+			//add the voicemail message
 			$sql = "insert into v_voicemail_messages ";
 			$sql .= "(";
 			$sql .= "domain_uuid, ";
