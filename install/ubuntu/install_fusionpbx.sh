@@ -823,6 +823,103 @@ if [ $DO_DAHDI == "y" ]; then
 		/bin/echo
 		read -p "Press Enter to continue (check for errors)"
 	fi
+	
+	#-----------------
+	# Databases
+	#-----------------
+	#Lets ask... sqlite or postgresql -- for user option only
+	if [ $DEBUG -eq 1 ]; then
+		/bin/echo "New Option..."
+		/bin/echo "  FreeSWITCH now has native support for PostgreSQL (no more odbc in the core)"
+		/bin/echo " also note that freeswitch is now compiled with zrtp support"
+		/bin/echo
+		read -p "  Would you like to install PostgreSQL or stay with Sqlite (p/S)? " SQLITEMYSQL
+		case "$SQLITEMYSQL" in
+		  [pP]*)
+			if [ $DISTRO = "precise" ]; then
+				echo "precise is PostgreSQL 9.1 by default"
+				POSTGRES9=9
+			else
+				/bin/echo
+				/bin/echo "OK, PostgreSQL! Would you prefer the stock verion 8.4"
+				/bin/echo "  or verion 9 from PPA?"
+				/bin/echo
+				read -p "PostgreSQL 8.4 or 9 [8/9]? " POSTGRES9 
+			fi
+			echo
+		  ;;
+		esac
+	fi
+
+	case "$SQLITEMYSQL" in
+	[Pp]*)
+		/bin/echo -ne "Installing PostgeSQL"
+
+		if [ $POSTGRES9 == "9" ]; then
+			/bin/echo " version 9.1"
+			if [ $DISTRO = "squeeze" ]; then
+				#add squeeze repo
+				/bin/echo "Adding debian backports for postgres9.1"
+				/bin/echo "deb http://backports.debian.org/debian-backports squeeze-backports main" > /etc/apt/sources.list.d/squeeze-backports.list
+				/usr/bin/apt-get update
+				/usr/bin/apt-get -y -t squeeze-backports install postgresql-9.1 libpq-dev 
+			elif [ $DISTRO = "precise" ]; then
+				#already there...
+				/usr/bin/apt-get -y install postgresql-9.1 libpq-dev 
+			else
+				#add the ppa
+				/usr/bin/apt-add-repository ppa:pitti/postgresql
+				/usr/bin/apt-get update
+				/usr/bin/apt-get -y install postgresql-9.1 libpq-dev 
+			fi
+		else
+			/bin/echo " version 8.4"
+			/usr/bin/apt-get -y install postgresql libpq-dev 
+			#The following NEW packages will be installed:
+			#  libpq5 php5-pgsql postgresql postgresql-8.4 postgresql-client-8.4
+			#  postgresql-client-common postgresql-common
+		fi
+
+		/bin/su -l postgres -c "/usr/bin/createuser -s -e freeswitch"
+		#/bin/su -l postgres -c "/usr/bin/createdb -E UTF8 -O freeswitch freeswitch"
+		/bin/su -l postgres -c "/usr/bin/createdb -E UTF8 -T template0 -O freeswitch freeswitch"
+		PGSQLPASSWORD="dummy"
+		PGSQLPASSWORD2="dummy2"
+		while [ $PGSQLPASSWORD != $PGSQLPASSWORD2 ]; do
+		/bin/echo
+		/bin/echo
+		/bin/echo "THIS PROBABLY ISN'T THE MOST SECURE THING TO DO."
+		/bin/echo "IT IS; HOWEVER, AUTOMATED. WE ARE STORING THE PASSWORD"
+		/bin/echo "AS A BASH VARIABLE, AND USING ECHO TO PIPE IT TO"
+		/bin/echo "psql. THE COMMAND USED IS:"
+		/bin/echo
+		/bin/echo "/bin/su -l postgres -c \"/bin/echo 'ALTER USER freeswitch with PASSWORD \$PGSQLPASSWORD;' | psql freeswitch\""
+		/bin/echo
+		/bin/echo "AFTERWARDS WE OVERWRITE THE VARIABLE WITH RANDOM DATA"
+		/bin/echo
+		/bin/echo "The pgsql username is freeswitch"
+		/bin/echo "The pgsql database name is freeswitch"
+		/bin/echo "Please provide a password for the freeswitch user"
+		#/bin/stty -echo
+		read -s -p "  Password: " PGSQLPASSWORD
+		/bin/echo
+		/bin/echo "Let's repeat that"
+		read -s -p "  Password: " PGSQLPASSWORD2
+		/bin/echo
+		#/bin/stty echo
+		done
+
+		/bin/su -l postgres -c "/bin/echo \"ALTER USER freeswitch with PASSWORD '$PGSQLPASSWORD';\" | /usr/bin/psql freeswitch"
+		/bin/echo "overwriting pgsql password variable with random data"
+		PGSQLPASSWORD=$(/usr/bin/head -c 512 /dev/urandom)
+		PGSQLPASSWORD2=$(/usr/bin/head -c 512 /dev/urandom)
+	;;
+
+	*)
+	#elif [ $SQLITEMYSQL == "s" || $SQLITEMYSQL == "S" || $SQLITEMYSQL == "" ]; then
+		/bin/echo "SQLITE is chosen. already done. nothing left to install..."
+	;;
+	esac	
 
 	#------------------------
 	# GIT FREESWITCH
@@ -963,7 +1060,14 @@ if [ $DO_DAHDI == "y" ]; then
 		/bin/echo -ne " ."
 		/bin/sleep 1
 		/bin/echo -ne " ."
-		/usr/bin/time /usr/src/freeswitch/configure
+		case "$SQLITEMYSQL" in
+		[Pp]*)
+			/usr/bin/time /usr/src/freeswitch/configure --enable-core-pgsql-support --enable-zrtp
+		;;
+		*)
+			/usr/bin/time /usr/src/freeswitch/configure --enable-zrtp
+		;;
+		esac
 
 		if [ $? -ne 0 ]; then
 			#previous had an error
@@ -2108,7 +2212,7 @@ DELIM
 		/bin/echo "New Option..."
 		/bin/echo "  SQlite is already installed (and required)"
 		/bin/echo
-		read -p "  Would you like to install MySQL, PostgreSQL or stay with Sqlite (m/p/S)? " SQLITEMYSQL
+		read -p "  Would you like to install PostgreSQL or stay with Sqlite (p/S)? " SQLITEMYSQL
 		case "$SQLITEMYSQL" in
 		  [pP]*)
 			if [ $DISTRO = "precise" ]; then
@@ -2127,36 +2231,39 @@ DELIM
 	fi
 
 	case "$SQLITEMYSQL" in
-	[Mm]*)
-	#if [ $SQLITEMYSQL == "m" ]; then
-		/bin/echo "Installing MySQL"
-		/usr/bin/apt-get -y install mysql-server php5-mysql mysql-client
-		if [ -e /usr/sbin/nginx ]; then
-			#nginx is installed.
-			/etc/init.d/php5-fpm restart
-			/etc/init.d/nginx restart
-		elif [ -e /usr/sbin/apache2 ]; then
-			#apache2 is installed.
-			/etc/init.d/apache2 restart
-		fi
-		/bin/echo "Now you'll need to manually finish the install and come back"
-		/bin/echo "  This way I can finish up the last bit of permissions issues"
-		/bin/echo "  Just go to"
-		/bin/echo '  http://'`/sbin/ifconfig eth0 | /bin/grep 'inet addr:' | /usr/bin/cut -d: -f2 | /usr/bin/awk '{ print $1}'`
-		/bin/echo "       MAKE SURE YOU CHOOSE MYSQL as your Database on the first page!!!"
-		/bin/echo "       ON the Second Page:"
-		/bin/echo "          Create Database Username: root"
-		/bin/echo "          Create Database Password: the_pw_you_set_during_install"
-		/bin/echo "			 other options: whatever you like"
-		/bin/echo "  I will wait here until you get done with that."
-		/bin/echo -ne "  When MySQL is configured come back and press enter. "
-		read
-	;;
+#	[Mm]*)
+#		/bin/echo "Installing MySQL"
+#		/usr/bin/apt-get -y install mysql-server php5-mysql mysql-client
+#		if [ -e /usr/sbin/nginx ]; then
+#			#nginx is installed.
+#			/etc/init.d/php5-fpm restart
+#			/etc/init.d/nginx restart
+#		elif [ -e /usr/sbin/apache2 ]; then
+#			#apache2 is installed.
+#			/etc/init.d/apache2 restart
+#		fi
+#		/bin/echo "Now you'll need to manually finish the install and come back"
+#		/bin/echo "  This way I can finish up the last bit of permissions issues"
+#		/bin/echo "  Just go to"
+#		/bin/echo '  http://'`/sbin/ifconfig eth0 | /bin/grep 'inet addr:' | /usr/bin/cut -d: -f2 | /usr/bin/awk '{ print $1}'`
+#		/bin/echo "       MAKE SURE YOU CHOOSE MYSQL as your Database on the first page!!!"
+#		/bin/echo "       ON the Second Page:"
+#		/bin/echo "          Create Database Username: root"
+#		/bin/echo "          Create Database Password: the_pw_you_set_during_install"
+#		/bin/echo "			 other options: whatever you like"
+#		/bin/echo "  I will wait here until you get done with that."
+#		/bin/echo -ne "  When MySQL is configured come back and press enter. "
+#		read
+#	;;
 
 	[Pp]*)
 	#elif [ $SQLITEMYSQL == "p" ]; then	
-		/bin/echo -ne "Installing PostgeSQL"
-
+		#/bin/echo -ne "Installing PostgeSQL"
+#moving most of this to fs install
+		/bin/echo "Time to add a $GUI_NAME user for the database."
+		/bin/echo -ne "    We will use $GUI_NAME as the username"
+		/bin/echo -ne "    please set the password."
+#add php postgres packages	
 		if [ $POSTGRES9 == "9" ]; then
 			/bin/echo " version 9.1"
 			if [ $DISTRO = "squeeze" ]; then
@@ -2164,19 +2271,19 @@ DELIM
 				/bin/echo "Adding debian backports for postgres9.1"
 				/bin/echo "deb http://backports.debian.org/debian-backports squeeze-backports main" > /etc/apt/sources.list.d/squeeze-backports.list
 				/usr/bin/apt-get update
-				/usr/bin/apt-get -y -t squeeze-backports install postgresql-9.1 php5-pgsql
+				/usr/bin/apt-get -y -t squeeze-backports install php5-pgsql
 			elif [ $DISTRO = "precise" ]; then
 				#already there...
-				/usr/bin/apt-get -y install postgresql-9.1 php5-pgsql
+				/usr/bin/apt-get -y php5-pgsql
 			else
 				#add the ppa
 				/usr/bin/apt-add-repository ppa:pitti/postgresql
 				/usr/bin/apt-get update
-				/usr/bin/apt-get -y install postgresql-9.1 php5-pgsql
+				/usr/bin/apt-get -y installphp5-pgsql
 			fi
 		else
 			/bin/echo " version 8.4"
-			/usr/bin/apt-get -y install postgresql php5-pgsql
+			/usr/bin/apt-get -y install postgresql libpq-dev 
 			#The following NEW packages will be installed:
 			#  libpq5 php5-pgsql postgresql postgresql-8.4 postgresql-client-8.4
 			#  postgresql-client-common postgresql-common
@@ -2241,7 +2348,6 @@ DELIM
 		read
 	;;
 	*)
-	#elif [ $SQLITEMYSQL == "s" || $SQLITEMYSQL == "S" || $SQLITEMYSQL == "" ]; then
 		/bin/echo "SQLITE is chosen. already done. nothing left to install..."
 		if [ -e /usr/sbin/nginx ]; then
 			#nginx is installed.
@@ -2251,13 +2357,6 @@ DELIM
 			#apache2 is installed.
 			/etc/init.d/apache2 restart
 		fi
-		#with $GUI_NAME in there, it's really hosing things up and how.
-#		/usr/bin/curl -s -d "db_type=sqlite&install_switch_base_dir=%2Fusr%2Flocal%2Ffreeswitch&install_php_dir=%2Fvar%2Fwww%2F$GUI_NAME&install_tmp_dir=%2Ftmp&install_backup_dir=%2Ftmp&install_step=2&submit=Next" http://localhost/install.php > /dev/null
-#		/usr/bin/curl -s -d "db_filename=$GUI_NAME.db&db_filepath=%2Fvar%2Fwww%2F$GUI_NAME%2Fsecure&db_type=sqlite&install_secure_dir=%2Fvar%2Fwww%2F$GUI_NAME%2Fsecure&install_switch_base_dir=%2Fusr%2Flocal%2Ffreeswitch&install_php_dir=%2Fvar%2Fwww%2F$GUI_NAME&install_tmp_dir=%2Ftmp&install_backup_dir=%2Ftmp&install_step=3&submit=Next" http://localhost/install.php > /dev/null
-
-		#do for https too!
-#		/usr/bin/curl -k -s -d "db_type=sqlite&install_switch_base_dir=%2Fusr%2Flocal%2Ffreeswitch&install_php_dir=%2Fvar%2Fwww%2F$GUI_NAME&install_tmp_dir=%2Ftmp&install_backup_dir=%2Ftmp&install_step=2&submit=Next" https://localhost/install.php > /dev/null
-#		/usr/bin/curl -k -s -d "db_filename=$GUI_NAME.db&db_filepath=%2Fvar%2Fwww%2F$GUI_NAME%2Fsecure&db_type=sqlite&install_secure_dir=%2Fvar%2Fwww%2F$GUI_NAME%2Fsecure&install_switch_base_dir=%2Fusr%2Flocal%2Ffreeswitch&install_php_dir=%2Fvar%2Fwww%2F$GUI_NAME&install_tmp_dir=%2Ftmp&install_backup_dir=%2Ftmp&install_step=3&submit=Next" https://localhost/install.php > /dev/null
 
 		/bin/echo "FusionPBX install.php was done automatically"
 		/bin/echo "  when sqlite was selected. "
