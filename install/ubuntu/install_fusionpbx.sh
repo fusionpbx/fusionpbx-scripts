@@ -409,7 +409,6 @@ function build_modules {
 					else
 							/bin/echo "     ${modules_compile[$index]} ALREADY ENABLED!"
 					fi
-
 			else
 					#module is not present. Add to end of file
 					#/bin/echo "did not find ${modules_compile[$index]}"
@@ -919,7 +918,7 @@ if [ $DO_DAHDI == "y" ]; then
 	#elif [ $SQLITEMYSQL == "s" || $SQLITEMYSQL == "S" || $SQLITEMYSQL == "" ]; then
 		/bin/echo "SQLITE is chosen. already done. nothing left to install..."
 	;;
-	esac	
+	esac
 
 	#------------------------
 	# GIT FREESWITCH
@@ -947,7 +946,7 @@ if [ $DO_DAHDI == "y" ]; then
 				/bin/echo "GIT ERROR"
 				exit 1
 			fi
-			
+
 			if [ $FSCHECKOUTVER == true ]; then
 				echo "OK we'll check out FreeSWITCH version $FSREV"
 				cd /usr/src/freeswitch
@@ -1355,7 +1354,7 @@ if [ $DO_DAHDI == "y" ]; then
 			;;
 
 			*)
-						/bin/echo "OK, not using -nonat option."
+				/bin/echo "OK, not using -nonat option."
 			;;
 		esac
 		/bin/echo
@@ -2000,7 +1999,7 @@ DELIM
 			#PHPCONFFILE="/etc/php5/fpm/php-fpm.conf"
 			#max_children set in /etc/php5/fpm/pool.d/www.conf
 			PHPCONFFILE="/etc/php5/fpm/pool.d/www.conf"
-		else [ $DISTRO = "lucid" ]; then 
+		elif [ $DISTRO = "lucid" ]; then 
 			#lucid ppa conf files changed 1/20/13
 			PHPINIFILE="/etc/php5/fpm/php.ini"
 			PHPCONFFILE="/etc/php5/fpm/pool.d/www.conf"
@@ -2822,7 +2821,7 @@ exit 0
 #	  FreeSWITCH with the -nonat option to save some time. Also a new variable
 #	TODO: Maybe probe cores and to the -b thing for quicker compile/bootstrap
 #	TODO: IPTABLES
-	
+
 #v4.3.1 2010 December 23
 #	look into make -j cores option
 #	made a state save file.  so if there's an error, don't re-bootstrap, configure, etc.
