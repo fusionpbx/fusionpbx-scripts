@@ -132,116 +132,115 @@ function nginxconfig {
 	#manually escaping now. needs variables....
 	/bin/cat > /etc/nginx/sites-available/$GUI_NAME  <<DELIM
 server{
-        listen 127.0.0.1:80;
-        server_name 127.0.0.1;
-        access_log /var/log/nginx/access.log;
-        error_log /var/log/nginx/error.log;
+	listen 127.0.0.1:80;
+	server_name 127.0.0.1;
+	access_log /var/log/nginx/access.log;
+	error_log /var/log/nginx/error.log;
 
-        client_max_body_size 10M;
-        client_body_buffer_size 128k;
+	client_max_body_size 10M;
+	client_body_buffer_size 128k;
 
+	location / {
+		root $WWW_PATH/$GUI_NAME;
+		index index.php;
+	}
 
-        location / {
-          root $WWW_PATH/$GUI_NAME;
-          index index.php;
-        }
+	location ~ \.php$ {
+		fastcgi_pass unix:/var/run/php5-fpm.sock;
+		#fastcgi_pass 127.0.0.1:9000;
+		fastcgi_index index.php;
+		include fastcgi_params;
+		fastcgi_param   SCRIPT_FILENAME $WWW_PATH/$GUI_NAME\$fastcgi_script_name;
+	}
 
-        location ~ \.php$ {
-            fastcgi_pass 127.0.0.1:9000;
-            #fastcgi_pass /var/run/php5-fpm.sock;
-            fastcgi_index index.php;
-            include fastcgi_params;
-            fastcgi_param   SCRIPT_FILENAME $WWW_PATH/$GUI_NAME\$fastcgi_script_name;
-        }
-
-        # Disable viewing .htaccess & .htpassword & .db
-        location ~ .htaccess {
-                deny all;
-        }
-        location ~ .htpassword {
-                deny all;
-        }
-        location ~^.+.(db)$ {
-                deny all;
-        }
+	# Disable viewing .htaccess & .htpassword & .db
+	location ~ .htaccess {
+			deny all;
+	}
+	location ~ .htpassword {
+			deny all;
+	}
+	location ~^.+.(db)$ {
+			deny all;
+	}
 }
 
 server{
-        listen 80;
-        server_name $GUI_NAME;
-        if (\$uri !~* ^.*provision.*$) {
-                rewrite ^(.*) https://\$host\$1 permanent;
-                break;
-        }
-        access_log /var/log/nginx/access.log;
-        error_log /var/log/nginx/.error.log;
+	listen 80;
+	server_name $GUI_NAME;
+	if (\$uri !~* ^.*provision.*$) {
+		rewrite ^(.*) https://\$host\$1 permanent;
+		break;
+	}
+	access_log /var/log/nginx/access.log;
+	error_log /var/log/nginx/.error.log;
 
-        client_max_body_size 10M;
-        client_body_buffer_size 128k;
+	client_max_body_size 10M;
+	client_body_buffer_size 128k;
 
+	location / {
+		root $WWW_PATH/$GUI_NAME;
+		index index.php;
+	}
 
-        location / {
-          root $WWW_PATH/$GUI_NAME;
-          index index.php;
-        }
+	location ~ \.php$ {
+		fastcgi_pass unix:/var/run/php5-fpm.sock;
+		#fastcgi_pass 127.0.0.1:9000;
+		fastcgi_index index.php;
+		include fastcgi_params;
+		fastcgi_param   SCRIPT_FILENAME $WWW_PATH/$GUI_NAME\$fastcgi_script_name;
+	}
 
-        location ~ \.php$ {
-            fastcgi_pass 127.0.0.1:9000;
-            fastcgi_index index.php;
-            include fastcgi_params;
-            fastcgi_param   SCRIPT_FILENAME $WWW_PATH/$GUI_NAME\$fastcgi_script_name;
-        }
-
-        # Disable viewing .htaccess & .htpassword & .db
-        location ~ .htaccess {
-                deny all;
-        }
-        location ~ .htpassword {
-                deny all;
-        }
-        location ~^.+.(db)$ {
-                deny all;
-        }
+	# Disable viewing .htaccess & .htpassword & .db
+	location ~ .htaccess {
+		deny all;
+	}
+	location ~ .htpassword {
+		deny all;
+	}
+	location ~^.+.(db)$ {
+		deny all;
+	}
 }
 
 server{
-        listen 443;
-        server_name $GUI_NAME;
-        ssl                     on;
-        ssl_certificate         /etc/ssl/certs/nginx.crt;
-        ssl_certificate_key     /etc/ssl/private/nginx.key;
-        ssl_protocols           SSLv3 TLSv1;
-        ssl_ciphers     HIGH:!ADH:!MD5;
+	listen 443;
+	server_name $GUI_NAME;
+	ssl                     on;
+	ssl_certificate         /etc/ssl/certs/nginx.crt;
+	ssl_certificate_key     /etc/ssl/private/nginx.key;
+	ssl_protocols           SSLv3 TLSv1;
+	ssl_ciphers     HIGH:!ADH:!MD5;
 
-        access_log /var/log/nginx/access.log;
-        error_log /var/log/nginx/.error.log;
+	access_log /var/log/nginx/access.log;
+	error_log /var/log/nginx/.error.log;
 
-        client_max_body_size 10M;
-        client_body_buffer_size 128k;
+	client_max_body_size 10M;
+	client_body_buffer_size 128k;
 
+	location / {
+		root $WWW_PATH/$GUI_NAME;
+		index index.php;
+	}
 
-        location / {
-          root $WWW_PATH/$GUI_NAME;
-          index index.php;
-        }
+	location ~ \.php$ {
+		fastcgi_pass unix:/var/run/php5-fpm.sock;
+		#fastcgi_pass 127.0.0.1:9000;
+		fastcgi_index index.php;
+		include fastcgi_params;
+		fastcgi_param   SCRIPT_FILENAME $WWW_PATH/$GUI_NAME\$fastcgi_script_name;
+	}
 
-        location ~ \.php$ {
-            fastcgi_pass 127.0.0.1:9000;
-            fastcgi_index index.php;
-            include fastcgi_params;
-            fastcgi_param   SCRIPT_FILENAME $WWW_PATH/$GUI_NAME\$fastcgi_script_name;
-        }
-
-        # Disable viewing .htaccess & .htpassword & .db
-        location ~ .htaccess {
-                deny all;
-        }
-        location ~ .htpassword {
-                deny all;
-        }
-        location ~^.+.(db)$ {
-                deny all;
-        }
+	# Disable viewing .htaccess & .htpassword & .db
+	location ~ .htaccess {
+		deny all;
+	}
+	location ~ .htpassword {
+		deny all;
+	}
+	location ~^.+.(db)$ {
+		deny all;
+	}
 }
 DELIM
 		/bin/ln -s /etc/nginx/sites-available/$GUI_NAME /etc/nginx/sites-enabled/$GUI_NAME
@@ -1973,7 +1972,7 @@ DELIM
 			elif [ ! -e /etc/apt/sources.list.d./nginx-stable-lucid.list ]; then 
 				/bin/echo "Adding PPA for latest nginx"
 				/usr/bin/apt-add-repository ppa:nginx/stable
-				#/bin/echo "deb http://ppa.launchpad.net/nginx/stable/ubuntu lucid main" >> /etc/apt/sources.list	
+				#/bin/echo "deb http://ppa.launchpad.net/nginx/stable/ubuntu lucid main" >> /etc/apt/sources.list
 				#/usr/bin/apt-key adv --keyserver keyserver.ubuntu.com --recv-keys C300EE8C
 			else
 				/bin/echo "nginx ppa already added"
