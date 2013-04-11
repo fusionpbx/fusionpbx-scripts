@@ -1384,6 +1384,7 @@ if [ $DO_DAHDI == "y" ]; then
 	#fi
 
 	/usr/sbin/adduser freeswitch audio
+	/usr/sbin/groupadd freeswitch
 
 	if [ $DO_DAHDI == "y" ]; then
 		#dialout for dahdi
@@ -2262,7 +2263,7 @@ DELIM
 		/bin/echo "Time to add a $GUI_NAME user for the database."
 		/bin/echo -ne "    We will use $GUI_NAME as the username"
 		/bin/echo -ne "    please set the password."
-#add php postgres packages	
+#add php postgres packages
 		if [ $POSTGRES9 == "9" ]; then
 			/bin/echo " version 9.1"
 			if [ $DISTRO = "squeeze" ]; then
@@ -2278,11 +2279,11 @@ DELIM
 				#add the ppa
 				/usr/bin/apt-add-repository ppa:pitti/postgresql
 				/usr/bin/apt-get update
-				/usr/bin/apt-get -y installphp5-pgsql
+				/usr/bin/apt-get -y install php5-pgsql
 			fi
 		else
 			/bin/echo " version 8.4"
-			/usr/bin/apt-get -y install postgresql libpq-dev 
+			/usr/bin/apt-get -y install postgresql libpq-dev
 			#The following NEW packages will be installed:
 			#  libpq5 php5-pgsql postgresql postgresql-8.4 postgresql-client-8.4
 			#  postgresql-client-common postgresql-common
