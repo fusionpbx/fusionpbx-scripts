@@ -666,10 +666,10 @@ fi
 
 #check for internet connection
 /usr/bin/wget -q --tries=10 --timeout=5 http://www.google.com -O /tmp/index.google &> /dev/null
-if [ ! -s /tmp/index.google ];then
+if [ ! -s /tmp/index.google ]; then
 	echo "No Internet connection. Exiting."
 	/bin/rm /tmp/index.google
-	exit 1
+	#exit 1
 else
 	echo "Internet connection is working, continuing!"
 	/bin/rm /tmp/index.google
