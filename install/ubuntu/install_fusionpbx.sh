@@ -749,8 +749,6 @@ else
 		;;
 
 		*)
-			echo "OK, Stopping."
-			exit 0
 		;;
 	esac
 fi
