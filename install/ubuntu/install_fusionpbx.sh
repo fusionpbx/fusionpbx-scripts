@@ -2249,7 +2249,7 @@ DELIM
 #		/bin/echo "       ON the Second Page:"
 #		/bin/echo "          Create Database Username: root"
 #		/bin/echo "          Create Database Password: the_pw_you_set_during_install"
-#		/bin/echo "			 other options: whatever you like"
+#		/bin/echo "          other options: whatever you like"
 #		/bin/echo "  I will wait here until you get done with that."
 #		/bin/echo -ne "  When MySQL is configured come back and press enter. "
 #		read
@@ -2339,7 +2339,7 @@ DELIM
 		/bin/echo "          Database Name: $GUI_NAME"
 		/bin/echo "          Database Username: $GUI_NAME"
 		/bin/echo "          Database Password: whateveryouentered"
-		/bin/echo "          Database Username: Leave_Blank (remove pgsql)"
+		/bin/echo "          Create Database Username: Leave_Blank"
 		/bin/echo "          Create Database Password: Leave_Blank"
 		/bin/echo 
 		/bin/echo "  I will wait here until you get done with that."
