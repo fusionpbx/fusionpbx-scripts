@@ -2005,7 +2005,7 @@ DELIM
 			PHPINIFILE="/etc/php5/fpm/php.ini"
 			PHPCONFFILE="/etc/php5/fpm/php5-fpm.conf"
 		fi
-		/bin/grep 10M /etc/php5/fpm/php.ini > /dev/null
+		/bin/grep 10M $PHPINIFILE > /dev/null
 		if [ $? -ne 0 ]; then
 			/bin/sed -i -e s,"upload_max_filesize = 2M","upload_max_filesize = 10M", $PHPINIFILE
 			if [ $? -ne 0 ]; then
@@ -2017,6 +2017,13 @@ DELIM
 			/bin/echo
 			/bin/echo "/etc/php5/fpm/php.ini already edited. Skipping..."
 		fi
+		
+		#change to socket
+		grep "listen = 127.0.0.1:9000" $PHPCONFFILE |grep \; 
+		if [ $? -ne 0 ]; then
+			sed -i $PHPCONFFILE -e s,listen\ \=\ 127\.0\.0\.\1\:9000,listen\ \=\ \/var\/run\/php5-fpm.sock,
+		fi
+		
 
 		##Applying fix for cgi.fix_pathinfo
 		/bin/grep 'cgi\.fix_pathinfo=0' $PHPINIFILE > /dev/null
