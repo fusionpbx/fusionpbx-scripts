@@ -2271,7 +2271,7 @@ DELIM
 				/usr/bin/apt-get -y -t squeeze-backports install php5-pgsql
 			elif [ $DISTRO = "precise" ]; then
 				#already there...
-				/usr/bin/apt-get -y php5-pgsql
+				/usr/bin/apt-get -y install php5-pgsql
 			else
 				#add the ppa
 				/usr/bin/apt-add-repository ppa:pitti/postgresql
