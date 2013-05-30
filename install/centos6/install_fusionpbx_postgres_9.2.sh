@@ -330,9 +330,9 @@ usermod -a -G apache freeswitch
 
 ## Install EPEL so we can get monit and ngrep
 if [ ${MACHINE_TYPE} == 'x86_64' ]; then
-	rpm -Uvh http://download.fedoraproject.org/pub/epel/6/x86_64/epel-release-6-7.noarch.rpm
+	rpm -Uvh http://download.fedoraproject.org/pub/epel/6/x86_64/epel-release-6-8.noarch.rpm
 else
-	rpm -Uvh http://download.fedoraproject.org/pub/epel/6/i386/epel-release-6-7.noarch.rpm
+	rpm -Uvh http://download.fedoraproject.org/pub/epel/6/i386/epel-release-6-8.noarch.rpm
 fi
 
 #Install Monit, Fail2Ban, and ngrep
