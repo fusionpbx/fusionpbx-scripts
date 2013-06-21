@@ -525,6 +525,7 @@ DELIM
 /etc/init.d/fail2ban restart
 
 if [[ $pgsql_server == "y" ]]; then
+	clear
 	for i in postgresql-9.1 php5-pgsql
 	do apt-get -y install "${i}"
 	done
@@ -556,7 +557,7 @@ cat << DELIM
 DELIM
 
 else
-
+	clear
 	echo
 	printf '	Please open a web-browser to http://'; ip -f inet addr show dev eth0 | sed -n 's/^ *inet *\([.0-9]*\).*/\1/p'
 cat << DELIM
@@ -572,6 +573,7 @@ DELIM
 fi
 
 if [[ $pgsql_client == "y" ]]; then
+	clear
 	for i in postgresql-client-9.1 php5-pgsql
 	do apt-get -y install "${i}"
 	done
