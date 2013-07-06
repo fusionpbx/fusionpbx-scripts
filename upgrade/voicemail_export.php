@@ -36,7 +36,7 @@ else {
 
 //get the includes
 	require "resources/require.php";
-	require_once "includes/header.php";
+	require_once "resources/header.php";
 	echo "<pre>\n";
 
 //prepare the data variable
@@ -282,6 +282,6 @@ else {
 
 //show the footer
 	echo "</pre>\n";
-	require_once "includes/footer.php";
+	require_once "resources/footer.php";
 
 ?>
