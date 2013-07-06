@@ -24,7 +24,7 @@
 	Mark J Crane <markjcrane@fusionpbx.com>
 */
 include "root.php";
-require "includes/require.php";
+require "resources/require.php";
 require_once "resources/check_auth.php";
 if (permission_exists('voicemail_view')) {
 	//access granted
@@ -35,7 +35,7 @@ else {
 }
 
 //get the includes
-	require "includes/require.php";
+	require "resources/require.php";
 	require_once "includes/header.php";
 	echo "<pre>\n";
 
@@ -271,7 +271,7 @@ else {
 
 //reset the database connection
 	unset($db);
-	require "includes/require.php";
+	require "resources/require.php";
 
 //loop through the sql array
 	$sql_array = explode(";", $data);
