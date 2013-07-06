@@ -143,7 +143,7 @@ else {
 	}
 
 //pdo voicemail database connection
-	include "includes/lib_pdo_vm.php";
+	include "resources/pdo_vm.php";
 
 //list the voicemail prefs
 	$sql = "select * from voicemail_prefs ";
