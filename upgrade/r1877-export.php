@@ -25,7 +25,7 @@
 */
 include "root.php";
 require_once "includes/config.php";
-require_once "includes/checkauth.php";
+require_once "resources/check_auth.php";
 if (ifgroup("superadmin")) {
 	//access granted
 }
