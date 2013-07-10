@@ -345,14 +345,14 @@ function finish_fpbx_install_permissions {
 	/bin/echo "The FusionPBX installation changed permissions of /usr/local/freeswitch/storage"
 	/bin/echo "  Waiting on you to finish installation (via browser), I'll clean up"
 	/bin/echo -ne "  the last bit of permissions when you finish."
-	/bin/echo "Waiting on $WWW_PATH/$GUI_NAME/includes/config.php"
-	while [ ! -e $WWW_PATH/$GUI_NAME/includes/config.php ]
+	/bin/echo "Waiting on $WWW_PATH/$GUI_NAME/resources/config.php"
+	while [ ! -e $WWW_PATH/$GUI_NAME/resources/config.php ]
 	do
 		/bin/echo -ne '.'
 		sleep 1
 	done
 	/bin/echo
-	/bin/echo "$WWW_PATH/$GUI_NAME/includes/config.php Found!"
+	/bin/echo "$WWW_PATH/$GUI_NAME/resources/config.php Found!"
 	/bin/echo "   Waiting 5 more seconds to be sure. "
 	SLEEPTIME=0
 	while [ "$SLEEPTIME" -lt 5 ]
