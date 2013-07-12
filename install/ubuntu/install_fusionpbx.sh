@@ -1281,6 +1281,8 @@ if [ $DO_DAHDI == "y" ]; then
 
 	/bin/chmod 755 /etc/init.d/freeswitch
 	/bin/echo "enabling FreeSWITCH to start at boot"
+	/bin/mkdir /etc/freeswitch
+	/bin/touch /etc/freeswitch/freeswitch.xml
 
 	/bin/grep true /etc/default/freeswitch > /dev/null
 	if [ $? -eq 0 ]; then
