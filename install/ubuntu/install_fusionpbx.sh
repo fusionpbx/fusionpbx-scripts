@@ -61,7 +61,7 @@ DISTRO=precise
 if [ $DO_DAHDI == "y" ]; then
 	modules_add=( ../../libs/freetdm/mod_freetdm mod_spandsp mod_dingaling mod_portaudio mod_callcenter mod_lcr mod_cidlookup mod_flite mod_memcache, mod_codec2 mod_pocketsphinx mod_xml_cdr mod_say_es )
 else
-	modules_add=( mod_spandsp mod_dingaling mod_callcenter mod_lcr mod_cidlookup mod_memcache, mod_codec2 mod_pocketsphinx mod_xml_cdr mod_say_es )
+	modules_add=( mod_spandsp mod_dingaling mod_callcenter mod_lcr mod_cidlookup mod_memcache mod_codec2 mod_pocketsphinx mod_xml_cdr mod_say_es )
 fi
 
 #-------
