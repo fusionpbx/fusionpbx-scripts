@@ -518,7 +518,7 @@ if [ $freeswitch_nat == "y" ]; then
 	/bin/sed -i /etc/default/freeswitch -e s,'^DAEMON_OPTS=.*','DAEMON_OPTS="-scripts /var/lib/fusionpbx/scripts -rp -nonat"',
 fi
 
-for i in nginx php5-fpm 
+for i in freeswitch nginx php5-fpm 
 do /etc/init.d/"${i}" restart >/dev/null 2>&1 
 done
 
