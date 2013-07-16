@@ -374,6 +374,40 @@ done
 #Install NGINX config file
 cat > /etc/nginx/sites-available/fusionpbx  << DELIM
 server{
+        listen 127.0.0.1:80;
+        server_name 127.0.0.1;
+        access_log /var/log/nginx/access.log;
+        error_log /var/log/nginx/error.log;
+
+        client_max_body_size 10M;
+        client_body_buffer_size 128k;
+
+        location / {
+                root $WWW_PATH/wui_name;
+                index index.php;
+        }
+
+        location ~ \.php$ {
+                fastcgi_pass unix:/var/run/php5-fpm.sock;
+                #fastcgi_pass 127.0.0.1:9000;
+                fastcgi_index index.php;
+                include fastcgi_params;
+                fastcgi_param   SCRIPT_FILENAME $WWW_PATH/$wui_name\$fastcgi_script_name;
+        }
+
+        # Disable viewing .htaccess & .htpassword & .db
+        location ~ .htaccess {
+                        deny all;
+        }
+        location ~ .htpassword {
+                        deny all;
+        }
+        location ~^.+.(db)$ {
+                        deny all;
+        }
+}
+
+server{
         listen 80;
         listen [::]:80 default_server ipv6only=on;
         server_name $wui_name;
