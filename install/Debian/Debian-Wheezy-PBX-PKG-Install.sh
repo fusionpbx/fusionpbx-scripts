@@ -50,7 +50,7 @@ fi
 # Set you system fqdn/hostname
 # Please change this ........
 HN="pbx"
-DN="fusionpbx,com
+DN="fusionpbx.com"
 
 #Configure Networking
 #IF you machine is at its final install location and has a static ip
