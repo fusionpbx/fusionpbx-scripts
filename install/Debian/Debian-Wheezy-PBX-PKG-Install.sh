@@ -23,7 +23,57 @@
 # THE SOFTWARE.
 ################################################################################
 
+################################################################################
+echo "This is a 1 time install script. if it fails for any reason please report"
+echo "to r.neese@gmail.com . Include any screen output you can to show where it"
+echo "fails."
+################################################################################
+
+################################################################################
+echo "This Script Requires a internet connection "
+################################################################################
+
+#check for internet connection
+#pulled from and modified
+#http://www.linuxscrew.com/2009/04/02/tiny-bash-scripts-check-internet-connection-availability/
+wget -q --tries=10 --timeout=5 http://www.google.com -O /tmp/index.google &> /dev/null
+
+if [ ! -s /tmp/index.google ];then
+	echo "No Internet connection. Please plug in the ethernet cable into eth0"
+	exit 1
+else
+	echo "continuing!"
+fi
+
 #<------Start Edit HERE--------->
+
+# Set you system fqdn/hostname
+# Please change this ........
+HN="pbx"
+DN="fusionpbx,com
+
+#Configure Networking
+#IF you machine is at its final install location and has a static ip
+# Change this setting from n to y to enable network setup of eth0.
+# Other Wise by default it uses dhcp an the ip will be dynamic.
+set_net=n
+
+#IF you set set_net=y Please set these to configure eth0:
+#Wan Interface
+IP=""
+#Netmask
+NM=""
+#Gateway
+GW=""
+#Name Servers
+NS1=""
+NS2=""
+#search domain
+SD=""
+
+#set local timezone 
+#Fresh Installs will require you to set the proper timezone.
+set_tz=n
 
 #Freeswitch Options
 freeswitch_install="all" # This is a metapackage which recommends or suggests all packaged FreeSWITCH modules.(Default)
@@ -33,7 +83,8 @@ freeswitch_install="all" # This is a metapackage which recommends or suggests al
 #freeswitch_install="sorbet" # This is a metapackage which recommends most packaged FreeSWITCH modules except a few which aren't recommended.
 #freeswitch_install="vanilla" # This is a metapackage which depends on the packages needed for running the FreeSWITCH vanilla example configuration.
 
-#FreeSwitch Configs Options
+#FreeSwitch Configs Options installed in /usr/share/freeswitch/conf/(configname)
+#This also copies the default configs into the default active config dir /etc/freeswitch
 #freeswitch_conf="curl" # FreeSWITCH curl configuration
 #freeswitch_conf="indiseout" # FreeSWITCH insideout configuration
 #freeswitch_conf="sbc" # FreeSWITCH session border controller (sbc) configuration
@@ -48,7 +99,7 @@ freeswitch_nat=n
 #(Currently the Fusionpkx Stable does not work on wheezy)
 # You should use the fusionpbx dev pkg for now
 # y=stable branch n=dev branch
-fusionpbx_stable=y
+fusionpbx_stable=n
 
 #Please Select Server or Client not both. 
 #Install postgresql Client 9.x for connection to remote pgsql servers (y/n)
@@ -66,20 +117,59 @@ pgsqlpass=pgsqladmin2013
 
 #<------Stop Edit Here-------->
 
+#Fully Qualified Domian Name
+FQDN="$HN.$DN"
+
 #Pulled from my own admin menu below.
-#FQDN (Fully Qualified Domain Name)
-FQDN=$(hostname -f)
 # Freeswitch logs dir
 freeswitch_log="/var/log/freeswitch"
 #Freeswitch dflt configs
 freeswitch_dflt_conf="/usr/share/freeswitch/conf"
 #Freeswitch active config files
 freeswitch_act_conf="/etc/freeswitch"
+
 #Nginx
 WWW_PATH="/usr/share/nginx/www" #debian nginx default dir
 wui_name="fusionpbx"
 #Php Conf Files
 php_ini="/etc/php5/fpm/php.ini"
+
+#setting Hostname/Domainname
+/bin/hostname $FQDN
+
+# Setup Primary Network Interface
+if [[ $set_net == "y" ]]; then
+cat << EOF > /etc/network/interfaces
+# The loopback network interface
+auto lo
+iface lo inet loopback
+# The primary network interface
+allow-hotplug eth0
+iface eth0 inet static
+      address $IP
+      netmask $NM
+      gateway $GW
+      dns-nameservers $NS1 $NS2
+      dns-search $SD
+EOF
+
+#Setup /etc/hosts file
+cat << EOF > /etc/hosts
+127.0.0.1       localhost $FQDN
+127.0.0.1       $HN
+::1             localhost ip6-localhost ip6-loopback
+fe00::0         ip6-localnet
+ff00::0         ip6-mcastprefix
+ff02::1         ip6-allnodes
+ff02::2         ip6-allrouters
+$IP     $FQDN
+$IP     $FQDN $HN
+EOF
+fi
+
+if [[ $set_tz == "y" ]]; then
+/usr/sbin/dpkg-reconfigure tzdata
+fi
 
 # OS ENVIRONMENT CHECKS
 #check for root
@@ -89,19 +179,8 @@ if [ $EUID -ne 0 ]; then
 fi
 echo "You're root."
 
-#check for internet connection
-#pulled from and modified
-#http://www.linuxscrew.com/2009/04/02/tiny-bash-scripts-check-internet-connection-availability/
-wget -q --tries=10 --timeout=5 http://www.google.com -O /tmp/index.google &> /dev/null
 
-if [ ! -s /tmp/index.google ];then
-	echo "No Internet connection."
-	exit 1
-else
-	echo "continuing!"
-fi
-
-# Os Check
+# Os/Distro Check
 lsb_release -c |grep -i wheezy > /dev/null
 
 if [[ $? -eq 0 ]]; then
@@ -117,14 +196,6 @@ sed -i /etc/apt/sources.list -e s,'deb cdrom\:\[Debian GNU/Linux testing _Wheezy
 
 #add curl
 apt-get -y install curl
-
-#repo run on my server.
-#add fusionpbx wui_name temp Repo until freeswitch gets a repo working for x86)
-#dding FusionPBX Web User Interface repo"
-/bin/cat > /etc/apt/sources.list.d/fusionpbx.list <<DELIM
-deb http://74.207.246.104/ wheezy main
-deb-src http://74.207.246.104/ wheezy main
-DELIM
 
 #pulled from freeswitch wiki
 #Adding freeswitch repo
@@ -181,15 +252,18 @@ if [[ $freeswitch_install == "vanilla" ]]; then
 	apt-get -y install	freeswitch-meta-vanilla
 fi
 
-#Genertaing /etc/freeswitch config dir.
+#Genertaing /etc/freeswitch config dir. 
 mkdir $freeswitch_act_conf
 
 #FreeSwitch Configs
 if [[ $freeswitch_conf == "curl" ]]; then
 	echo " Installing Freeswitch curl configs"
+	# Installing defailt configs into /usr/share/freeswitch/conf/(configname).
 	apt-get -y install	freeswitch-conf-curl
-	cp -rp "$freeswitch_dflt_conf"/curl/* "$freeswitch_act_conf" #Copy configs into Freeswitch active conf dir
-	chown -R freeswitch:freeswitch "$freeswitch_act_conf" #Chowning files for correct user/group
+	#Copy configs into Freeswitch active conf dir.
+	cp -rp "$freeswitch_dflt_conf"/curl/* "$freeswitch_act_conf"
+	#Chowning files for correct user/group in the active conf dir.
+	chown -R freeswitch:freeswitch "$freeswitch_act_conf" 
 fi
 
 if [[ $freeswitch_conf == "insideout" ]]; then
@@ -234,7 +308,7 @@ do apt-get -y install "${i}"
 done 
 
 #Taken From http://wiki.fusionpbx.com/index.php?title=Monit and edited to work with debian pkgs.
-#Adding Monti to keep freeswitch running.
+#Adding Monitor to keep freeswitch running.
 /bin/cat > /etc/monit/conf.d/freeswitch  <<DELIM
 set daemon 60
 set logfile syslog facility log_daemon
@@ -383,7 +457,7 @@ server{
         client_body_buffer_size 128k;
 
         location / {
-                root $WWW_PATH/wui_name;
+                root $WWW_PATH/$wui_name;
                 index index.php;
         }
 
@@ -501,6 +575,21 @@ done
 adduser www-data freeswitch
 adduser freeswitch www-data
 
+#for i in autoload_configs chatplan config.FS0 dialplan directory extensions.conf fur_elise.ttml \
+#ivr_menus jingle_profiles lang mime.types mrcp_profiles notify-voicemail.tpl README_IMPORTANT.txt \
+#sip_profiles skinny_profiles tetris.ttml voicemail.tpl web-vm.tpl yaml
+#do rm -rf /etc/freeswitch/"${i}"
+#done
+
+#add fusionpbx wui_name temp Repo until freeswitch gets a repo working for x86)
+#dding FusionPBX Web User Interface repo"
+/bin/cat > /etc/apt/sources.list.d/fusionpbx.list <<DELIM
+deb http://74.207.246.104/ wheezy main
+deb-src http://74.207.246.104/ wheezy main
+DELIM
+
+apt-get update
+
 # Install fusionpbx Web User Interface
 echo "Installing FusionPBX Web User Interface pkg"
 
@@ -518,13 +607,16 @@ if [ $freeswitch_nat == "y" ]; then
 	/bin/sed -i /etc/default/freeswitch -e s,'^DAEMON_OPTS=.*','DAEMON_OPTS="-scripts /var/lib/fusionpbx/scripts -rp -nonat"',
 fi
 
-for i in freeswitch nginx php5-fpm 
-do /etc/init.d/"${i}" restart >/dev/null 2>&1 
-done
-
 #fix permissions for "$freeswitch_act_conf" so www-data can write to it
 find "$freeswitch_act_conf" -type f -exec chmod 660 {} + 
 find "$freeswitch_act_conf" -type d -exec chmod 770 {} + 
+
+#fix permissions on the freeswitch xml_cdr dir so fusionpbx can read from it
+find "/var/log/freeswitch/xml_cdr" -type d -exec chmod 770 {} + 
+
+for i in freeswitch nginx php5-fpm 
+do /etc/init.d/"${i}" restart >/dev/null 2>&1 
+done
 
 #Pulled From 
 #http://wiki.fusionpbx.com/index.php?title=Fail2Ban
