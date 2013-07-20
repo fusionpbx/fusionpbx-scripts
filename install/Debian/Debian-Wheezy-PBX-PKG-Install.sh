@@ -58,20 +58,20 @@ DN="fusionpbx.com"
 # Other Wise by default it uses dhcp an the ip will be dynamic.
 set_net=n
 
-#IF you set set_net=y Please set these to configure eth0:
+#IF you change set_net=y Please chane these to configure eth0:
 #Wan Interface
-IP=""
+IP="192.168.123.117"
 #Netmask
-NM=""
+NM="255.255.255.0"
 #Gateway
-GW=""
+GW="192.168.123.1"
 #Name Servers
-NS1=""
-NS2=""
+NS1="4.2.2.2"
+NS2="4.2.2.2"
 #search domain
-SD=""
+SD="fusionpbx.com"
 
-#set local timezone 
+#set local timezone
 #Fresh Installs will require you to set the proper timezone.
 set_tz=n
 
@@ -101,14 +101,14 @@ freeswitch_nat=n
 # y=stable branch n=dev branch
 fusionpbx_stable=n
 
-#Please Select Server or Client not both. 
+#Please Select Server or Client not both.
 #Install postgresql Client 9.x for connection to remote pgsql servers (y/n)
 pgsql_client=n
 
 #Install postgresql server 9.x (y/n) (client included)(Local Machine)
 pgsql_server=n
 
-# ONLY NEEDE IF USING Posgresql Server Localy. 
+# ONLY NEEDE IF USING Posgresql Server Localy.
 #Please Change the user keeping the name lower case
 pgsqluser=pgsqladmin
 
@@ -203,12 +203,12 @@ apt-get -y install curl
 deb http://files.freeswitch.org/repo/deb/debian/ wheezy main
 deb-src http://files.freeswitch.org/repo/deb/debian/ wheezy main
 DELIM
-#adding key for freeswitch repo 
+#adding key for freeswitch repo
 curl http://files.freeswitch.org/repo/deb/debian/freeswitch_archive_g0.pub | apt-key add -
 
 #Updating OS and installed pre deps
 for i in update upgrade
-do apt-get -y "${i}" 
+do apt-get -y "${i}"
 done
 
 #------------------
@@ -218,10 +218,10 @@ done
 for i in unzip libjpeg8 libjpeg62 screen htop pkg-config curl libtiff5 libtiff-tools \
 		ntp bison autotalent ladspa-sdk tap-plugins swh-plugins libgsm1 libfftw3-3 libpython2.7 \
 		libperl5.14 scons libpq5 unixodbc uuid gettext libvlc5 sox flac vim ngrep memcached
-do apt-get -y install "${i}" 
+do apt-get -y install "${i}"
 done
 
-# Freeswitch Install Options. 
+# Freeswitch Install Options.
 if [[ $freeswitch_install == "all" ]]; then
 	echo " Installing freeswitch all"
 	apt-get -y install	freeswitch-meta-all
@@ -252,7 +252,7 @@ if [[ $freeswitch_install == "vanilla" ]]; then
 	apt-get -y install	freeswitch-meta-vanilla
 fi
 
-#Genertaing /etc/freeswitch config dir. 
+#Genertaing /etc/freeswitch config dir.
 mkdir $freeswitch_act_conf
 
 #FreeSwitch Configs
@@ -305,7 +305,7 @@ for i in /etc/freeswitch/directory/default/*.xml ;do rm $i ; done
 #Fail2ban
 for i in fail2ban monit
 do apt-get -y install "${i}"
-done 
+done
 
 #Taken From http://wiki.fusionpbx.com/index.php?title=Monit and edited to work with debian pkgs.
 #Adding Monitor to keep freeswitch running.
@@ -318,7 +318,7 @@ start program = "/etc/init.d/freeswitch start"
 stop program = "/etc/init.d/freeswitch stop"
 DELIM
 
-#Adding changes to freeswitch profiles 
+#Adding changes to freeswitch profiles
 sed -i "$freeswitch_act_conf"/sip_profiles/internal.xml -e s,'<param name="log-auth-failures" value="false"/>','<param name="log-auth-failures" value="true"/>',
 
 sed -i "$freeswitch_act_conf"/sip_profiles/internal.xml -e s,'<!-- *<param name="log-auth-failures" value="false"/>','<param name="log-auth-failures" value="true"/>', \
@@ -392,8 +392,8 @@ sed -i 's/RepeatedMsgReduction\ on/RepeatedMsgReduction\ off/' /etc/rsyslog.conf
 sed -i /usr/bin/fail2ban-client -e s,beautifier\.setInputCmd\(c\),'time.sleep\(0\.1\)\n\t\t\tbeautifier.setInputCmd\(c\)',
 
 #Restarting Nginx and PHP FPM
-for i in freeswitch fail2ban 
-do /etc/init.d/"${i}" restart  >/dev/null 2>&1 
+for i in freeswitch fail2ban
+do /etc/init.d/"${i}" restart  >/dev/null 2>&1
 done
 
 # see http://wiki.fusionpbx.com/index.php?title=<<DELIM
@@ -431,8 +431,8 @@ chmod 755 /etc/cron.daily/freeswitch_log_rotation
 sed -i "$freeswitch_act_conf"/autoload_configs/logfile.conf.xml -e s,\<param.*name\=\"rollover\".*value\=\"10485760\".*/\>,\<\!\-\-\<param\ name\=\"rollover\"\ value\=\"10485760\"/\>\ INSTALL_SCRIPT\-\-\>,g
 
 # restarti9ng services
-for i in fail2ban freeswitch 
-do /etc/init.d/"${i}" restart  >/dev/null 2>&1 
+for i in fail2ban freeswitch
+do /etc/init.d/"${i}" restart  >/dev/null 2>&1
 done
 
 #Install and configure  PHP + Nginx + sqlite3
@@ -442,7 +442,7 @@ do apt-get -y install "${i}"
 done
 
 # Changing file upload size from 2M to 15M
-/bin/sed -i $php_ini -e s,"upload_max_filesize = 2M","upload_max_filesize = 15M", 
+/bin/sed -i $php_ini -e s,"upload_max_filesize = 2M","upload_max_filesize = 15M",
 
 #Nginx config Copied from Debian nginx pkg (nginx on debian wheezy uses sockets by default not ports)
 #Install NGINX config file
@@ -596,7 +596,8 @@ echo "Installing FusionPBX Web User Interface pkg"
 if [[ $fusionpbx_stable == "y" ]]; then
 	apt-get -y --force-yes install fusionpbx
 else
-	apt-get -y --force-yes install fusionpbx-dev
+#	apt-get -y --force-yes install fusionpbx-dev
+	dpkg -i /root/debs/fusionpbx-dev_3.3-1_all.deb
 fi
 
 #"Re-Configuring /etc/default/freeswitch to use fusionpbx scripts dir"
@@ -607,18 +608,29 @@ if [ $freeswitch_nat == "y" ]; then
 	/bin/sed -i /etc/default/freeswitch -e s,'^DAEMON_OPTS=.*','DAEMON_OPTS="-scripts /var/lib/fusionpbx/scripts -rp -nonat"',
 fi
 
+#Clean out the freeswitch conf dir
+rm -rf "$freeswitch_act_conf"/*
+
+cp -rp "$WWW_PATH/$wui_name"/resources/templates/conf/* "$freeswitch_act_conf"
+
+#chown files
+chown -R freeswitch:freeswitch "$freeswitch_act_conf"
+
 #fix permissions for "$freeswitch_act_conf" so www-data can write to it
-find "$freeswitch_act_conf" -type f -exec chmod 660 {} + 
-find "$freeswitch_act_conf" -type d -exec chmod 770 {} + 
+find "$freeswitch_act_conf" -type f -exec chmod 660 {} +
+find "$freeswitch_act_conf" -type d -exec chmod 770 {} +
+
+#create xml_cdr dir
+mkdir "$freeswitch_log"/xml_cdr
 
 #fix permissions on the freeswitch xml_cdr dir so fusionpbx can read from it
-find "/var/log/freeswitch/xml_cdr" -type d -exec chmod 770 {} + 
+find "$freeswitch_log"/xml_cdr -type d -exec chmod 770 {} +
 
-for i in freeswitch nginx php5-fpm 
-do /etc/init.d/"${i}" restart >/dev/null 2>&1 
+for i in freeswitch nginx php5-fpm
+do /etc/init.d/"${i}" restart >/dev/null 2>&1
 done
 
-#Pulled From 
+#Pulled From
 #http://wiki.fusionpbx.com/index.php?title=Fail2Ban
 # Adding fusionpbx to fail2ban
 cat > /etc/fail2ban/filter.d/fusionpbx.conf  <<DELIM
@@ -655,7 +667,7 @@ if [[ $pgsql_server == "y" ]]; then
 	for i in postgresql-9.1 php5-pgsql
 	do apt-get -y install "${i}"
 	done
-	
+
 	/etc/init.d/php5-fpm restart
 
 	#Adding a SuperUser and Password for Postgresql database.
@@ -672,11 +684,11 @@ cat << DELIM
 
 	Also Please fill in the SuperUser Name and Password fields.
 
-	On the Second Configuration Page of the web user interface please fill in the following fields: 
+	On the Second Configuration Page of the web user interface please fill in the following fields:
 
 	Database Name: "$wui_name"
 	Database Username: "$wui_name"
-	Database Password: Please Select A Secure Password 
+	Database Password: Please Select A Secure Password
 	Create Database Username: "$pgsqluser"
 	Create Database Password: "$pgsqlpass"
 
@@ -714,7 +726,7 @@ cat << DELIM
 	On the First configuration page of the web user interface.
 
 	Please Select the PostgreSQL option in the pull-down menu as your Database
- 
+
 	Also Please fill in the SuperUser Name and Password fields.
 
 	On the Second Configuration Page of the web user intercae please fill in the following fields:
@@ -735,7 +747,7 @@ apt-get clean
 
 cat << DELIM
 
-     Freeswitch & FusionPBX Web User Interface Installation Completed. 
+     Freeswitch & FusionPBX Web User Interface Installation Completed.
 
     Now you can configure FreeSWITCH using the FusionPBX web user interface
 
