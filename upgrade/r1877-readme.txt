@@ -51,34 +51,37 @@ Migration Instructions
 			sqlite3 /var/www/fusionpbx/secure/fusionpbx.db < /tmp/database_backup.sql
 		4. Make sure the database is writeable
 
-14. Edit fusionpbx/includes/config.php change the database name to the new database.
+14. Edit fusionpbx/resources/config.php change the database name to the new database.
 
 15. Update the source code to 3.0.x
 	svn update
 
-16. Login with the web browser.
+16. Run logout.php from the browser to clear the session then login to the GUI with the web browser.
 
 17. Update the menu by going to:
 	http://x.x.x.x/core/menu/menu.php then edit the menu and press 'restore default'
 
 18. Update the permissions.
 	Go to advanced -> group manager edit the permissions for the superadmin group
-	Select the permissions you that are not select in the list when finished press save.
+	Select the permissions that you want to enable and then press save.
 
 19. Logout of the web interface to clear the session.
 
 20. For multi-tenant systems delete the domain based dialplan xml files in.
 	rm /usr/local/freeswitch/conf/dialplans/replace_with_the_domain_name.xml
 
-21. Upgrade FusionPBX
+21. For Single tenant systems go to Advanced -> Default Settings
+	Remove /default off the end of all of the paths. Should see it in 2 places.
+
+22. Upgrade FusionPBX
 	cd /var/www/fusionpbx
 	/usr/bin/php /var/www/fusionpbx/core/upgrade/upgrade.php
 
-22. Go to Advanced -> XML Editor
+23. Go to Advanced -> XML Editor
 	Expand 'autoload_configs'
 	Click on xml_cdr.conf.xml
 	At <param name="url" remove /mod/ and replace it with /app/
 	Status -> SIP Status press 'reloadxml'
 	System -> Modules restart XML CDR.
 
-23. Upgrade is complete.
+24. Upgrade is complete.
