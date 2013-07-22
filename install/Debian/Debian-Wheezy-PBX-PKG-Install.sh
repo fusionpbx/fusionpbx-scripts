@@ -611,9 +611,10 @@ fi
 #Clean out the freeswitch conf dir
 rm -rf "$freeswitch_act_conf"/*
 
-cp -rp "$WWW_PATH/$wui_name"/resources/templates/conf/* "$freeswitch_act_conf"
+#Put Fusionpbx Freeswitch configs into place
+cp -r "$WWW_PATH/$wui_name"/resources/templates/conf/* "$freeswitch_act_conf"
 
-#chown files
+#chown freeswitch  conf files
 chown -R freeswitch:freeswitch "$freeswitch_act_conf"
 
 #fix permissions for "$freeswitch_act_conf" so www-data can write to it
@@ -622,6 +623,9 @@ find "$freeswitch_act_conf" -type d -exec chmod 770 {} +
 
 #create xml_cdr dir
 mkdir "$freeswitch_log"/xml_cdr
+
+#chown the xml_cdr dir
+chown freeswitch:freeswitch "$freeswitch_log"/xml_cdr
 
 #fix permissions on the freeswitch xml_cdr dir so fusionpbx can read from it
 find "$freeswitch_log"/xml_cdr -type d -exec chmod 770 {} +
@@ -744,6 +748,8 @@ DELIM
 fi
 
 apt-get clean
+
+clear
 
 cat << DELIM
 
