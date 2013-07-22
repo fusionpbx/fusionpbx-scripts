@@ -584,8 +584,8 @@ adduser freeswitch www-data
 #add fusionpbx wui_name temp Repo until freeswitch gets a repo working for x86)
 #dding FusionPBX Web User Interface repo"
 /bin/cat > /etc/apt/sources.list.d/fusionpbx.list <<DELIM
-deb http://74.207.246.104/ wheezy main
-deb-src http://74.207.246.104/ wheezy main
+deb http://repo.voyagepbx.com/apt/ wheezy main
+deb-src http://repo.voyagepbx.com/apt/ wheezy main
 DELIM
 
 apt-get update
@@ -596,8 +596,7 @@ echo "Installing FusionPBX Web User Interface pkg"
 if [[ $fusionpbx_stable == "y" ]]; then
 	apt-get -y --force-yes install fusionpbx
 else
-#	apt-get -y --force-yes install fusionpbx-dev
-	dpkg -i /root/debs/fusionpbx-dev_3.3-1_all.deb
+	apt-get -y --force-yes install fusionpbx-dev
 fi
 
 #"Re-Configuring /etc/default/freeswitch to use fusionpbx scripts dir"
