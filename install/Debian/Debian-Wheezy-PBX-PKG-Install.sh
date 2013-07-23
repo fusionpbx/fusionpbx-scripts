@@ -584,8 +584,8 @@ adduser freeswitch www-data
 #add fusionpbx wui_name temp Repo until freeswitch gets a repo working for x86)
 #dding FusionPBX Web User Interface repo"
 /bin/cat > /etc/apt/sources.list.d/fusionpbx.list <<DELIM
-deb http://repo.voyagepbx.com/apt/ wheezy main
-deb-src http://repo.voyagepbx.com/apt/ wheezy main
+deb http://repo.fusionpbx.com wheezy main
+deb-src http://repo.fusionpbx.com/ wheezy main
 DELIM
 
 apt-get update
