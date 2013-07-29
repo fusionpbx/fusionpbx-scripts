@@ -24,7 +24,7 @@
 	Mark J Crane <markjcrane@fusionpbx.com>
 */
 include "root.php";
-require_once "includes/config.php";
+require_once "resources/config.php";
 require_once "resources/check_auth.php";
 if (ifgroup("superadmin")) {
 	//access granted
