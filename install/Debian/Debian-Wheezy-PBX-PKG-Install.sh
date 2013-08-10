@@ -67,7 +67,7 @@ fi
 
 #<------Start Edit HERE--------->
 #Setup up host name or use system default host name or preset host/domain name.
-set_host=n
+set_host=y
 
 # if you use the set host name please change these to fields.
 # Please change this ........
@@ -167,7 +167,9 @@ else
 fi
 
 #setting Hostname/Domainname
-/bin/hostname $HN.$DN
+cat << EOF > /etc/hostname
+$HN.$DN
+EOF
 
 # Setup Primary Network Interface
 if [[ $set_net == "y" ]]; then
