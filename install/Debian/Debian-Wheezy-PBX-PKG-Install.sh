@@ -67,7 +67,7 @@ fi
 
 #<------Start Edit HERE--------->
 #Setup up host name or use system default host name or preset host/domain name.
-set_host=y
+set_host=n
 
 # if you use the set host name please change these to fields.
 # Please change this ........
