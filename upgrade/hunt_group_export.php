@@ -53,20 +53,21 @@ require_once "resources/paging.php";
 				$ring_group_strategy = "sequence";
 			}
 
-			if ($ring_group_timeout_type == "extension") {
-				$ring_group_timeout_app = "transfer";
-			} elseif ($ring_group_timeout_type == "voicemail") {
-				$ring_group_timeout_app = "transfer";
-				$ring_group_timeout_data = "*99".$ring_group_timeout_data;
-			} else {
-				$ring_group_timeout_app = "transfer";
-			}
-
+			//set the ring group context
 			if (count($_SESSION["domains"]) > 1) {
 				$ring_group_context = $domain_name;
 			}
 			else {
 				$ring_group_context = "default";
+			}
+
+			if ($ring_group_timeout_type == "extension") {
+				$ring_group_timeout_app = "transfer";
+			} elseif ($ring_group_timeout_type == "voicemail") {
+				$ring_group_timeout_app = "transfer";
+				$ring_group_timeout_data = "*99".$ring_group_timeout_data." XML ".$ring_group_context;
+			} else {
+				$ring_group_timeout_app = "transfer";
 			}
 
 			if (strlen($dialplan_uuid) > 0) {
@@ -143,7 +144,7 @@ require_once "resources/paging.php";
 			$database->fields['dialplan_enabled'] = 'true';
 			$database->fields['dialplan_description'] = $ring_group_description;
 			$database->fields['app_uuid'] = '1d61fb65-1eec-bc73-a6ee-a6203b4fe6f2';
-//			$database->add();
+			$database->add();
 
 		//add the dialplan details
 			$database->table = "v_dialplan_details";
@@ -154,7 +155,7 @@ require_once "resources/paging.php";
 			$database->fields['dialplan_detail_type'] = 'destination_number';
 			$database->fields['dialplan_detail_data'] = '^'.$ring_group_extension.'$';
 			$database->fields['dialplan_detail_order'] = '000';
-//			$database->add();
+			$database->add();
 
 		//add the dialplan details
 			$database->table = "v_dialplan_details";
@@ -165,7 +166,7 @@ require_once "resources/paging.php";
 			$database->fields['dialplan_detail_type'] = 'set';
 			$database->fields['dialplan_detail_data'] = 'ring_group_uuid='.$ring_group_uuid;
 			$database->fields['dialplan_detail_order'] = '025';
-//			$database->add();
+			$database->add();
 
 		//add the dialplan details
 			$database->table = "v_dialplan_details";
@@ -176,7 +177,7 @@ require_once "resources/paging.php";
 			$database->fields['dialplan_detail_type'] = 'lua';
 			$database->fields['dialplan_detail_data'] = 'app.lua ring_groups';
 			$database->fields['dialplan_detail_order'] = '030';
-//			$database->add();
+			$database->add();
 
 		//get the hunt group destinations
 			$sql = "select * from v_hunt_group_destinations ";
@@ -208,7 +209,7 @@ require_once "resources/paging.php";
 							//do nothing
 						}
 						elseif ($destination_type == "voicemail") {
-							$destination_number = "*99".$destination_number;
+							$destination_number = "*99".$destination_number." XML ".$ring_group_context;
 						}
 						elseif ($destination_type == "sip uri") {
 							//do nothing
