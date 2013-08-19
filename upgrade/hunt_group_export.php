@@ -22,8 +22,8 @@ require_once "resources/paging.php";
 	$sql .= "h.hunt_group_pin, h.hunt_group_caller_announce, h.hunt_group_call_prompt, h.hunt_group_user_list, h.hunt_group_enabled, h.hunt_group_description ";
 	$sql .= "from v_hunt_groups as h, v_domains as d ";
 	$sql .= "where d.domain_uuid = h.domain_uuid ";
-	$sql .= "and h.domain_uuid = '".$_SESSION["domain_uuid"]."' ";
-	//$sql .= "and domain_uuid = '$domain_uuid' ";
+	$sql .= "and (h.hunt_group_type = 'simultaneous' or h.hunt_group_type = 'sequentially') ";
+	//$sql .= "and h.domain_uuid = '".$_SESSION["domain_uuid"]."' ";
 	//$sql .= "and hunt_group_enabled = 'true' ";
 	//echo $sql."\n";
 	$prep_statement = $db->prepare(check_sql($sql));
@@ -199,6 +199,10 @@ require_once "resources/paging.php";
 						$destination_order = $field["destination_order"];
 						//$destination_enabled = $field["destination_enabled"];
 						//$destination_description = $field["destination_description"];
+
+						if (strlen($destination_timeout) == 0) {
+							$destination_timeout = "30";
+						}
 
 						$destination_delay = "0";
 						if ($ring_group_strategy == "sequence") {
