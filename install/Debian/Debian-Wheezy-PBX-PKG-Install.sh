@@ -1935,8 +1935,8 @@ done ) >$CONFIG
 exit 0
 DELIM
 
-for i in admin-menu genconf genclient.sh genserv.sh
-do chown +x /usr/bin/${i}
+for i in debian.menu confgen genclient.sh genserver.sh
+do chmod +x /usr/bin/${i}
 done
 
 fi
