@@ -1,20 +1,20 @@
 #!/bin/bash
-#Date AUG, 14 2013 18:20 EST
+#Date AUG, 29 2013 21:50 EST
 ################################################################################
 # The MIT License (MIT)
-##
+#
 # Copyright (c) <2013> <r.neese@gmail.com>
-##
+#
 # Permission is hereby granted, free of charge, to any person obtaining a copy
 # of this software and associated documentation files (the "Software"), to deal
 # in the Software without restriction, including without limitation the rights
 # to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
 # copies of the Software, and to permit persons to whom the Software is
 # furnished to do so, subject to the following conditions:
-##
+#
 # The above copyright notice and this permission notice shall be included in
 # all copies or substantial portions of the Software.
-##
+#
 # THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 # IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
 # FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
@@ -22,104 +22,37 @@
 # LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 # THE SOFTWARE.
-################################################################################
-
+#
 ################################################################################
 # If you appreciate the work, please consider purchasing something from my
 # wishlist. That pays bigger dividends to this coder than anything else I
-# can think of ;).
-##
+# can think of ;). Email me and I will give the shipping address....
+#
 # It also keeps development of the script going for more platforms;
-##
+#
 # Wish list in the works.
-##
+#
 # 1) odroid-x2 + 1 emmc + ssd adapter + jtag uart. 
 # here: http://www.hardkernel.com/renewal_2011/products/prdt_info.php?g_code=G135235611947
-##
+#
 # 2) Beagle Bone Black + jtag uart. 
 # here: http://www.digikey.com/product-detail/en/BB-BBLK-000/BB-BBLK-000-ND/3884456?WT.mc_id=PLA_3884456
-##
+#
 # 3) Dreamplug + jtag 
 # here: http://www.globalscaletechnologies.com/p-54-dreamplug-devkit.aspx
-##
+#
 # 4) Hackberry + jtag
 # here: https://www.miniand.com/products/Hackberry%20A10%20Developer%20Board#buy
+#
 ################################################################################
 
-################################################################################
-echo "This is a 1 time install script. if it fails for any reason please report"
-echo "to r.neese@gmail.com . Include any screen output you can to show where it"
-echo "fails."
-################################################################################
-
-################################################################################
-echo "This Script Requires a internet connection "
-################################################################################
-#check for internet connection. Pulled from and modified
-#http://www.linuxscrew.com/2009/04/02/tiny-bash-scripts-check-internet-connection-availability/
-wget -q --tries=10 --timeout=5 http://www.google.com -O /tmp/index.google &> /dev/null
-
-if [ ! -s /tmp/index.google ];then
-	echo "No Internet connection. Please plug in the ethernet cable into eth0"
-	exit 1
-else
-	echo "continuing!"
-fi
-
-#<------Start Edit HERE--------->
-#Setup up host name or use system default host name or preset host/domain name.
-set_host=n
-
-# if you use the set host name please change these to fields.
-# Please change this ........
-HOST="pbx"
-DOMAIN="fusionpbx.com"
-
-#Configure Networking
-#IF you machine is at its final install location and needs/requires a static ip
-# Change this setting from n to y to enable network setup of eth0.
-# Other Wise by default it uses dhcp an the ip will be dynamic wich could lead to issues.
-set_net=n
-
-#IF you change set_net=y Please chane these to configure eth0:
-#Make shure they match your working network.......
-#Wan Interface
-IP="0.0.0.0"
-#Netmask
-NM="255.0.0.0.0"
-#Gateway
-GW="0.0.0.0"
-#Name Servers
-NS1="0.0.0.0"
-NS2="0.0.0.0"
-
-# set local timezone
-# Fresh Installs will require you to set the proper timezone.
-# If you have not set your local timezone. Please change n to y
-set_tz=n
-
-# Freeswitch Options
-freeswitch_install="all" # This is a metapackage which recommends or suggests all packaged FreeSWITCH modules.(Default)
-#freeswitch_install="bare" # This is a metapackage which depends on the packages needed for a very bare FreeSWITCH install.
-#freeswitch_install="codecs" # This is a metapackage which depends on the packages needed to install most FreeSWITCH codecs.
-#freeswitch_install="default" # This is a metapackage which depends on the packages needed for a reasonably basic FreeSWITCH install.
-#freeswitch_install="sorbet" # This is a metapackage which recommends most packaged FreeSWITCH modules except a few which aren't recommended.
-#freeswitch_install="vanilla" # This is a metapackage which depends on the packages needed for running the FreeSWITCH vanilla example configuration.
-
-#FreeSwitch Configs Options installed in /usr/share/freeswitch/conf/(configname)
-#This also copies the default configs into the default active config dir /etc/freeswitch
-#freeswitch_conf="curl" # FreeSWITCH curl configuration
-#freeswitch_conf="indiseout" # FreeSWITCH insideout configuration
-#freeswitch_conf="sbc" # FreeSWITCH session border controller (sbc) configuration
-#freeswitch_conf="softphone" # FreeSWITCH softphone configuration
-freeswitch_conf="vanilla" # FreeSWITCH vanilla configuration
+#<------Start Option Edit HERE--------->
 
 # to start FreeSWITCH with -nonat option set freeswitch_NAT to y
-# Set to y if on public IP
+# Set to y if on public static IP
 freeswitch_nat=n
 
-#Use fusionpbx Stable debian pkg.
-#(Currently the Fusionpkx Stable does not work on wheezy)
+#Use fusionpbx debian pkgs.
 # You should use the fusionpbx dev pkg for now
 # y=stable branch n=dev branch
 fusionpbx_stable=n
@@ -132,76 +65,68 @@ pgsql_client=n
 pgsql_server=n
 
 # ONLY NEEDE IF USING Posgresql Server Localy.
-#Please Change the user keeping the name lower case
-pgsqluser=pgsqladmin
 
-#Please Change the password keeping it lower case
-pgsqlpass=pgsqladmin2013
+#Set  admin user name used for postgresql server
+# Lower case only
+pgsqluser=
+
+#Set admin password used postgresql server
+pgsqlpass=
+
+#Enable Set Database name & Database User name
+#Used with the pgsql server setup amd client setup
+set_db_info=n
+
+#Set Database Name used for fusionpbx in the postgresql server
+database_name=
+
+#Set Database User Name used for fusionpbx in postgresql server
+database_user_name=
 
 #Future Options not yet implamented,
-#Enable new admin shell menu & openvpn scripts.
+#Install new admin shell menu & openvpn scripts.
+install_admin_menu=n
+
+#Enable admin menu at next login.
 enable_admin_menu=n
 
-#<------Stop Edit Here-------->
+#<------Stop Options Edit Here-------->
 
-#Pulled from my own admin menu below.
 # Freeswitch logs dir
 freeswitch_log="/var/log/freeswitch"
-#Freeswitch dflt configs
+
+#Freeswitch default configs location
 freeswitch_dflt_conf="/usr/share/freeswitch/conf"
-#Freeswitch active config files
+
+#Freeswitch active config directory
 freeswitch_act_conf="/etc/freeswitch"
 
-#Nginx
+#Nginx default www dir
 WWW_PATH="/usr/share/nginx/www" #debian nginx default dir
+
+#set Web User Interface Dir Name
 wui_name="fusionpbx"
-#Php Conf Files
+
+#Php ini config file
 php_ini="/etc/php5/fpm/php.ini"
 
-#setting Hostname/Domainname
-if [ $set_host == "y" ]; then
-    HN="$HOST"
-    DN="$DOMAIN"
+#start install
+echo "This is a one time install script. If it fails for any reason please report"
+echo "to r.neese@gmail.com . Include any screen output you can to show where it"
+echo "fails."
+echo
+echo "This Script Currently Requires a internet connection "
+
+#check for internet connection. Pulled from and modified
+#http://www.linuxscrew.com/2009/04/02/tiny-bash-scripts-check-internet-connection-availability/
+
+wget -q --tries=10 --timeout=5 http://www.google.com -O /tmp/index.google &> /dev/null
+
+if [ ! -s /tmp/index.google ];then
+	echo "No Internet connection. Please plug in the ethernet cable into eth0"
+	exit 1
 else
-    HN=$(hostname)
-    DN=$(dnsdomainname)
-fi
-
-#setting Hostname/Domainname
-cat << EOF > /etc/hostname
-$HN.$DN
-EOF
-
-# Setup Primary Network Interface
-if [[ $set_net == "y" ]]; then
-cat << EOF > /etc/network/interfaces
-# The loopback network interface
-auto lo
-iface lo inet loopback
-# The primary network interface
-allow-hotplug eth0
-iface eth0 inet static
-      address $IP
-      netmask $NM
-      gateway $GW
-      dns-nameservers $NS1 $NS2
-EOF
-
-#Setup /etc/hosts file
-cat << EOF > /etc/hosts
-127.0.0.1       localhost
-::1             localhost ip6-localhost ip6-loopback
-fe00::0         ip6-localnet
-ff00::0         ip6-mcastprefix
-ff02::1         ip6-allnodes
-ff02::2         ip6-allrouters
-$IP     $HN.$DN
-$IP     $HN.$DN $DN
-EOF
-fi
-
-if [[ $set_tz == "y" ]]; then
-/usr/sbin/dpkg-reconfigure tzdata
+	echo "continuing!"
 fi
 
 # OS ENVIRONMENT CHECKS
@@ -210,8 +135,8 @@ if [ $EUID -ne 0 ]; then
    echo "Must Run As Root" 1>&2
    exit 1
 fi
-echo "You're root."
 
+echo "You're root."
 
 # Os/Distro Check
 lsb_release -c |grep -i wheezy > /dev/null
@@ -232,7 +157,7 @@ apt-get -y install curl
 
 #pulled from freeswitch wiki
 #Adding freeswitch repo
-/bin/cat > /etc/apt/sources.list.d/freeswitch.list <<DELIM
+/bin/cat > "/etc/apt/sources.list.d/freeswitch.list" <<DELIM
 deb http://files.freeswitch.org/repo/deb/debian/ wheezy main
 deb-src http://files.freeswitch.org/repo/deb/debian/ wheezy main
 DELIM
@@ -244,88 +169,28 @@ for i in update upgrade
 do apt-get -y "${i}"
 done
 
-#------------------
-# Installing Freeswitch Deps
-#------------------
 #install Freeswitch Deps
-for i in unzip libjpeg8 libjpeg62 screen htop pkg-config curl libtiff5 libtiff-tools \
+for i in unzip libjpeg8 libjpeg62 screen htop pkg-config libtiff5 libtiff-tools \
 		ntp bison autotalent ladspa-sdk tap-plugins swh-plugins libgsm1 libfftw3-3 libpython2.7 \
-		libperl5.14 scons libpq5 unixodbc uuid gettext libvlc5 sox flac vim ngrep memcached
+		libperl5.14 scons libpq5 unixodbc uuid gettext libvlc5 sox flac ngrep memcached
 do apt-get -y install "${i}"
 done
 
-# Freeswitch Install Options.
-if [[ $freeswitch_install == "all" ]]; then
-	echo " Installing freeswitch all"
-	apt-get -y install	freeswitch-meta-all
-fi
-
-if [[ $freeswitch_install == "bare" ]]; then
-	echo " Installing freeswitch bare"
-	apt-get -y install	freeswitch-meta-bare
-fi
-
-if [[ $freeswitch_install == "codecs" ]]; then
-	echo " Installing freeswitch all codecs"
-	apt-get -y install	freeswitch-meta-codecs
-fi
-
-if [[ $freeswitch_install == "default" ]]; then
-	echo " Installing freeswitch default"
-	apt-get -y install	freeswitch-meta-default
-fi
-
-if [[ $freeswitch_install == "sorbet" ]]; then
-	echo " Installing freeswitch sorbet"
-	apt-get -y install	freeswitch-meta-sorbet
-fi
-
-if [[ $freeswitch_install == "vanilla" ]]; then
-	echo " Installing freeswitch vanilla"
-	apt-get -y install	freeswitch-meta-vanilla
-fi
+# Freeswitch Base $ Modules Install Options.
+echo " Installing freeswitch all modules"
+apt-get -y install	freeswitch-meta-all
 
 #Genertaing /etc/freeswitch config dir.
 mkdir $freeswitch_act_conf
 
-#FreeSwitch Configs
-if [[ $freeswitch_conf == "curl" ]]; then
-	echo " Installing Freeswitch curl configs"
-	# Installing defailt configs into /usr/share/freeswitch/conf/(configname).
-	apt-get -y install	freeswitch-conf-curl
-	#Copy configs into Freeswitch active conf dir.
-	cp -rp "$freeswitch_dflt_conf"/curl/* "$freeswitch_act_conf"
-	#Chowning files for correct user/group in the active conf dir.
-	chown -R freeswitch:freeswitch "$freeswitch_act_conf" 
-fi
+#Install FreeSwitch vanilla configs
+echo " Installing freeswitch vanilla configs into the default config directory"
+apt-get -y install	freeswitch-conf-vanilla
 
-if [[ $freeswitch_conf == "insideout" ]]; then
-	echo " Installing Freeswitch insideout configs"
-	apt-get -y install	freeswitch-conf-insideout
-	cp -rp "$freeswitch_dflt_conf"/insideoout/* "$freeswitch_act_conf"
-	chown -R freeswitch:freeswitch "$freeswitch_act_conf"
-fi
+echo " Installing freeswitch vanilla configs into the freeswitch active config directory "
+cp -rp "$freeswitch_dflt_conf"/vanilla/* "$freeswitch_act_conf"
 
-if [[ $freeswitch_conf == "sbc" ]]; then
-	echo " Installing Freeswitch session border control configs"
-	apt-get -y install	freeswitch-conf-sbc
-	cp -rp "$freeswitch_dflt_conf"/sbc/* "$freeswitch_act_conf"
-	chown -R freeswitch:freeswitch "$freeswitch_act_conf"
-fi
-
-if [[ $freeswitch_conf == "softphone" ]]; then
-	echo "Installing softphone configs"
-	apt-get -y install	freeswitch-conf-softphone
-	cp -rp "$freeswitch_dflt_conf"/softphone/* "$freeswitch_act_conf"
-	chown -R freeswitch:freeswitch "$freeswitch_act_conf"
-fi
-
-if [[ $freeswitch_conf == "vanilla" ]]; then
-	echo " Installing Vanilla configs"
-	apt-get -y install	freeswitch-conf-vanilla
-	cp -rp "$freeswitch_dflt_conf"/vanilla/* "$freeswitch_act_conf"
-	chown -R freeswitch:freeswitch "$freeswitch_act_conf"
-fi
+chown -R freeswitch:freeswitch "$freeswitch_act_conf"
 
 # Proper file to change init strings in. (/etc/defalut/freeswitch)
 # Configuring /etc/default/freeswitch DAEMON_Optional ARGS
@@ -342,7 +207,7 @@ done
 
 #Taken From http://wiki.fusionpbx.com/index.php?title=Monit and edited to work with debian pkgs.
 #Adding Monitor to keep freeswitch running.
-/bin/cat > /etc/monit/conf.d/freeswitch  <<DELIM
+/bin/cat > "/etc/monit/conf.d/freeswitch"  <<DELIM
 set daemon 60
 set logfile syslog facility log_daemon
 
@@ -360,7 +225,7 @@ sed -i "$freeswitch_act_conf"/sip_profiles/internal.xml -e s,'<!-- *<param name=
 				-e s,'<param name="log-auth-failures" value="false"/>-->','<param name="log-auth-failures" value="true"/>',
 
 #Setting up Fail2ban freeswitch config files.
-/bin/cat > /etc/fail2ban/filter.d/freeswitch.conf  <<DELIM
+/bin/cat > "/etc/fail2ban/filter.d/freeswitch.conf"  <<DELIM
 
 # Fail2Ban configuration file
 
@@ -383,7 +248,7 @@ failregex = \[WARNING\] sofia_reg.c:\d+ SIP auth challenge \(REGISTER\) on sofia
 ignoreregex =
 DELIM
 
-/bin/cat >> /etc/fail2ban/jail.local  <<DELIM
+/bin/cat >> "/etc/fail2ban/jail.local" <<DELIM
 [freeswitch-tcp]
 enabled  = true
 port     = 5060,5061,5080,5081
@@ -430,19 +295,15 @@ do /etc/init.d/"${i}" restart  >/dev/null 2>&1
 done
 
 # see http://wiki.fusionpbx.com/index.php?title=<<DELIM
-/bin/cat > /etc/cron.daily/freeswitch_log_rotation <<DELIM
+/bin/cat > "/etc/cron.daily/freeswitch_log_rotation" <<DELIM
 #!/bin/bash
-# logrotate replacement script
-# put in /etc/cron.daily
-# don't forget to make it executable
-# you might consider changing "$freeswitch_act_conf"/autoload_configs/logfile.conf.xml
-#  <param name="rollover" value="0"/>
 
 #number of days of logs to keep
 NUMBERDAYS=30
 FSPATH="/var/log/freeswitch"
 
 $FSPATH/bin/freeswitch_cli -x "fsctl send_sighup" |grep '+OK' >/tmp/<<DELIM
+
 if [ $? -eq 0 ]; then
        #-cmin 2 could bite us (leave some files uncompressed, eg 11M auto-rotate). Maybe -1440 is better?
        find $FSPATH -name "freeswitch.log.*" -cmin -2 -exec gzip {} \;
@@ -479,7 +340,7 @@ done
 
 #Nginx config Copied from Debian nginx pkg (nginx on debian wheezy uses sockets by default not ports)
 #Install NGINX config file
-cat > /etc/nginx/sites-available/fusionpbx  << DELIM
+cat > "/etc/nginx/sites-available/fusionpbx"  << DELIM
 server{
         listen 127.0.0.1:80;
         server_name 127.0.0.1;
@@ -608,39 +469,34 @@ done
 adduser www-data freeswitch
 adduser freeswitch www-data
 
-#for i in autoload_configs chatplan config.FS0 dialplan directory extensions.conf fur_elise.ttml \
-#ivr_menus jingle_profiles lang mime.types mrcp_profiles notify-voicemail.tpl README_IMPORTANT.txt \
-#sip_profiles skinny_profiles tetris.ttml voicemail.tpl web-vm.tpl yaml
-#do rm -rf /etc/freeswitch/"${i}"
-#done
-
 #add fusionpbx wui_name temp Repo until freeswitch gets a repo working for x86)
 #dding FusionPBX Web User Interface repo"
-/bin/cat > /etc/apt/sources.list.d/fusionpbx.list <<DELIM
+/bin/cat > "/etc/apt/sources.list.d/fusionpbx.list" <<DELIM
 deb http://repo.fusionpbx.com wheezy main
 deb-src http://repo.fusionpbx.com/ wheezy main
 DELIM
 
 apt-get update
 
-# Install fusionpbx Web User Interface
-echo "Installing FusionPBX Web User Interface pkg"
+# Install FusionPBX Web User Interface
+echo "Installing FusionPBX Web User Interface Debian pkg"
 
-if [[ $fusionpbx_stable == "y" ]]; then
+if [[ $fusionpbx_stable == y ]]; then
 	apt-get -y --force-yes install fusionpbx
 else
 	apt-get -y --force-yes install fusionpbx-dev
 fi
 
 #"Re-Configuring /etc/default/freeswitch to use fusionpbx scripts dir"
+
 #DAEMON_Optional ARGS
 /bin/sed -i /etc/default/freeswitch -e s,'^DAEMON_OPTS=.*','DAEMON_OPTS="-scripts /var/lib/fusionpbx/scripts -rp"',
 
-if [ $freeswitch_nat == "y" ]; then
+if [[ $freeswitch_nat == y ]]; then
 	/bin/sed -i /etc/default/freeswitch -e s,'^DAEMON_OPTS=.*','DAEMON_OPTS="-scripts /var/lib/fusionpbx/scripts -rp -nonat"',
 fi
 
-#Clean out the freeswitch conf dir
+#Clean out the freeswitch default configs from the active conf dir
 rm -rf "$freeswitch_act_conf"/*
 
 #Put Fusionpbx Freeswitch configs into place
@@ -669,7 +525,7 @@ done
 #Pulled From
 #http://wiki.fusionpbx.com/index.php?title=Fail2Ban
 # Adding fusionpbx to fail2ban
-cat > /etc/fail2ban/filter.d/fusionpbx.conf  <<DELIM
+cat > "/etc/fail2ban/filter.d/fusionpbx.conf"  <<DELIM
 # Fail2Ban configuration file
 #
 [Definition]
@@ -698,14 +554,26 @@ DELIM
 #restarting fail2ban
 /etc/init.d/fail2ban restart
 
+#setting database name /user name / password
+if [[ $set_db_info == y ]]; then
+    db_name="$database_name"
+    db_user_name="$database_user_name"
+    db_passwd="$(openssl rand -base64 32;)"
+else
+	db_name="$wui_name"
+	db_user_name="$wui_name"
+	db_passwd="Admin Please Select A Secure Password for your Postgresql Fusionpbx Database"
+fi
+
 #Install pgsql-client
-if [[ $pgsql_client == "y" ]]; then
+if [[ $pgsql_client == y ]]; then
 	clear
 	for i in postgresql-client-9.1 php5-pgsql
 	do apt-get -y install "${i}"
 	done
 
 	/etc/init.d/php5-fpm restart
+	
 	echo
 	printf '	Please open a web-browser to http://'; ip -f inet addr show dev eth0 | sed -n 's/^ *inet *\([.0-9]*\).*/\1/p'
 cat << DELIM
@@ -722,9 +590,9 @@ cat << DELIM
 
 	Server: Use the IP or Doamin name assigned to the remote postgresql database server machine
 	Port: use the port for the remote pgsql server
-	Database Name: "$wui_name"
-	Database Username: "$wui_name"
-	Database Password: Please Select A Secure Password
+	Database Name: "$db_name"
+	Database Username: "$db_user_name"
+	Database Password: "$db_passwd"
 	Create Database Username: Database_Superuser_Name of the remote pgsql server
 	Create Database Password: Database_Superuser_password of the remote pgsql server
 
@@ -733,7 +601,7 @@ DELIM
 fi
 
 #install pgsql-server
-if [[ $pgsql_server == "y" ]]; then
+if [[ $pgsql_server == y ]]; then
 	clear
 	for i in postgresql-9.1 php5-pgsql
 	do apt-get -y install "${i}"
@@ -743,11 +611,13 @@ if [[ $pgsql_server == "y" ]]; then
 
 	#Adding a SuperUser and Password for Postgresql database.
 	su -l postgres -c "/usr/bin/psql -c \"create role $pgsqluser with superuser login password '$pgsqlpass'\""
+	clear
 	echo
-	printf '	Please open a web browser to http://'; ip -f inet addr show dev eth0 | sed -n 's/^ *inet *\([.0-9]*\).*/\1/p'
+	echo
+	printf '	Please open a web browser to http://'; ip -f inet addr show dev eth0 | sed -n 's/^ *inet *\([.0-9]*\).*/\1/p'   
 cat << DELIM
 
-	Or the Doamin name assigned to the machine like http://mypbx.myip.net
+	Or the Doamin name assigned to the machine like http://"$(hostname).$(dnsdomainname)".
 
 	On the First configuration page of the web user interface
 
@@ -757,9 +627,9 @@ cat << DELIM
 
 	On the Second Configuration Page of the web user interface please fill in the following fields:
 
-	Database Name: "$wui_name"
-	Database Username: "$wui_name"
-	Database Password: Please Select A Secure Password
+	Database Name: "$db_name"
+	Database Username: "$db_user_name"
+	Database Password: "$db_passwd"
 	Create Database Username: "$pgsqluser"
 	Create Database Password: "$pgsqlpass"
 
@@ -771,10 +641,9 @@ clear
 echo
 echo
 	printf '	Please open a web-browser to http://'; ip -f inet addr show dev eth0 | sed -n 's/^ *inet *\([.0-9]*\).*/\1/p'
-
 cat << DELIM
 
-	or the Doamin name assigned to the machine like http://mypbx.myip.net.
+	or the Doamin name assigned to the machine like http://"$(hostname).$(dnsdomainname)".
 
     on the First Configuration page of the web usre interface "$wui_name".
 
@@ -789,11 +658,11 @@ DELIM
 
 fi
 
-#cleanup
+#apt-get cleanup
 apt-get clean
 
-# Enable/install shell admin menu
-if [[ $enable_admin_menu == "y" ]]; then
+#Install admin shell menu
+if [[ $install_admin_menu == y ]]; then
 /bin/cat > /usr/bin/debian.menu <<DELIM
 #!/bin/bash
 #Date AUG, 14 2013 18:20 EST 
@@ -819,28 +688,6 @@ if [[ $enable_admin_menu == "y" ]]; then
 # LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 # THE SOFTWARE.
-################################################################################
-
-################################################################################
-# If you appreciate the work, please consider purchasing something from my
-# wishlist. That pays bigger dividends to this coder than anything else I
-# can think of ;).
-##
-# It also keeps development of the script going for more platforms;
-##
-# Wish list in the works.
-##
-# 1) odroid-x2 + 1 emmc + ssd adapter + jtag uart. 
-# here: http://www.hardkernel.com/renewal_2011/products/prdt_info.php?g_code=G135235611947
-##
-# 2) Beagle Bone Black + jtag uart. 
-# here: http://www.digikey.com/product-detail/en/BB-BBLK-000/BB-BBLK-000-ND/3884456?WT.mc_id=PLA_3884456
-##
-# 3) Dreamplug + jtag 
-# here: http://www.globalscaletechnologies.com/p-54-dreamplug-devkit.aspx
-##
-# 4) Hackberry + jtag
-# here: https://www.miniand.com/products/Hackberry%20A10%20Developer%20Board#buy
 ################################################################################
 
 set -eu
@@ -1000,6 +847,7 @@ read -p "Are you sure you wish to factory reset you pbx? (y/Y/n/N)"
 case $REPLY in
  n|N) break ;;
  y|Y)
+ 
 # stop system services
 for i in nginx php5-fpm fail2ban freeswitch
 do /etc/init.d/"${i}" stop  >/dev/null 2>&1
@@ -1117,9 +965,9 @@ case "$REPLY" in
 for i in monit nginx php5-fpm fail2ban freeswitch
 do /etc/init.d/"${i}" stop  >/dev/null 2>&1 
 done
-rm -f "$FS_LOG"/*.log
 rm -f "$FS_LOG"/*.fsxml
 /etc/init.d/fail2ban start > /dev/null 2>&1
+rm -f "$FS_LOG"/*.log
 /etc/init.d/inetutils-syslogd start > /dev/null 2>&1
 /usr/sbin/logrotate -f /etc/logrotate.conf
 rm -f /var/log/*.0 /var/log/*.1 /var/log/*.2 /var/log/*.3 /var/log/*.4 \
@@ -1130,8 +978,8 @@ rm -f /var/log/*.0 /var/log/*.1 /var/log/*.2 /var/log/*.3 /var/log/*.4 \
 for i in monit nginx php5-fpm fail2ban freeswitch
 do /etc/init.d/"${i}" start  >/dev/null 2>&1
 done
-break
-;;
+break ;;
+
  *) echo "Answer must be a y/Y or n/N" ;;
 esac
 done
@@ -1203,16 +1051,17 @@ cat << EOF
  *** Setup / Configuration ***
  1) Set/Change Root Password      2) Set Timezone & Time
  3) Setup Network Interface(WAN)  4) Setup Network Interface (LAN)
- 5) Setup OpenVPN Connections (Future Option)    
+ 5) Setup OpenVPN Connections    
 
   ******** Maintance *********
- 6) Web Service Options	   7) Freeswitch CLI       8) Restart Freeswitch
+ 6) Web Service Options	    7) Freeswitch CLI       8) Restart Freeswitch
  9) Clear & Rotate logs    10) Backup PBX System   11) Factory Reset System
  12) Drop PGSQL Database   13) Reboot System       14) Power Off System    
- 14) Disable/Enable nat freeswitch  15) Drop to Shell         x) Logout
-
+ 14) Disable/Enable nat    15) Drop to Shell        x) Logout
+     Freeswitch
+     
   ***** Upgrade Options *****
- u) Upgrade
+ u) Upgrade 
 
 Choice:
 EOF
@@ -1243,8 +1092,9 @@ EOF
 done
 DELIM
 
+# Installing OpenVPN config scripts
 #confgen
-/bin/cat > /usr/bin/confgen <<DELIM
+/bin/cat > "/usr/bin/confgen" <<DELIM
 #!/bin/bash
 #########################################################################
 ##### Openvpn Confgen ##                        ##  2010may07 v0.1  #####
@@ -1684,7 +1534,7 @@ done
 DELIM
 
 #genclient.sh
-/bin/cat > /usr/bin/genclient.sh <<DELIM
+/bin/cat > "/usr/bin/genclient.sh" <<DELIM
 #!/bin/bash
 #########################################################################
 ##### Openvpn Confgen ##                        ##  2010may07 v0.1  #####
@@ -1787,7 +1637,7 @@ echo -ne "${COMPRESS:+comp-lzo\n}"
 DELIM
 
 #GENSERVER.sh
-/bin/cat > /usr/bin/genserver.sh <<DELIM
+/bin/cat > "/usr/bin/genserver.sh" <<DELIM
 #!/bin/bash
 #########################################################################
 ##### Openvpn Confgen ##                        ##  2010may07 v0.1  #####
@@ -1935,8 +1785,15 @@ done ) >$CONFIG
 exit 0
 DELIM
 
+#chmod these files to be executable
 for i in debian.menu confgen genclient.sh genserver.sh
 do chmod +x /usr/bin/${i}
 done
+fi
 
+#Enable Admin shell menu
+if [[ $enable_admin_menu == y ]]; then
+/bin/cat >> "/etc/profile" <<DELIM
+/usr/bin/debian.menu
+DELIM
 fi
