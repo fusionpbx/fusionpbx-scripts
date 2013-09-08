@@ -77,6 +77,7 @@ database_name=
 #Set Database User Name used for fusionpbx in postgresql server
 database_user_name=
 
+#      (UNDER DEVEL)
 #Future Options not yet implamented,
 #Install new admin shell menu & openvpn scripts.
 install_admin_menu=n
