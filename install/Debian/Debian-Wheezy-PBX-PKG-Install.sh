@@ -32,16 +32,10 @@
 #
 # Wish list in the works.
 #
-# 1) odroid-x2 + 1 emmc + ssd adapter + jtag uart. 
-# here: http://www.hardkernel.com/renewal_2011/products/prdt_info.php?g_code=G135235611947
-#
-# 2) Beagle Bone Black + jtag uart. 
-# here: http://www.digikey.com/product-detail/en/BB-BBLK-000/BB-BBLK-000-ND/3884456?WT.mc_id=PLA_3884456
-#
-# 3) Dreamplug + jtag 
+# 1) Dreamplug + jtag 
 # here: http://www.globalscaletechnologies.com/p-54-dreamplug-devkit.aspx
 #
-# 4) Hackberry + jtag
+# 2) Hackberry + jtag
 # here: https://www.miniand.com/products/Hackberry%20A10%20Developer%20Board#buy
 #
 ################################################################################
