@@ -32,10 +32,7 @@
 #
 # Wish list in the works.
 #
-# 1) Dreamplug + jtag 
-# here: http://www.globalscaletechnologies.com/p-54-dreamplug-devkit.aspx
-#
-# 2) Hackberry + jtag
+# 1) Hackberry + jtag
 # here: https://www.miniand.com/products/Hackberry%20A10%20Developer%20Board#buy
 #
 ################################################################################
