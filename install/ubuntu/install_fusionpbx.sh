@@ -173,7 +173,7 @@ server{
 		break;
 	}
 	access_log /var/log/nginx/access.log;
-	error_log /var/log/nginx/.error.log;
+	error_log /var/log/nginx/error.log;
 
 	client_max_body_size 10M;
 	client_body_buffer_size 128k;
@@ -213,7 +213,7 @@ server{
 	ssl_ciphers     HIGH:!ADH:!MD5;
 
 	access_log /var/log/nginx/access.log;
-	error_log /var/log/nginx/.error.log;
+	error_log /var/log/nginx/error.log;
 
 	client_max_body_size 10M;
 	client_body_buffer_size 128k;
