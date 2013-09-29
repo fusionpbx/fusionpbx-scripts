@@ -273,12 +273,18 @@ else {
 	unset($db);
 	require "resources/require.php";
 
+//start the atomic transaction
+	$db->exec("BEGIN;");
+
 //loop through the sql array
 	$sql_array = explode(";", $data);
 	foreach($sql_array as $sql) {
 		echo $sql."\n";
 		$db->exec(check_sql($sql));
 	}
+
+//commit the atomic transaction
+	$count = $db->exec("COMMIT;"); //returns affected rows
 
 //show the footer
 	echo "</pre>\n";

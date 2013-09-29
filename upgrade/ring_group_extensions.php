@@ -39,6 +39,9 @@ else {
 	require_once "resources/header.php";
 	echo "<pre>\n";
 
+//start the atomic transaction
+	$db->exec("BEGIN;");
+
 //ring group export
 	echo "<pre>\n";
 	$sql = "SELECT g.domain_uuid, g.ring_group_extension_uuid, g.ring_group_uuid, g.extension_delay, g.extension_timeout, e.extension, e.extension_uuid ";
@@ -83,6 +86,9 @@ else {
 	}
 	echo "completed";
 	echo "<pre>\n";
+
+//commit the atomic transaction
+	$count = $db->exec("COMMIT;"); //returns affected rows
 
 //show the footer
 	echo "</pre>\n";

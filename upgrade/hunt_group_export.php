@@ -16,6 +16,9 @@ require_once "resources/paging.php";
 //show debug
 	echo "<pre>\n";
 
+//start the atomic transaction
+	$db->exec("BEGIN;");
+
 //get the hunt groups
 	$sql = "select d.domain_name, h.domain_uuid, h.dialplan_uuid, h.hunt_group_uuid, h.hunt_group_extension, h.hunt_group_name, h.hunt_group_type, h.hunt_group_context, ";
 	$sql .= "h.hunt_group_timeout, h.hunt_group_timeout_destination, h.hunt_group_timeout_type, h.hunt_group_ringback, h.hunt_group_cid_name_prefix, ";
@@ -37,7 +40,7 @@ require_once "resources/paging.php";
 			$hunt_group_uuid = $row["hunt_group_uuid"];
 			$dialplan_uuid = $row["dialplan_uuid"];
 			$ring_group_extension = $row["hunt_group_extension"];
-			$ring_group_name = $row["hunt_group_name"];
+			$ring_group_name = check_str($row["hunt_group_name"]);
 			$ring_group_strategy = $row["hunt_group_type"]; //simultaneous //sequentially
 			$ring_group_timeout_sec = $row["hunt_group_timeout"];
 			$ring_group_timeout_data = $row["hunt_group_timeout_destination"];
@@ -47,7 +50,7 @@ require_once "resources/paging.php";
 			//$hunt_group_pin = $row["hunt_group_pin"];
 			$ring_group_users = $row["hunt_group_user_list"];
 			$ring_group_enabled = $row["hunt_group_enabled"];
-			$ring_group_description = $row["hunt_group_description"];
+			$ring_group_description = check_str($row["hunt_group_description"]);
 
 			if ($ring_group_strategy == "sequentially") {
 				$ring_group_strategy = "sequence";
@@ -291,6 +294,9 @@ require_once "resources/paging.php";
 				}
 			}
 		}
+
+//commit the atomic transaction
+	$count = $db->exec("COMMIT;"); //returns affected rows
 
 //save the xml
 	save_dialplan_xml();
