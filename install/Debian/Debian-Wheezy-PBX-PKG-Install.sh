@@ -657,22 +657,22 @@ apt-get clean
 if [[ $install_admin_menu == y ]]; then
 /bin/cat > /usr/bin/debian.menu <<DELIM
 #!/bin/bash
-#Date AUG, 14 2013 18:20 EST 
+#Date AUG, 14 2013 18:20 EST
 ################################################################################
 # The MIT License (MIT)
-##
+#
 # Copyright (c) <2013> Richard Neese <r.neese@gmail.com>
-##
+#
 # Permission is hereby granted, free of charge, to any person obtaining a copy
 # of this software and associated documentation files (the "Software"), to deal
 # in the Software without restriction, including without limitation the rights
 # to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
 # copies of the Software, and to permit persons to whom the Software is
 # furnished to do so, subject to the following conditions:
-##
+#
 # The above copyright notice and this permission notice shall be included in
 # all copies or substantial portions of the Software.
-##
+#
 # THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 # IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
 # FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
@@ -686,39 +686,46 @@ set -eu
 
 #Base Varitables
 USRBASE="/usr"
-LOCALBASE="/usr/local"
 BACKUPDIR="/root/pbx-backup"
-
-# Setup 
-HN="$HOST"
-
-WUI_NAME="fusionpbx"
 
 #Freeswitch Directories
 # Freeswitch logs dir
 FS_LOG="/var/log/freeswitch"
+
 #freeswitch db/recording/storage/voicemail/fax dir
 FS_LIB="/var/lib/freeswitch"
 FS_DB="/var/lib/freeswitch/db"
 FS_REC="/var/lib/freeswitch/recordings"
 FS_STOR="/var/lib/freeswitch/storage"
+
 #freeswitch modules dir
 FS_MOD="/usr/lib/freeswitch/mod"
+
 #defalt configs dir / grammer / lang / sounds
 FS_DFLT_CONF="/usr/share/freeswitch/conf"
 FS_GRAM="/usr/share/freeswitch/grammar"
 FS_LANG="/usr/share/freeswitch/lang"
 FS_SCRPT="/usr/share/freeswitch/scripts"
+
 #Freeswitch Sounds Dir
 FS_SNDS="/usr/share/freeswitch/sounds"
+
 #Freeswitch active config files
 FS_ACT_CONF="/etc/freeswitch"
+
 #WWW directory
-WWW_PATH="$USRBASE/share/nginx/www/$WUI_NAME"
+WWW_PATH="$USRBASE/share/nginx/www"
+
+#WUI Name
+WUI_NAME="fusionpbx"
+
 #Fusionpbx DB Dir
 FPBX_DB="/var/lib/fusionpbx/db"
+
 #FusionPBX Scripts Dir (DialPLan Scripts for use with Freeswitch)
 FPBX_SCRPT="/var/lib/fusionpbx/scripts"
+
+################################################################
 
 # Disacle CTL C (Disable CTL-C so you can not escape the menu)
 #trap "" SIGTSTP
@@ -740,6 +747,7 @@ set_local_tz(){
 # Setup Primary Network Interface
 set_net_1(){
 # Configure hostename
+read -r -p "Please set your system hostname (pbx):" HN
 read -r -p "Please set your system domainname (mydomain.com):" DN
 # Configure WAN network interface
 read -r -p "Please  set your system doman IP (Same as the Domain IP ) :" IP
@@ -774,7 +782,7 @@ $IP     $HN.$DN $HN
 EOF
 
 cat << EOF > /etc/hostname
-$HN.$DN
+$HN
 EOF
 }
 
@@ -812,7 +820,6 @@ done
 
 /etc/init.d/nginx $web  >/dev/null 2>&1
 /etc/init.d/php5-fpm $web  >/dev/null 2>&1
-
 }
 
 list_web_options(){
@@ -828,21 +835,24 @@ EOF
 # Setup/configure OpenVPN
 set_vpn(){
 while : ;do
-/usr/local/bin/confgen
+$USRBASE/bin/confgen
 done
 }
 
 # Factory Reset System
 factory_reset(){
+echo "This will wipe and set your system back to factory default"
+echo "it will remove all call detail records / custom conifgs / "
+echo " sounds / recordings / faxes / and reset the gui. "
 while : ;do
 read -p "Are you sure you wish to factory reset you pbx? (y/Y/n/N)"
-case $REPLY in
+case "$REPLY" in
  n|N) break ;;
  y|Y)
- 
+
 # stop system services
 for i in nginx php5-fpm fail2ban freeswitch
-do /etc/init.d/"${i}" stop  >/dev/null 2>&1
+do /etc/init.d/"${i}" stop > /dev/null 2>&1
 done
 
 # remove freeswitch related files
@@ -872,7 +882,10 @@ find "$FS_ACT_CONF" -type d -exec chmod 770 {} +
 
 # remove fusionpbx db and config files
 
-if exists "$FBPX_DB"/fusionpbx.db rm -f "$FBPX_DB"/fusionpbx.db
+if exists "$FBPX_DB"/fusionpbx.db 
+then
+rm -f "$FBPX_DB"/fusionpbx.db
+fi
 
 rm -f "$WWW_PATH"/"$WUI_NAME"/resources/config.php
 
@@ -897,29 +910,36 @@ do /etc/init.d/"${i}" start > /dev/null 2>&1
 done
 break ;;
 
- *) echo "Answer must be a y/Y or n/N" ;;
+*) echo "Answer must be a y/Y or n/N" ;;
 esac
 done
 }
 
-# Factory Reset System
+# Factory Reset Postgresql Database
 drop_pgsql_db(){
+echo "This will drop the current postgresql database table for the pbx."
 while : ;do
 read -p "Are you sure you wish drop the current pgsql db table? (y/Y/n/N)"
-case $REPLY in
+case "$REPLY" in
  n|N) break ;;
  y|Y)
-do /bin/su -l postgres -c "/bin/echo \"DROP DATABASE $WUI_NAME;\" | /usr/bin/psql"
+
+read -r -p "Please enter the postgresql database name you used at install time : " DBNAME
+/bin/su -l postgres -c "/bin/echo \"DROP DATABASE $DBNAME;\" | /usr/bin/psql"
+break ;;
+
+*) echo "Answer must be a y/Y or n/N" ;;
+esac
 done
 }
 
 # PBX Backup configs/voicemail/personal recordings
 backup_pbx(){
-read "This will halt the running services and then "
-read "backup your system to $BACKUPDIR/pbx-backup-$(date +%Y%m%d).tar.bz2"
-read "and then start the services again"
+echo "This will halt the running services and then "
+echo "backup your system to $BACKUPDIR/pbx-backup-$(date +%Y%m%d).tar.bz2"
+echo "and then start the services again"
 while : ;do
-read -p "Are you sure you wish to backup your pbx? (y/Y/n/N)" 
+read -p "Are you sure you wish to backup your pbx? (y/Y/n/N)"
 case "$REPLY" in
  n|N) break ;;
  y|Y)
@@ -930,16 +950,16 @@ do /etc/init.d/"${i}" stop > /dev/null 2>&1
 done
 
 # Backup system (Fusion config.php and database / freeswitch cdr, voicemail, recordings, configs)
-tar -cjf "$BACKUPDIR"/pbx-backup-$(date +%Y%m%d).tar.bz2 "$WWW_PATH"/resources/config.php "$FS_DB"/fusionpbx.db \
+tar -cjf "$BACKUPDIR"/"pbx-backup-$(date +%Y%m%d).tar.bz2" "$WWW_PATH"/resources/config.php "$FS_DB"/fusionpbx.db \
 	"$FS_LOG"/xml_cdr "$FS_ACT_CONF" "$FS_STOR"
 
 # Restart system services
 for i in monit nginx php5-fpm fail2ban freeswitch
 do /etc/init.d/"${i}" start > /dev/null 2>&1
 done
+break ;;
 
-;;
- *) echo "Answer must be a y/Y or n/N" ;;
+*) echo "Answer must be a y/Y or n/N" ;;
 esac
 done
 }
@@ -954,49 +974,56 @@ case "$REPLY" in
  n|N) break ;;
  y|Y)
 
+# stop system services
 for i in monit nginx php5-fpm fail2ban freeswitch
-do /etc/init.d/"${i}" stop  >/dev/null 2>&1 
+do /etc/init.d/"${i}" stop > /dev/null 2>&1
 done
-rm -f "$FS_LOG"/*.fsxml
-/etc/init.d/fail2ban start > /dev/null 2>&1
-rm -f "$FS_LOG"/*.log
-/etc/init.d/inetutils-syslogd start > /dev/null 2>&1
+
+rm -f "$FS_LOG"/*.fsxml "$FS_LOG"/*.log
+
+for i in fail2ban inetutils-syslogd
+do /etc/init.d/"${i}" start > /dev/null 2>&1
+done
+
 /usr/sbin/logrotate -f /etc/logrotate.conf
-rm -f /var/log/*.0 /var/log/*.1 /var/log/*.2 /var/log/*.3 /var/log/*.4 \
-	/var/log/*.5 /var/log/*.6 /var/log/*.7 /var/log/*.8 /var/log/*.9 \
-	/var/log/*.10  /var/log/*.gz
-/etc/init.d/fail2ban stop > /dev/null 2>&1
-/etc/init.d/inetutils-syslogd stop > /dev/null 2>&1
-for i in monit nginx php5-fpm fail2ban freeswitch
+rm -f /var/log/*.[0-10] /var/log/*.gz
+
+for i in fail2ban inetutils-syslogd
+do /etc/init.d/"${i}" stop > /dev/null 2>&1
+done
+
+#restart services
+for i in nginx php5-fpm fail2ban freeswitch monit
 do /etc/init.d/"${i}" start  >/dev/null 2>&1
 done
 break ;;
 
- *) echo "Answer must be a y/Y or n/N" ;;
+*) echo "Answer must be a y/Y or n/N" ;;
 esac
 done
 }
 
-# System Pkg Upgrade 
+
+# System Pkg Upgrade
 upgrade(){
-read -p "Are you sure you wish to update your install (y/Y/n/N) " 
+read -p "Are you sure you wish to update your install (y/Y/n/N) "
 if [[ $REPLY =~ ^[Nn]$ ]]
 then
 return
 else
 if [[ $REPLY =~ ^[Yy]$ ]]
 then
-/usr/bin/apt-get update > /dev/null && \
-/usr/bin/apt-get upgrade && \
-/usr/bin/apt-get autoremove && \
-/usr/bin/apt-get clean 
+/usr/bin/apt-get update > /dev/null 2>&1 
+/usr/bin/apt-get upgrade -y --force-yes
+/usr/bin/apt-get autoremove > /dev/null 2>&1
+/usr/bin/apt-get clean > /dev/null 2>&1
 fi
 fi
 }
 
 # Restart Freeswitch
 fs_restart(){
-read -p "Are you sure you wish to restart freeswitch (y/Y/n/N) " 
+read -p "Are you sure you wish to restart freeswitch (y/Y/n/N) "
 if [[ $REPLY =~ ^[Nn]$ ]]
 then
 return
@@ -1010,11 +1037,11 @@ fi
 
 #Disable Nat Freeswitch
 config_nat(){
-read -p "Are you sure you wish to enable/disable nat for freeswitch e/E=enable d/D=disable (e/E/d/D) " 
+read -p "Are you sure you wish to enable/disable nat for freeswitch e/E=enable d/D=disable (e/E/d/D) "
 if [[ $REPLY =~ ^[Dd]$ ]]
 then
 /bin/sed -i /etc/default/freeswitch -e s,'^DAEMON_OPTS=.*','DAEMON_OPTS="-scripts /var/lib/fusionpbx/scripts -rp"',
-/bin/echo "init script set to start 'freeswitch -nc -scripts /var/lib/fusionpbx/scripts -rp -nonat'"
+/bin/echo "init script set to start 'freeswitch -nc -scripts /var/lib/fusionpbx/scripts -rp'"
 /etc/init.d/freeswitch restart  >/dev/null 2>&1
 else
 if [[ $REPLY =~ ^[Ee]$ ]]
@@ -1043,17 +1070,17 @@ cat << EOF
  *** Setup / Configuration ***
  1) Set/Change Root Password      2) Set Timezone & Time
  3) Setup Network Interface(WAN)  4) Setup Network Interface (LAN)
- 5) Setup OpenVPN Connections    
+ 5) Setup OpenVPN Connections
 
   ******** Maintance *********
- 6) Web Service Options	    7) Freeswitch CLI       8) Restart Freeswitch
- 9) Clear & Rotate logs    10) Backup PBX System   11) Factory Reset System
- 12) Drop PGSQL Database   13) Reboot System       14) Power Off System    
- 14) Disable/Enable nat    15) Drop to Shell        x) Logout
+ 6) Web Service Options	      7) Freeswitch CLI       8) Restart Freeswitch
+ 9) Clear & Rotate logs       10) Backup PBX System   11) Factory Reset System
+ 12) Drop Postgres Database   13) Reboot System       14) Power Off System
+ 15) Disable/Enable nat       16) Drop to Shell       x) Logout
      Freeswitch
-     
+
   ***** Upgrade Options *****
- u) Upgrade 
+ u) Upgrade
 
 Choice:
 EOF
@@ -1073,11 +1100,11 @@ EOF
   10) backup_pbx ;;
   11) factory_reset ;;
   12) drop pgsql_db ;;
-  13) reboot;  kill -HUP $(pgrep -s 0 -o) ;;
-  14) poweroff; kill -HUP $(pgrep -s 0 -o) ;;
+  13) reboot;  kill -HUP "$(pgrep -s 0 -o)" ;;
+  14) poweroff; kill -HUP "$(pgrep -s 0 -o)" ;;
   15) config_nat ;;
   16) /bin/bash ;;
-  x|X) clear; kill -HUP $(pgrep -s 0 -o) ;;
+  x|X) clear; kill -HUP "$(pgrep -s 0 -o)" ;;
   u|U) upgrade ;;
   *) echo "you must select a valid option (one of: 1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,x|X,u|U)" && continue ;;
  esac
