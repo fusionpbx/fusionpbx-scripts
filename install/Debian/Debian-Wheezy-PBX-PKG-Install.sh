@@ -170,7 +170,7 @@ done
 
 # Freeswitch Base $ Modules Install Options.
 echo " Installing freeswitch all modules"
-apt-get -y install	freeswitch-meta-all
+apt-get -y install freeswitch-meta-all freeswitch-mod-vlc
 
 #Genertaing /etc/freeswitch config dir.
 mkdir $freeswitch_act_conf
