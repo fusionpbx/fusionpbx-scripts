@@ -37,7 +37,66 @@
 #
 ################################################################################
 
+echo " This install requires the system have a (FQDN) fully qualified domain name and a static ip. "
+echo " This is due to the Mail Trandport Agent pkgs looking for a FQDN "
+echo " So if you have not set a static ip and a fqdn please answer n to the next question. It will "
+echo " then allow you to configure the network ip and fqdn. Then it will continue on with th install."
+echo " Note you can change these at anytime from the admin menu."
+echo
+read -p "Does your system have a stati ip and a fqdn if yes hit enter else if no hit (n/N)"
+if [[ $REPLY =~ ^[Nn]$ ]]
+then
+# Configure hostename
+read -r -p "Please set your system hostname (example: pbx):" HN
+read -r -p "Please set your system domain name (example: mydomain.com):" DN
+# Configure WAN network interface
+read -r -p "Please  set your system IP (local ip or domain ip)  :" IP
+read -r -p "Please enter the network mask :" NM
+read -r -p "Please enter the network gateway :" GW
+read -r -p "Please enter the primary dns source:" NS1
+read -r -p "Please enter the secondary dns source :" NS2
+cat << EOF > /etc/network/interfaces
+# The loopback network interface
+auto lo
+iface lo inet loopback
+# The primary network interface
+allow-hotplug eth0
+iface eth0 inet static
+      address $IP
+      netmask $NM
+      gateway $GW
+      dns-nameservers $NS1 $NS2
+EOF
+
+cat << EOF > /etc/hosts
+127.0.0.1       localhost $HN
+::1             localhost ip6-localhost ip6-loopback
+fe00::0         ip6-localnet
+ff00::0         ip6-mcastprefix
+ff02::1         ip6-allnodes
+ff02::2         ip6-allrouters
+$IP     $HN.$DN $HN
+EOF
+
+cat << EOF > /etc/hostname
+$HN
+EOF
+
+hostname $HN
+
+echo "Rebooting for networkign changes to take effect."
+echo "You will need to relogin and restart the script."
+echo "when it ask you the fqdn/ip question just hit enter and it will continue."
+echo "Please ssh to $IP and relogin"
+
+reboot
+fi
+
 #<------Start Option Edit HERE--------->
+#select you mail transport agent
+#used to send voicemail to email.....(mod_voicemail)
+# ssmtp=default 
+MTA=ssmtp
 
 # to start FreeSWITCH with -nonat option set freeswitch_NAT to y
 # Set to y if on public static IP
@@ -77,7 +136,7 @@ database_user_name=
 #      (UNDER DEVEL)
 #Future Options not yet implamented,
 #Install new admin shell menu & openvpn scripts.
-install_admin_menu=y
+install_admin_menu=n
 
 #Enable admin menu at next login.
 enable_admin_menu=n
