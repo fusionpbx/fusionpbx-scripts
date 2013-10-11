@@ -32,8 +32,6 @@
 #
 # Wish list in the works.
 #
-# 1) Hackberry + jtag
-# here: https://www.miniand.com/products/Hackberry%20A10%20Developer%20Board#buy
 #
 ################################################################################
 
@@ -43,7 +41,7 @@ echo " So if you have not set a static ip and a fqdn please answer n to the next
 echo " then allow you to configure the network ip and fqdn. Then it will continue on with th install."
 echo " Note you can change these at anytime from the admin menu."
 echo
-read -p "Does your system have a stati ip and a fqdn if yes hit enter else if no hit (n/N/enter)"
+read -p "Does your system have a static ip and a fqdn if yes hit enter else if no hit (n/N/enter)"
 if [[ $REPLY =~ ^[Nn]$ ]]
 then
 # Configure hostename
@@ -201,9 +199,12 @@ else
 fi
 
 #Disabling the cd from the /etc/apt/sources.list
-sed -i /etc/apt/sources.list -e s,'deb cdrom\:\[Debian GNU/Linux testing _Wheezy_ - Official Snapshot i386 CD Binary-1 20130429-03:58\]/ wheezy main','# deb cdrom\:\[Debian GNU/Linux testing _Wheezy_ - Official Snapshot i386 CD Binary-1 20130429-03:58]\/ wheezy main',
+if [[ $? -eq 0 ]]; then
+	DISTRO=wheezy
+	sed -i /etc/apt/sources.list -e s,'deb cdrom\:\[Debian GNU/Linux testing _Wheezy_ - Official Snapshot i386 CD Binary-1 20130429-03:58\]/ wheezy main','# deb cdrom\:\[Debian GNU/Linux testing _Wheezy_ - Official Snapshot i386 CD Binary-1 20130429-03:58]\/ wheezy main',
+fi
 
-#add curl
+#add curl (used to fetch the freeswitch repo key)
 apt-get -y install curl
 
 #pulled from freeswitch wiki
@@ -717,7 +718,7 @@ apt-get clean
 
 #Install admin shell menu
 if [[ $install_admin_menu == y ]]; then
-/bin/cat > /usr/bin/debian.menu <<DELIM
+/bin/cat > "/usr/bin/debian.menu" <<DELIM
 #!/bin/bash
 #Date AUG, 14 2013 18:20 EST
 ################################################################################
@@ -829,7 +830,6 @@ iface eth0 inet static
       netmask $NM
       gateway $GW
       dns-nameservers $NS1 $NS2
-      dns-search $SD
 EOF
 
 cat << EOF > /etc/hosts
@@ -839,7 +839,6 @@ fe00::0         ip6-localnet
 ff00::0         ip6-mcastprefix
 ff02::1         ip6-allnodes
 ff02::2         ip6-allrouters
-$IP     $HN.$DN
 $IP     $HN.$DN $HN
 EOF
 

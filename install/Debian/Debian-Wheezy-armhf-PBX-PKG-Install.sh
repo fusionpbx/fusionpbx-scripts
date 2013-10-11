@@ -32,8 +32,6 @@
 #
 # Wish list in the works.
 #
-# 1) Hackberry + jtag
-# here: https://www.miniand.com/products/Hackberry%20A10%20Developer%20Board#buy
 #
 ################################################################################
 
@@ -707,7 +705,7 @@ apt-get clean
 
 #Install admin shell menu
 if [[ $install_admin_menu == y ]]; then
-/bin/cat > /usr/bin/debian.menu <<DELIM
+/bin/cat > "/usr/bin/debian.menu" <<DELIM
 #!/bin/bash
 #Date AUG, 14 2013 18:20 EST
 ################################################################################
