@@ -633,7 +633,7 @@ if [[ $pgsql_client == y ]]; then
 	printf '	Please open a web-browser to http://'; ip -f inet addr show dev eth0 | sed -n 's/^ *inet *\([.0-9]*\).*/\1/p'
 cat << DELIM
 
-	Or the Doamin name assigned to the machine like http://mypbx.myip.net.
+	Or the Doamin name assigned to the machine like http://"$(hostname).$(dnsdomainname)".
 
 	On the First configuration page of the web user interface.
 
