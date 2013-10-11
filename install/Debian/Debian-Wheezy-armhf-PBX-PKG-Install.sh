@@ -43,7 +43,7 @@ echo " So if you have not set a static ip and a fqdn please answer n to the next
 echo " then allow you to configure the network ip and fqdn. Then it will continue on with th install."
 echo " Note you can change these at anytime from the admin menu."
 echo
-read -p "Does your system have a stati ip and a fqdn if yes hit enter else if no hit (n/N)"
+read -p "Does your system have a stati ip and a fqdn if yes hit enter else if no hit (n/N/enter)"
 if [[ $REPLY =~ ^[Nn]$ ]]
 then
 # Configure hostename
