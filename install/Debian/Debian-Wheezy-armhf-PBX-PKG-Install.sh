@@ -93,8 +93,24 @@ fi
 #<------Start Option Edit HERE--------->
 #select you mail transport agent
 #used to send voicemail to email.....(mod_voicemail)
-# ssmtp=default 
-MTA=ssmtp
+#Uncomment the one you wish to use.. SSMTP=Default
+#MTA=exim4-daemon-light # lightweight Exim MTA (v4) daemon
+#MTA=citadel-mta # complete and feature-rich groupware server (mail transport agent)
+#MTA=clamsmtp # virus-scanning SMTP proxy
+#MTA=courier-mta # Courier mail server - ESMTP daemon
+#MTA=esmtp-run # user configurable relay-only MTA - the regular MTA
+#MTA=exim4-daemon-heavy # Exim MTA (v4) daemon with extended features, including exiscan-acl
+#MTA=lsb-invalid-mta # Linux Standard Base sendmail dummy
+#MTA=masqmail # mail transport agent for intermittently connected hosts
+#MTA=msmtp-mta # light SMTP client with support for server profiles - the regular MTA
+#MTA=nullmailer # simple relay-only mail transport agent
+#MTA=postfix # High-performance mail transport agent
+#MTA=proxsmtp # multi purpose SMTP Proxy
+#MTA=pyg # Python Mail <-> News Gateway
+#MTA=qmail-run # sets up qmail as mail-transfer-agent
+#MTA=sendmail-bin # powerful, efficient, and scalable Mail Transport Agent
+MTA=ssmtp # extremely simple MTA to get mail off the system to a mail hub
+#MTA=xmail # advanced, fast and reliable ESMTP/POP3 mail server
 
 # to start FreeSWITCH with -nonat option set freeswitch_NAT to y
 # Set to y if on public static IP
