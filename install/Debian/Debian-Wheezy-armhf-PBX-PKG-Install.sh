@@ -187,6 +187,10 @@ fi
 
 echo "You're root."
 
+if [ ! -s /usr/bin/lsb_release ]; then
+	apt-get update && apt-get -y install lsb-release
+fi
+
 # Os/Distro Check
 lsb_release -c |grep -i wheezy > /dev/null
 
