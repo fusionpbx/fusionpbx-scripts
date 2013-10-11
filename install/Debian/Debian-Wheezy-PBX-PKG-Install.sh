@@ -221,7 +221,7 @@ do apt-get -y "${i}"
 done
 
 #install (MTA) Mail Transport Agent
-apt-get install $NAT
+apt-get install $MTA
 
 #install Freeswitch Deps
 for i in unzip libjpeg8 libjpeg62 screen htop pkg-config libtiff5 libtiff-tools \

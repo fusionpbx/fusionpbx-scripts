@@ -217,6 +217,9 @@ for i in update upgrade
 do apt-get -y "${i}"
 done
 
+#install (MTA) Mail Transport Agent
+apt-get install $MTA
+
 #install Freeswitch Deps
 for i in unzip libjpeg8 libjpeg62 screen htop pkg-config libtiff5 libtiff-tools \
 		ntp bison autotalent ladspa-sdk tap-plugins swh-plugins libgsm1 libfftw3-3 libpython2.7 \
