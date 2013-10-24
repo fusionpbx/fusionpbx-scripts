@@ -238,13 +238,6 @@ done
 #install (MTA) Mail Transport Agent
 apt-get install $MTA
 
-#install Freeswitch Deps
-for i in unzip libjpeg8 libjpeg62 screen htop pkg-config libtiff5 libtiff-tools \
-		ntp bison autotalent ladspa-sdk tap-plugins swh-plugins libgsm1 libfftw3-3 libpython2.7 \
-		libperl5.14 scons libpq5 unixodbc uuid gettext libvlc5 sox flac ngrep memcached
-do apt-get -y install "${i}"
-done
-
 # Freeswitch Base $ Modules Install Options.
 echo " Installing freeswitch all modules"
 apt-get -y install --force-yes freeswitch-meta-all freeswitch-mod-vlc
