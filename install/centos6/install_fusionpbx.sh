@@ -66,10 +66,9 @@ service ntpd start
 chkconfig ntpd on
 
 #Disable SELinux (Ken hates this thing)
-if [ -x /usr/sbin/setenforce ]
-	then
-		setenforce 0
-		/bin/sed -i -e s,'SELINUX=enforcing','SELINUX=disabled', /etc/sysconfig/selinux
+if [ -x /usr/sbin/setenforce ]; then
+	setenforce 0
+	/bin/sed -i -e s,'SELINUX=enforcing','SELINUX=disabled', /etc/sysconfig/selinux
 fi
 
 # Lets go Get the FreeSWITCH Source and install it

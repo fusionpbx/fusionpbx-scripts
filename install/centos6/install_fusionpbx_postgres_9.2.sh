@@ -202,12 +202,11 @@ service ntpd start
 chkconfig ntpd on
 
 #Disable SELinux
-if [ -x /usr/sbin/setenforce ]
-	then
-		/usr/sbin/setenforce 0
-		/bin/sed -i -e s,'SELINUX=enforcing','SELINUX=disabled', /etc/sysconfig/selinux
-#dz it seems both these files exist on Centos 6.2 but this next on actually controls selinux
-        /bin/sed -i -e s,'SELINUX=enforcing','SELINUX=disabled', /etc/selinux/config
+if [ -x /usr/sbin/setenforce ]; then
+	/usr/sbin/setenforce 0
+	/bin/sed -i -e s,'SELINUX=enforcing','SELINUX=disabled', /etc/sysconfig/selinux
+	#dz it seems both these files exist on Centos 6.2 but this next on actually controls selinux
+	/bin/sed -i -e s,'SELINUX=enforcing','SELINUX=disabled', /etc/selinux/config
 fi
 
 # Lets go Get the FreeSWITCH Source and install it
