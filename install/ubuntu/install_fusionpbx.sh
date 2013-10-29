@@ -68,6 +68,10 @@ fi
 #DEFINES
 #-------
 VERSION="Version - using subversion, no longer keeping track. WAF License"
+#latest stable
+#FPBXBRANCH="http://fusionpbx.googlecode.com/svn/trunk/fusionpbx"
+#dev branch
+FPBXBRANCH="http://fusionpbx.googlecode.com/svn/branches/dev/fusionpbx"
 # Modules_comp_default determined using
 #  grep -v ^$ /usr/src/freeswitch/modules.conf |grep -v ^# | tr '\n' ' '
 #  on FreeSWITCH version FreeSWITCH Version 1.0.head (git-8f2ee97 2010-12-05 17-19-28 -0600)
@@ -2131,11 +2135,11 @@ DELIM
 	if [[ "$INST_FPBX" == "svn" ]]; then
 			if [ $FBPXCHECKOUTVER == true ]; then
 				/bin/echo "Going to install FusionPBX SVN Rev $FPBXREV"
-				/usr/bin/svn checkout -r r$FPBXREV http://fusionpbx.googlecode.com/svn/branches/dev/fusionpbx $WWW_PATH/$GUI_NAME
+				/usr/bin/svn checkout -r r$FPBXREV $FPBXBRANCH $WWW_PATH/$GUI_NAME
 			else
 				/bin/echo "Going to install FusionPBX latest SVN!"
 				#removed -r r1877 r1877 from new install
-				/usr/bin/svn checkout http://fusionpbx.googlecode.com/svn/branches/dev/fusionpbx $WWW_PATH/$GUI_NAME
+				/usr/bin/svn checkout $FPBXBRANCH $WWW_PATH/$GUI_NAME
 			fi
 	elif [ $INST_FPBX == tgz ]; then
 			/bin/tar -C $WWW_PATH -xzvf $TGZ_FILE
@@ -2676,7 +2680,7 @@ if [ $UPGFUSION -eq 1 ]; then
 
 			#svn...
 
-			/usr/bin/svn update http://fusionpbx.googlecode.com/svn/branches/dev/fusionpbx $WWW_PATH/$GUI_NAME
+			/usr/bin/svn update $FPBXBRANCH $WWW_PATH/$GUI_NAME
 			/bin/chown -R www-data:www-data $WWW_PATH/$GUI_NAME
 			#print message saying to hit advanced->upgrade schema
 			/bin/echo "Done upgrading Files"
@@ -2685,7 +2689,7 @@ if [ $UPGFUSION -eq 1 ]; then
 		;;
 
 		[1]*)
-			/usr/bin/svn update -r r1877 http://fusionpbx.googlecode.com/svn/branches/dev/fusionpbx $WWW_PATH/$GUI_NAME
+			/usr/bin/svn update -r r1877 $FPBXBRANCH $WWW_PATH/$GUI_NAME
 			/bin/chown -R www-data:www-data $WWW_PATH/$GUI_NAME
 			#print message saying to hit advanced->upgrade schema
 			/bin/echo "Done upgrading Files"
