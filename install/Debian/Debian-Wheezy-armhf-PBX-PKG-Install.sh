@@ -452,6 +452,10 @@ server{
                 rewrite ^(.*) https://\$host\$1 permanent;
                 break;
         }
+        
+        #grandstream gx2200
+        rewrite "^.*/provision/cfg([A-Fa-f0-9]{12})(\.(xml|cfg))$" /app/provision/?mac=$1;
+        
         access_log /var/log/nginx/access.log;
         error_log /var/log/nginx/.error.log;
 
@@ -492,6 +496,9 @@ server{
         ssl_protocols           SSLv3 TLSv1;
         ssl_ciphers     HIGH:!ADH:!MD5;
 
+		#grandstream gx2200
+		rewrite "^.*/provision/cfg([A-Fa-f0-9]{12})(\.(xml|cfg))$" /app/provision/?mac=$1;
+		
         access_log /var/log/nginx/access.log;
         error_log /var/log/nginx/.error.log;
 
