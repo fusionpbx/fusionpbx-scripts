@@ -210,6 +210,19 @@ fi
 
 echo "You're root."
 
+#Configuring /etc/apt/source.list
+/bin/cat > "/etc/apt/sources.list" <<DELIM
+deb http://ftp.us.debian.org/debian/ wheezy main
+deb-src http://ftp.us.debian.org/debian/ wheezy main
+
+deb http://security.debian.org/ wheezy/updates main
+deb-src http://security.debian.org/ wheezy/updates main
+
+# wheezy-updates, previously known as 'volatile'
+deb http://ftp.us.debian.org/debian/ wheezy-updates main
+deb-src http://ftp.us.debian.org/debian/ wheezy-updates main
+DELIM
+
 if [ ! -s /usr/bin/lsb_release ]; then
 	apt-get update && apt-get -y install lsb-release
 fi
@@ -224,9 +237,6 @@ else
 	echo "Reqires Debian 7 (Wheezy)"
 	exit 1
 fi
-
-#Disabling the cd from the /etc/apt/sources.list
-sed -i /etc/apt/sources.list -e s,'deb cdrom\:\[Debian GNU/Linux testing _Wheezy_ - Official Snapshot i386 CD Binary-1 20130429-03:58\]/ wheezy main','# deb cdrom\:\[Debian GNU/Linux testing _Wheezy_ - Official Snapshot i386 CD Binary-1 20130429-03:58]\/ wheezy main',
 
 #add curl
 apt-get -y install curl
