@@ -1,5 +1,5 @@
 #!/bin/bash
-#Date AUG, 29 2013 21:50 EST
+#Date Nov, 9 2013 09:00 EST
 ################################################################################
 # The MIT License (MIT)
 #
@@ -737,466 +737,7 @@ DELIM
 
 fi
 
-#apt-get cleanup
-apt-get clean
 
-#Install admin shell menu
-if [[ $install_admin_menu == y ]]; then
-/bin/cat > "/usr/bin/debian.menu" <<DELIM
-#!/bin/bash
-#Date AUG, 14 2013 18:20 EST
-################################################################################
-# The MIT License (MIT)
-#
-# Copyright (c) <2013> Richard Neese <r.neese@gmail.com>
-#
-# Permission is hereby granted, free of charge, to any person obtaining a copy
-# of this software and associated documentation files (the "Software"), to deal
-# in the Software without restriction, including without limitation the rights
-# to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-# copies of the Software, and to permit persons to whom the Software is
-# furnished to do so, subject to the following conditions:
-#
-# The above copyright notice and this permission notice shall be included in
-# all copies or substantial portions of the Software.
-#
-# THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-# IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-# FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-# AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-# LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-# OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-# THE SOFTWARE.
-################################################################################
-
-set -eu
-
-#Base Varitables
-USRBASE="/usr"
-BACKUPDIR="/root/pbx-backup"
-
-#Freeswitch Directories
-# Freeswitch logs dir
-FS_LOG="/var/log/freeswitch"
-
-#freeswitch db/recording/storage/voicemail/fax dir
-FS_LIB="/var/lib/freeswitch"
-FS_DB="/var/lib/freeswitch/db"
-FS_REC="/var/lib/freeswitch/recordings"
-FS_STOR="/var/lib/freeswitch/storage"
-
-#freeswitch modules dir
-FS_MOD="/usr/lib/freeswitch/mod"
-
-#defalt configs dir / grammer / lang / sounds
-FS_DFLT_CONF="/usr/share/freeswitch/conf"
-FS_GRAM="/usr/share/freeswitch/grammar"
-FS_LANG="/usr/share/freeswitch/lang"
-FS_SCRPT="/usr/share/freeswitch/scripts"
-
-#Freeswitch Sounds Dir
-FS_SNDS="/usr/share/freeswitch/sounds"
-
-#Freeswitch active config files
-FS_ACT_CONF="/etc/freeswitch"
-
-#WWW directory
-WWW_PATH="$USRBASE/share/nginx/www"
-
-#WUI Name
-WUI_NAME="fusionpbx"
-
-#Fusionpbx DB Dir
-FPBX_DB="/var/lib/fusionpbx/db"
-
-#FusionPBX Scripts Dir (DialPLan Scripts for use with Freeswitch)
-FPBX_SCRPT="/var/lib/fusionpbx/scripts"
-
-################################################################
-
-# Disacle CTL C (Disable CTL-C so you can not escape the menu)
-#trap "" SIGTSTP
-trap "" 2
-
-# Reassign ctl+d to ctl+_
-stty eof  '^_'
-
-# Set Root Password
-set_root_password(){
-/usr/bin/passwd
-}
-
-# Set System Time Zone
-set_local_tz(){
-/usr/sbin/dpkg-reconfigure tzdata
-}
-
-# Setup Primary Network Interface
-set_net_1(){
-# Configure hostename
-read -r -p "Please set your system hostname (pbx):" HN
-read -r -p "Please set your system domainname (mydomain.com):" DN
-# Configure WAN network interface
-read -r -p "Please  set your system doman IP (Same as the Domain IP ) :" IP
-read -r -p "Please enter the network mask :" NM
-read -r -p "Please enter the network gateway :" GW
-read -r -p "Please enter the primary dns source:" NS1
-read -r -p "Please enter the secondary dns source :" NS2
-read -r -p "Please enter the dns search domain :" SD
-cat << EOF > /etc/network/interfaces
-# The loopback network interface
-auto lo
-iface lo inet loopback
-# The primary network interface
-allow-hotplug eth0
-iface eth0 inet static
-      address $IP
-      netmask $NM
-      gateway $GW
-      dns-nameservers $NS1 $NS2
-      dns-search $SD
-EOF
-
-cat << EOF > /etc/hosts
-127.0.0.1       localhost $HN
-::1             localhost ip6-localhost ip6-loopback
-fe00::0         ip6-localnet
-ff00::0         ip6-mcastprefix
-ff02::1         ip6-allnodes
-ff02::2         ip6-allrouters
-$IP     $HN.$DN
-$IP     $HN.$DN $HN
-EOF
-
-cat << EOF > /etc/hostname
-$HN
-EOF
-}
-
-# Setup Secondary Network Interface
-set_net_2(){
-# Configure LAN network interface
-read -r -p "Please  set your system doman IP (Same as the Domain IP ) :" IP
-read -r -p "Please enter the network mask :" NM
-read -r -p "Please enter the network gateway :" GW
-
-cat << EOF >> /etc/network/interfaces
-# The secondary network interface
-allow-hotplug eth1
-iface eth0 inet static
-        address $IP
-        netmask $NM
-        gateway $GW
-EOF
-}
-
-# Start/Stop/Restart Web Services
-web_options(){
-while : ;do
-list_web_options
- read -r web
- case "$web" in
- start|stop|restart) break ;;
-  1) web="start" && break ;;
-  2) web="stop" && break ;;
-  3) web="restart" && break ;;
-  4) return ;;
-  *) continue ;;
- esac
-done
-
-/etc/init.d/nginx $web  >/dev/null 2>&1
-/etc/init.d/php5-fpm $web  >/dev/null 2>&1
-}
-
-list_web_options(){
-cat << EOF
-1) start
-2) stop
-3) restart
-4) Return to main menu
-Choice:
-EOF
-}
-
-# Setup/configure OpenVPN
-set_vpn(){
-while : ;do
-$USRBASE/bin/confgen
-done
-}
-
-# Factory Reset System
-factory_reset(){
-echo "This will wipe and set your system back to factory default"
-echo "it will remove all call detail records / custom conifgs / "
-echo " sounds / recordings / faxes / and reset the gui. "
-while : ;do
-read -p "Are you sure you wish to factory reset you pbx? (y/Y/n/N)"
-case "$REPLY" in
- n|N) break ;;
- y|Y)
-
-# stop system services
-for i in nginx php5-fpm fail2ban freeswitch
-do /etc/init.d/"${i}" stop > /dev/null 2>&1
-done
-
-# remove freeswitch related files
-rm -f "$FS_DB"/* "$FS_LOG"/*.log "$FS_LOG"/freeswitch.xml.fsxml
-rm -rf "$FS_LOG"/xml-cdr/* "$FS_STOR"/fax/* "$FS_REC"/*
-
-rm -rf "$FPBX_SCRPT"/*
-
-#Put Fusionpbx Freeswitch configs into place
-cp -r "$WWW_PATH"/"$WUI_NAME"/resources/install/scripts/* "$FPBX_SCRPT"
-
-#chown freeswitch script files
-chown -R freeswitch:freeswitch "$FPBX_SCRPT"
-
-#Clean out the freeswitch conf dir
-rm -rf "$FS_ACT_CONF"/*
-
-#Put Fusionpbx Freeswitch configs into place
-cp -r "$WWW_PATH"/"$WUI_NAME"/resources/templates/conf/* "$FS_ACT_CONF"
-
-#chown freeswitch  conf files
-chown -R freeswitch:freeswitch "$FS_ACT_CONF"
-
-#fix permissions for "$FS_ACT_CONF" so www-data can write to it
-find "$FS_ACT_CONF" -type f -exec chmod 660 {} +
-find "$FS_ACT_CONF" -type d -exec chmod 770 {} +
-
-# remove fusionpbx db and config files
-
-if exists "$FBPX_DB"/fusionpbx.db 
-then
-rm -f "$FBPX_DB"/fusionpbx.db
-fi
-
-rm -f "$WWW_PATH"/"$WUI_NAME"/resources/config.php
-
-# reset network interfaces to defaults
-cat << EOF > /etc/network/interfaces
-
-# The loopback network interface
-auto lo
-iface lo inet loopback
-
-# The primary network interface
-allow-hotplug eth0
-iface eth0 inet dhcp
-
-EOF
-
-/bin/sed -i /etc/default/freeswitch -e s,'^DAEMON_OPTS=.*','DAEMON_OPTS="-scripts /var/lib/fusionpbx/scripts -rp"',
-
-#Restart Services
-for i in nginx php5-fpm fail2ban freeswitch
-do /etc/init.d/"${i}" start > /dev/null 2>&1
-done
-break ;;
-
-*) echo "Answer must be a y/Y or n/N" ;;
-esac
-done
-}
-
-# Factory Reset Postgresql Database
-drop_pgsql_db(){
-echo "This will drop the current postgresql database table for the pbx."
-while : ;do
-read -p "Are you sure you wish drop the current pgsql db table? (y/Y/n/N)"
-case "$REPLY" in
- n|N) break ;;
- y|Y)
-
-read -r -p "Please enter the postgresql database name you used at install time : " DBNAME
-/bin/su -l postgres -c "/bin/echo \"DROP DATABASE $DBNAME;\" | /usr/bin/psql"
-break ;;
-
-*) echo "Answer must be a y/Y or n/N" ;;
-esac
-done
-}
-
-# PBX Backup configs/voicemail/personal recordings
-backup_pbx(){
-echo "This will halt the running services and then "
-echo "backup your system to $BACKUPDIR/pbx-backup-$(date +%Y%m%d).tar.bz2"
-echo "and then start the services again"
-while : ;do
-read -p "Are you sure you wish to backup your pbx? (y/Y/n/N)"
-case "$REPLY" in
- n|N) break ;;
- y|Y)
-
-# stop system services
-for i in monit nginx php5-fpm fail2ban freeswitch
-do /etc/init.d/"${i}" stop > /dev/null 2>&1
-done
-
-# Backup system (Fusion config.php and database / freeswitch cdr, voicemail, recordings, configs)
-tar -cjf "$BACKUPDIR"/"pbx-backup-$(date +%Y%m%d).tar.bz2" "$WWW_PATH"/resources/config.php "$FS_DB"/fusionpbx.db \
-	"$FS_LOG"/xml_cdr "$FS_ACT_CONF" "$FS_STOR"
-
-# Restart system services
-for i in monit nginx php5-fpm fail2ban freeswitch
-do /etc/init.d/"${i}" start > /dev/null 2>&1
-done
-break ;;
-
-*) echo "Answer must be a y/Y or n/N" ;;
-esac
-done
-}
-
-# Rotate/Clean logs
-rotate_logs(){
-echo "This will halt the running services and sync the system rotate the logs"
-echo "and then restart the services for the pbx system"
-while : ;do
-read -p "Are you sure you wish to rotate you sysem and freeswitch logs? (y/Y/n/N)"
-case "$REPLY" in
- n|N) break ;;
- y|Y)
-
-# stop system services
-for i in monit nginx php5-fpm fail2ban freeswitch
-do /etc/init.d/"${i}" stop > /dev/null 2>&1
-done
-
-rm -f "$FS_LOG"/*.fsxml "$FS_LOG"/*.log
-
-for i in fail2ban inetutils-syslogd
-do /etc/init.d/"${i}" start > /dev/null 2>&1
-done
-
-/usr/sbin/logrotate -f /etc/logrotate.conf
-rm -f /var/log/*.[0-10] /var/log/*.gz
-
-for i in fail2ban inetutils-syslogd
-do /etc/init.d/"${i}" stop > /dev/null 2>&1
-done
-
-#restart services
-for i in nginx php5-fpm fail2ban freeswitch monit
-do /etc/init.d/"${i}" start  >/dev/null 2>&1
-done
-break ;;
-
-*) echo "Answer must be a y/Y or n/N" ;;
-esac
-done
-}
-
-
-# System Pkg Upgrade
-upgrade(){
-read -p "Are you sure you wish to update your install (y/Y/n/N) "
-if [[ $REPLY =~ ^[Nn]$ ]]
-then
-return
-else
-if [[ $REPLY =~ ^[Yy]$ ]]
-then
-/usr/bin/apt-get update > /dev/null 2>&1 
-/usr/bin/apt-get upgrade -y --force-yes
-/usr/bin/apt-get autoremove > /dev/null 2>&1
-/usr/bin/apt-get clean > /dev/null 2>&1
-fi
-fi
-}
-
-# Restart Freeswitch
-fs_restart(){
-read -p "Are you sure you wish to restart freeswitch (y/Y/n/N) "
-if [[ $REPLY =~ ^[Nn]$ ]]
-then
-return
-else
-if [[ $REPLY =~ ^[Yy]$ ]]
-then
-/etc/init.d/freeswitch restart  >/dev/null 2>&1
-fi
-fi
-}
-
-#Disable Nat Freeswitch
-config_nat(){
-read -p "Are you sure you wish to enable/disable nat for freeswitch e/E=enable d/D=disable (e/E/d/D) "
-if [[ $REPLY =~ ^[Dd]$ ]]
-then
-/bin/sed -i /etc/default/freeswitch -e s,'^DAEMON_OPTS=.*','DAEMON_OPTS="-scripts /var/lib/fusionpbx/scripts -rp"',
-/bin/echo "init script set to start 'freeswitch -nc -scripts /var/lib/fusionpbx/scripts -rp'"
-/etc/init.d/freeswitch restart  >/dev/null 2>&1
-else
-if [[ $REPLY =~ ^[Ee]$ ]]
-then
-/bin/sed -i /etc/default/freeswitch -e s,'^DAEMON_OPTS=.*','DAEMON_OPTS="-scripts /var/lib/fusionpbx/scripts -rp -nonat"',
-/bin/echo "init script set to start 'freeswitch -nc -scripts /var/lib/fusionpbx/scripts -rp -nonat'"
-/etc/init.d/freeswitch restart  >/dev/null 2>&1
-fi
-fi
-}
-
-# Aminastrator Option Menu
-while : ;do
-#Clears Screen & Displays System Info
-/usr/bin/clear
-echo ""
-printf 'HostName/DomainName: '; /bin/hostname
-printf 'System Uptime: '; /usr/bin/uptime
-printf 'System Primary IP: '; ip -f inet addr show dev eth0 | sed -n 's/^ *inet *\([.0-9]*\).*/\1/p'
-printf 'System Secondary IP: '; ip -f inet addr show dev eth1 | sed -n 's/^ *inet *\([.0-9]*\).*/\1/p'
-#Displays Option Menu
-cat << EOF
-
-	PBX Administration Menu:
-
- *** Setup / Configuration ***
- 1) Set/Change Root Password      2) Set Timezone & Time
- 3) Setup Network Interface(WAN)  4) Setup Network Interface (LAN)
- 5) Setup OpenVPN Connections
-
-  ******** Maintance *********
- 6) Web Service Options	      7) Freeswitch CLI       8) Restart Freeswitch
- 9) Clear & Rotate logs       10) Backup PBX System   11) Factory Reset System
- 12) Drop Postgres Database   13) Reboot System       14) Power Off System
- 15) Disable/Enable nat       16) Drop to Shell       x) Logout
-     Freeswitch
-
-  ***** Upgrade Options *****
- u) Upgrade
-
-Choice:
-EOF
-
-# Aminastrator Option Menu Functions
- read -r ans
- case "$ans" in
-  1) set_root_password ;;
-  2) set_local_tz ;;
-  3) set_net_1 ;;
-  4) set_net_2 ;;
-  5) set_vpnvpn ;;
-  6) web_options ;;
-  7) /usr/bin/fs_cli ;;
-  8) fs_restart ;;
-  9) rotate_logs ;;
-  10) backup_pbx ;;
-  11) factory_reset ;;
-  12) drop pgsql_db ;;
-  13) reboot;  kill -HUP "$(pgrep -s 0 -o)" ;;
-  14) poweroff; kill -HUP "$(pgrep -s 0 -o)" ;;
-  15) config_nat ;;
-  16) /bin/bash ;;
-  x|X) clear; kill -HUP "$(pgrep -s 0 -o)" ;;
-  u|U) upgrade ;;
-  *) echo "you must select a valid option (one of: 1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,x|X,u|U)" && continue ;;
- esac
-done
-DELIM
 
 # Installing OpenVPN config scripts
 #confgen
@@ -1891,6 +1432,465 @@ done ) >$CONFIG
 exit 0
 DELIM
 
+#Install admin shell menu
+if [[ $install_admin_menu == y ]]; then
+/bin/cat > "/usr/bin/debian.menu" <<DELIM
+#!/bin/bash
+#Date AUG, 14 2013 18:20 EST
+################################################################################
+# The MIT License (MIT)
+#
+# Copyright (c) <2013> Richard Neese <r.neese@gmail.com>
+#
+# Permission is hereby granted, free of charge, to any person obtaining a copy
+# of this software and associated documentation files (the "Software"), to deal
+# in the Software without restriction, including without limitation the rights
+# to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+# copies of the Software, and to permit persons to whom the Software is
+# furnished to do so, subject to the following conditions:
+#
+# The above copyright notice and this permission notice shall be included in
+# all copies or substantial portions of the Software.
+#
+# THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+# IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+# FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+# AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+# LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+# OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+# THE SOFTWARE.
+################################################################################
+
+set -eu
+
+#Base Varitables
+USRBASE="/usr"
+BACKUPDIR="/root/pbx-backup"
+
+#Freeswitch Directories
+# Freeswitch logs dir
+FS_LOG="/var/log/freeswitch"
+
+#freeswitch db/recording/storage/voicemail/fax dir
+FS_LIB="/var/lib/freeswitch"
+FS_DB="/var/lib/freeswitch/db"
+FS_REC="/var/lib/freeswitch/recordings"
+FS_STOR="/var/lib/freeswitch/storage"
+
+#freeswitch modules dir
+FS_MOD="/usr/lib/freeswitch/mod"
+
+#defalt configs dir / grammer / lang / sounds
+FS_DFLT_CONF="/usr/share/freeswitch/conf"
+FS_GRAM="/usr/share/freeswitch/grammar"
+FS_LANG="/usr/share/freeswitch/lang"
+FS_SCRPT="/usr/share/freeswitch/scripts"
+
+#Freeswitch Sounds Dir
+FS_SNDS="/usr/share/freeswitch/sounds"
+
+#Freeswitch active config files
+FS_ACT_CONF="/etc/freeswitch"
+
+#WWW directory
+WWW_PATH="$USRBASE/share/nginx/www"
+
+#WUI Name
+WUI_NAME="fusionpbx"
+
+#Fusionpbx DB Dir
+FPBX_DB="/var/lib/fusionpbx/db"
+
+#FusionPBX Scripts Dir (DialPLan Scripts for use with Freeswitch)
+FPBX_SCRPT="/var/lib/fusionpbx/scripts"
+
+################################################################
+
+# Disacle CTL C (Disable CTL-C so you can not escape the menu)
+#trap "" SIGTSTP
+trap "" 2
+
+# Reassign ctl+d to ctl+_
+stty eof  '^_'
+
+# Set Root Password
+set_root_password(){
+/usr/bin/passwd
+}
+
+# Set System Time Zone
+set_local_tz(){
+/usr/sbin/dpkg-reconfigure tzdata
+}
+
+# Setup Primary Network Interface
+set_net_1(){
+# Configure hostename
+read -r -p "Please set your system hostname (pbx):" HN
+read -r -p "Please set your system domainname (mydomain.com):" DN
+# Configure WAN network interface
+read -r -p "Please  set your system doman IP (Same as the Domain IP ) :" IP
+read -r -p "Please enter the network mask :" NM
+read -r -p "Please enter the network gateway :" GW
+read -r -p "Please enter the primary dns source:" NS1
+read -r -p "Please enter the secondary dns source :" NS2
+read -r -p "Please enter the dns search domain :" SD
+cat << EOF > /etc/network/interfaces
+# The loopback network interface
+auto lo
+iface lo inet loopback
+# The primary network interface
+allow-hotplug eth0
+iface eth0 inet static
+      address $IP
+      netmask $NM
+      gateway $GW
+      dns-nameservers $NS1 $NS2
+      dns-search $SD
+EOF
+
+cat << EOF > /etc/hosts
+127.0.0.1       localhost $HN
+::1             localhost ip6-localhost ip6-loopback
+fe00::0         ip6-localnet
+ff00::0         ip6-mcastprefix
+ff02::1         ip6-allnodes
+ff02::2         ip6-allrouters
+$IP     $HN.$DN
+$IP     $HN.$DN $HN
+EOF
+
+cat << EOF > /etc/hostname
+$HN
+EOF
+}
+
+# Setup Secondary Network Interface
+set_net_2(){
+# Configure LAN network interface
+read -r -p "Please  set your system doman IP (Same as the Domain IP ) :" IP
+read -r -p "Please enter the network mask :" NM
+read -r -p "Please enter the network gateway :" GW
+
+cat << EOF >> /etc/network/interfaces
+# The secondary network interface
+allow-hotplug eth1
+iface eth0 inet static
+        address $IP
+        netmask $NM
+        gateway $GW
+EOF
+}
+
+# Start/Stop/Restart Web Services
+web_options(){
+while : ;do
+list_web_options
+ read -r web
+ case "$web" in
+ start|stop|restart) break ;;
+  1) web="start" && break ;;
+  2) web="stop" && break ;;
+  3) web="restart" && break ;;
+  4) return ;;
+  *) continue ;;
+ esac
+done
+
+/etc/init.d/nginx $web  >/dev/null 2>&1
+/etc/init.d/php5-fpm $web  >/dev/null 2>&1
+}
+
+list_web_options(){
+cat << EOF
+1) start
+2) stop
+3) restart
+4) Return to main menu
+Choice:
+EOF
+}
+
+# Setup/configure OpenVPN
+set_vpn(){
+while : ;do
+$USRBASE/bin/confgen
+done
+}
+
+# Factory Reset System
+factory_reset(){
+echo "This will wipe and set your system back to factory default"
+echo "it will remove all call detail records / custom conifgs / "
+echo " sounds / recordings / faxes / and reset the gui. "
+while : ;do
+read -p "Are you sure you wish to factory reset you pbx? (y/Y/n/N)"
+case "$REPLY" in
+ n|N) break ;;
+ y|Y)
+
+# stop system services
+for i in nginx php5-fpm fail2ban freeswitch
+do /etc/init.d/"${i}" stop > /dev/null 2>&1
+done
+
+# remove freeswitch related files
+rm -f "$FS_DB"/* "$FS_LOG"/*.log "$FS_LOG"/freeswitch.xml.fsxml
+rm -rf "$FS_LOG"/xml-cdr/* "$FS_STOR"/fax/* "$FS_REC"/*
+
+rm -rf "$FPBX_SCRPT"/*
+
+#Put Fusionpbx Freeswitch configs into place
+cp -r "$WWW_PATH"/"$WUI_NAME"/resources/install/scripts/* "$FPBX_SCRPT"
+
+#chown freeswitch script files
+chown -R freeswitch:freeswitch "$FPBX_SCRPT"
+
+#Clean out the freeswitch conf dir
+rm -rf "$FS_ACT_CONF"/*
+
+#Put Fusionpbx Freeswitch configs into place
+cp -r "$WWW_PATH"/"$WUI_NAME"/resources/templates/conf/* "$FS_ACT_CONF"
+
+#chown freeswitch  conf files
+chown -R freeswitch:freeswitch "$FS_ACT_CONF"
+
+#fix permissions for "$FS_ACT_CONF" so www-data can write to it
+find "$FS_ACT_CONF" -type f -exec chmod 660 {} +
+find "$FS_ACT_CONF" -type d -exec chmod 770 {} +
+
+# remove fusionpbx db and config files
+
+if exists "$FBPX_DB"/fusionpbx.db 
+then
+rm -f "$FBPX_DB"/fusionpbx.db
+fi
+
+rm -f "$WWW_PATH"/"$WUI_NAME"/resources/config.php
+
+# reset network interfaces to defaults
+cat << EOF > /etc/network/interfaces
+
+# The loopback network interface
+auto lo
+iface lo inet loopback
+
+# The primary network interface
+allow-hotplug eth0
+iface eth0 inet dhcp
+
+EOF
+
+/bin/sed -i /etc/default/freeswitch -e s,'^DAEMON_OPTS=.*','DAEMON_OPTS="-scripts /var/lib/fusionpbx/scripts -rp"',
+
+#Restart Services
+for i in nginx php5-fpm fail2ban freeswitch
+do /etc/init.d/"${i}" start > /dev/null 2>&1
+done
+break ;;
+
+*) echo "Answer must be a y/Y or n/N" ;;
+esac
+done
+}
+
+# Factory Reset Postgresql Database
+drop_pgsql_db(){
+echo "This will drop the current postgresql database table for the pbx."
+while : ;do
+read -p "Are you sure you wish drop the current pgsql db table? (y/Y/n/N)"
+case "$REPLY" in
+ n|N) break ;;
+ y|Y)
+
+read -r -p "Please enter the postgresql database name you used at install time : " DBNAME
+/bin/su -l postgres -c "/bin/echo \"DROP DATABASE $DBNAME;\" | /usr/bin/psql"
+break ;;
+
+*) echo "Answer must be a y/Y or n/N" ;;
+esac
+done
+}
+
+# PBX Backup configs/voicemail/personal recordings
+backup_pbx(){
+echo "This will halt the running services and then "
+echo "backup your system to $BACKUPDIR/pbx-backup-$(date +%Y%m%d).tar.bz2"
+echo "and then start the services again"
+while : ;do
+read -p "Are you sure you wish to backup your pbx? (y/Y/n/N)"
+case "$REPLY" in
+ n|N) break ;;
+ y|Y)
+
+# stop system services
+for i in monit nginx php5-fpm fail2ban freeswitch
+do /etc/init.d/"${i}" stop > /dev/null 2>&1
+done
+
+# Backup system (Fusion config.php and database / freeswitch cdr, voicemail, recordings, configs)
+tar -cjf "$BACKUPDIR"/"pbx-backup-$(date +%Y%m%d).tar.bz2" "$WWW_PATH"/resources/config.php "$FS_DB"/fusionpbx.db \
+	"$FS_LOG"/xml_cdr "$FS_ACT_CONF" "$FS_STOR"
+
+# Restart system services
+for i in monit nginx php5-fpm fail2ban freeswitch
+do /etc/init.d/"${i}" start > /dev/null 2>&1
+done
+break ;;
+
+*) echo "Answer must be a y/Y or n/N" ;;
+esac
+done
+}
+
+# Rotate/Clean logs
+rotate_logs(){
+echo "This will halt the running services and sync the system rotate the logs"
+echo "and then restart the services for the pbx system"
+while : ;do
+read -p "Are you sure you wish to rotate you sysem and freeswitch logs? (y/Y/n/N)"
+case "$REPLY" in
+ n|N) break ;;
+ y|Y)
+
+# stop system services
+for i in monit nginx php5-fpm fail2ban freeswitch
+do /etc/init.d/"${i}" stop > /dev/null 2>&1
+done
+
+rm -f "$FS_LOG"/*.fsxml "$FS_LOG"/*.log
+
+for i in fail2ban inetutils-syslogd
+do /etc/init.d/"${i}" start > /dev/null 2>&1
+done
+
+/usr/sbin/logrotate -f /etc/logrotate.conf
+rm -f /var/log/*.[0-10] /var/log/*.gz
+
+for i in fail2ban inetutils-syslogd
+do /etc/init.d/"${i}" stop > /dev/null 2>&1
+done
+
+#restart services
+for i in nginx php5-fpm fail2ban freeswitch monit
+do /etc/init.d/"${i}" start  >/dev/null 2>&1
+done
+break ;;
+
+*) echo "Answer must be a y/Y or n/N" ;;
+esac
+done
+}
+
+
+# System Pkg Upgrade
+upgrade(){
+read -p "Are you sure you wish to update your install (y/Y/n/N) "
+if [[ $REPLY =~ ^[Nn]$ ]]
+then
+return
+else
+if [[ $REPLY =~ ^[Yy]$ ]]
+then
+/usr/bin/apt-get update > /dev/null 2>&1 
+/usr/bin/apt-get upgrade -y --force-yes
+/usr/bin/apt-get autoremove > /dev/null 2>&1
+/usr/bin/apt-get clean > /dev/null 2>&1
+fi
+fi
+}
+
+# Restart Freeswitch
+fs_restart(){
+read -p "Are you sure you wish to restart freeswitch (y/Y/n/N) "
+if [[ $REPLY =~ ^[Nn]$ ]]
+then
+return
+else
+if [[ $REPLY =~ ^[Yy]$ ]]
+then
+/etc/init.d/freeswitch restart  >/dev/null 2>&1
+fi
+fi
+}
+
+#Disable Nat Freeswitch
+config_nat(){
+read -p "Are you sure you wish to enable/disable nat for freeswitch e/E=enable d/D=disable (e/E/d/D) "
+if [[ $REPLY =~ ^[Dd]$ ]]
+then
+/bin/sed -i /etc/default/freeswitch -e s,'^DAEMON_OPTS=.*','DAEMON_OPTS="-scripts /var/lib/fusionpbx/scripts -rp"',
+/bin/echo "init script set to start 'freeswitch -nc -scripts /var/lib/fusionpbx/scripts -rp'"
+/etc/init.d/freeswitch restart  >/dev/null 2>&1
+else
+if [[ $REPLY =~ ^[Ee]$ ]]
+then
+/bin/sed -i /etc/default/freeswitch -e s,'^DAEMON_OPTS=.*','DAEMON_OPTS="-scripts /var/lib/fusionpbx/scripts -rp -nonat"',
+/bin/echo "init script set to start 'freeswitch -nc -scripts /var/lib/fusionpbx/scripts -rp -nonat'"
+/etc/init.d/freeswitch restart  >/dev/null 2>&1
+fi
+fi
+}
+
+# Aminastrator Option Menu
+while : ;do
+#Clears Screen & Displays System Info
+/usr/bin/clear
+echo ""
+printf 'HostName/DomainName: '; /bin/hostname
+printf 'System Uptime: '; /usr/bin/uptime
+printf 'System Primary IP: '; ip -f inet addr show dev eth0 | sed -n 's/^ *inet *\([.0-9]*\).*/\1/p'
+printf 'System Secondary IP: '; ip -f inet addr show dev eth1 | sed -n 's/^ *inet *\([.0-9]*\).*/\1/p'
+#Displays Option Menu
+cat << EOF
+
+	PBX Administration Menu:
+
+ *** Setup / Configuration ***
+ 1) Set/Change Root Password      2) Set Timezone & Time
+ 3) Setup Network Interface(WAN)  4) Setup Network Interface (LAN)
+ 5) Setup OpenVPN Connections
+
+  ******** Maintance *********
+ 6) Web Service Options	      7) Freeswitch CLI       8) Restart Freeswitch
+ 9) Clear & Rotate logs       10) Backup PBX System   11) Factory Reset System
+ 12) Drop Postgres Database   13) Reboot System       14) Power Off System
+ 15) Disable/Enable nat       16) Drop to Shell       x) Logout
+     Freeswitch
+
+  ***** Upgrade Options *****
+ u) Upgrade
+
+Choice:
+EOF
+
+# Aminastrator Option Menu Functions
+ read -r ans
+ case "$ans" in
+  1) set_root_password ;;
+  2) set_local_tz ;;
+  3) set_net_1 ;;
+  4) set_net_2 ;;
+  5) set_vpnvpn ;;
+  6) web_options ;;
+  7) /usr/bin/fs_cli ;;
+  8) fs_restart ;;
+  9) rotate_logs ;;
+  10) backup_pbx ;;
+  11) factory_reset ;;
+  12) drop pgsql_db ;;
+  13) reboot;  kill -HUP "$(pgrep -s 0 -o)" ;;
+  14) poweroff; kill -HUP "$(pgrep -s 0 -o)" ;;
+  15) config_nat ;;
+  16) /bin/bash ;;
+  x|X) clear; kill -HUP "$(pgrep -s 0 -o)" ;;
+  u|U) upgrade ;;
+  *) echo "you must select a valid option (one of: 1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,x|X,u|U)" && continue ;;
+ esac
+done
+DELIM
+fi
+
 #chmod these files to be executable
 for i in debian.menu confgen genclient.sh genserver.sh
 do chmod +x /usr/bin/${i}
@@ -1902,4 +1902,6 @@ if [[ $enable_admin_menu == y ]]; then
 /bin/cat >> "/etc/profile" <<DELIM
 /usr/bin/debian.menu
 DELIM
-fi
+
+#apt-get cleanup
+apt-get clean
