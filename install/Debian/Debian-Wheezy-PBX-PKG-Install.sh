@@ -132,7 +132,7 @@ fi
 
 echo "You're root."
 
-sed '/cdrom/d' /etc/apt/source.list
+sed '/cdrom/d' /etc/apt/sources.list
 
 if [ ! -s /usr/bin/lsb_release ]; then
 	apt-get update && apt-get -y install lsb-release

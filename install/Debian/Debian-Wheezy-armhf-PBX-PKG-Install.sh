@@ -210,18 +210,7 @@ fi
 
 echo "You're root."
 
-#Configuring /etc/apt/source.list
-/bin/cat > "/etc/apt/sources.list" <<DELIM
-deb http://ftp.us.debian.org/debian/ wheezy main
-deb-src http://ftp.us.debian.org/debian/ wheezy main
-
-deb http://security.debian.org/ wheezy/updates main
-deb-src http://security.debian.org/ wheezy/updates main
-
-# wheezy-updates, previously known as 'volatile'
-deb http://ftp.us.debian.org/debian/ wheezy-updates main
-deb-src http://ftp.us.debian.org/debian/ wheezy-updates main
-DELIM
+sed '/cdrom/d' /etc/apt/source.list
 
 if [ ! -s /usr/bin/lsb_release ]; then
 	apt-get update && apt-get -y install lsb-release
