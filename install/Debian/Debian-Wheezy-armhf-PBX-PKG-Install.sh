@@ -211,6 +211,7 @@ fi
 echo "You're root."
 
 sed -i '/cdrom:/d' /etc/apt/sources.list
+sed -i '2,4d' /etc/apt/sources.list
 
 if [ ! -s /usr/bin/lsb_release ]; then
 	apt-get update && apt-get -y install lsb-release
@@ -1894,3 +1895,5 @@ DELIM
 
 #apt-get cleanup
 apt-get clean
+
+echo " Install Finished "

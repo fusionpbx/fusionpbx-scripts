@@ -1359,6 +1359,12 @@ done ) >$CONFIG
 exit 0
 DELIM
 
+#chmod these files to be executable
+for i in confgen genclient.sh genserver.sh
+do chmod +x /usr/bin/${i}
+done
+fi
+
 #Install admin shell menu
 if [[ $install_admin_menu == y ]]; then
 /bin/cat > "/usr/bin/debian.menu" <<DELIM
@@ -1813,19 +1819,11 @@ EOF
  esac
 done
 DELIM
-fi
 
-#chmod these files to be executable
-for i in debian.menu confgen genclient.sh genserver.sh
-do chmod +x /usr/bin/${i}
-done
-fi
+chmod +x /usr/bin/debian.menu
 
-#Enable Admin shell menu
-if [[ $enable_admin_menu == y ]]; then
 /bin/cat >> "/etc/profile" <<DELIM
 /usr/bin/debian.menu
-DELIM
 fi
 
 #apt-get cleanup
