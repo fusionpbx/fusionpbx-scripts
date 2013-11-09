@@ -132,7 +132,8 @@ fi
 
 echo "You're root."
 
-sed '/cdrom/d' /etc/apt/sources.list
+sed -i '/cdrom:/d' /etc/apt/sources.list
+sed -i '2,4d' /etc/apt/sources.list
 
 if [ ! -s /usr/bin/lsb_release ]; then
 	apt-get update && apt-get -y install lsb-release
@@ -1706,7 +1707,6 @@ esac
 done
 }
 
-
 # System Pkg Upgrade
 upgrade(){
 read -p "Are you sure you wish to update your install (y/Y/n/N) "
@@ -1830,3 +1830,5 @@ fi
 
 #apt-get cleanup
 apt-get clean
+
+echo " Install Finished "
