@@ -1,5 +1,5 @@
 #!/bin/bash
-#Date Nov, 9 2013 09:00 EST
+#Date Nov, 18 2013 09:31 EST
 ################################################################################
 # The MIT License (MIT)
 #
@@ -163,19 +163,13 @@ DELIM
 curl http://files.freeswitch.org/repo/deb/debian/freeswitch_archive_g0.pub | apt-key add -
 
 #Updating OS and installed pre deps
-for i in update upgrade
-do apt-get -y "${i}"
-done
-
-#install (MTA) Mail Transport Agent
-apt-get install $MTA
+for i in update upgrade ;do apt-get -y "${i}" ; done
 
 #install Freeswitch Deps
 for i in unzip libjpeg8 libjpeg62 screen htop pkg-config libtiff5 libtiff-tools \
 		ntp bison autotalent ladspa-sdk tap-plugins swh-plugins libgsm1 libfftw3-3 libpython2.7 \
 		libperl5.14 scons libpq5 unixodbc uuid gettext libvlc5 sox flac ngrep memcached
-do apt-get -y install "${i}"
-done
+do apt-get -y install "${i}" ; done
 
 # Freeswitch Base $ Modules Install Options.
 echo " Installing freeswitch all modules"
@@ -202,9 +196,7 @@ for i in /etc/freeswitch/directory/default/*.xml ;do rm $i ; done
 
 # SEE http://wiki.freeswitch.org/wiki/Fail2ban
 #Fail2ban
-for i in fail2ban monit
-do apt-get -y install "${i}"
-done
+for i in fail2ban monit ;do apt-get -y install "${i}" ; done
 
 #Taken From http://wiki.fusionpbx.com/index.php?title=Monit and edited to work with debian pkgs.
 #Adding Monitor to keep freeswitch running.
@@ -326,15 +318,10 @@ chmod 755 /etc/cron.daily/freeswitch_log_rotation
 sed -i "$freeswitch_act_conf"/autoload_configs/logfile.conf.xml -e s,\<param.*name\=\"rollover\".*value\=\"10485760\".*/\>,\<\!\-\-\<param\ name\=\"rollover\"\ value\=\"10485760\"/\>\ INSTALL_SCRIPT\-\-\>,g
 
 # restarti9ng services
-for i in fail2ban freeswitch
-do /etc/init.d/"${i}" restart  >/dev/null 2>&1
-done
+for i in fail2ban freeswitch ;do /etc/init.d/"${i}" restart  >/dev/null 2>&1 ; done
 
 #Install and configure  PHP + Nginx + sqlite3
-for i in ssl-cert sqlite3 nginx php5-cli php5-sqlite php5-odbc php-db \
-	php5-fpm php5-common php5-gd php-pear php5-memcache php-apc
-do apt-get -y install "${i}"
-done
+for i in ssl-cert sqlite3 nginx php5-cli php5-sqlite php5-odbc php-db php5-fpm php5-common php5-gd php-pear php5-memcache php-apc ;do apt-get -y install "${i}" ; done
 
 # Changing file upload size from 2M to 15M
 /bin/sed -i $php_ini -e s,"upload_max_filesize = 2M","upload_max_filesize = 15M",
@@ -469,9 +456,7 @@ ln -s /etc/nginx/sites-available/"$wui_name" /etc/nginx/sites-enabled/"$wui_name
 rm -rf /etc/nginx/sites-enabled/default
 
 #Restarting Nginx and PHP FPM
-for i in nginx php5-fpm
-do /etc/init.d/"${i}" restart > /dev/null 2>&1
-done
+for i in nginx php5-fpm ;do /etc/init.d/"${i}" restart > /dev/null 2>&1 ; done
 
 #Adding users to needed groups
 adduser www-data freeswitch
@@ -526,9 +511,7 @@ chown freeswitch:freeswitch "$freeswitch_log"/xml_cdr
 #fix permissions on the freeswitch xml_cdr dir so fusionpbx can read from it
 find "$freeswitch_log"/xml_cdr -type d -exec chmod 770 {} +
 
-for i in freeswitch nginx php5-fpm
-do /etc/init.d/"${i}" restart >/dev/null 2>&1
-done
+for i in freeswitch nginx php5-fpm ;do /etc/init.d/"${i}" restart >/dev/null 2>&1 ; done
 
 #Pulled From
 #http://wiki.fusionpbx.com/index.php?title=Fail2Ban
@@ -1361,11 +1344,8 @@ DELIM
 fi
 
 #chmod these files to be executable
-for i in confgen genclient.sh genserver.sh
-do chmod +x /usr/bin/${i}
-done
+for i in confgen genclient.sh genserver.sh ;do chmod +x /usr/bin/${i} ; done
 fi
-
 
 #Install admin shell menu
 if [[ $install_admin_menu == y ]]; then
