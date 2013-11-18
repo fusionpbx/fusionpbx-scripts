@@ -1358,12 +1358,14 @@ while ((c--)); do
 done ) >$CONFIG
 exit 0
 DELIM
+fi
 
 #chmod these files to be executable
 for i in confgen genclient.sh genserver.sh
 do chmod +x /usr/bin/${i}
 done
 fi
+
 
 #Install admin shell menu
 if [[ $install_admin_menu == y ]]; then
