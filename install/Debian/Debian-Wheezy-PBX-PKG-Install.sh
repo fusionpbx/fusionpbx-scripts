@@ -34,6 +34,7 @@
 #
 ################################################################################
 #<------Start Option Edit HERE--------->
+# TO Disable freeswitch nat auto detection
 # to start FreeSWITCH with -nonat option set freeswitch_NAT to y
 # Set to y if on public static IP
 freeswitch_nat=n
@@ -49,6 +50,10 @@ fusionpbx_stable=n
 #Used with the pgsql server setup amd client setup
 #THis will echo the information at the end of the install for the Administrator.
 set_db_info=n
+
+# ONLY NEEDE IF USING Posgresql Server remotely 
+#Install postgresql Client 9.x for connection to remote pgsql servers (y/n)
+pgsql_client=n
 
 #Install postgresql server 9.x (y/n) (client included)(Local Machine)
 pgsql_server=n
@@ -67,18 +72,11 @@ database_name=fusionpbx
 #Set FusionPBX database admin name.(used by fusionpbx to access the database table in the pgsql server.
 database_user_name=
 
-# ONLY NEEDE IF USING Posgresql Server remotely 
-#Install postgresql Client 9.x for connection to remote pgsql servers (y/n)
-pgsql_client=n
-
 #      (UNDER DEVEL)
 
 #Future Options not yet implamented,
 #Install new admin shell menu & openvpn scripts.
 install_admin_menu=n
-
-#Enable admin menu at next login.
-enable_admin_menu=n
 
 #<------Stop Options Edit Here-------->
 ###############################################################################
@@ -159,6 +157,7 @@ apt-get -y install curl
 deb http://files.freeswitch.org/repo/deb/debian/ wheezy main
 deb-src http://files.freeswitch.org/repo/deb/debian/ wheezy main
 DELIM
+
 #adding key for freeswitch repo
 curl http://files.freeswitch.org/repo/deb/debian/freeswitch_archive_g0.pub | apt-key add -
 
@@ -166,10 +165,7 @@ curl http://files.freeswitch.org/repo/deb/debian/freeswitch_archive_g0.pub | apt
 for i in update upgrade ;do apt-get -y "${i}" ; done
 
 #install Freeswitch Deps
-for i in unzip libjpeg8 libjpeg62 screen htop pkg-config libtiff5 libtiff-tools \
-		ntp bison autotalent ladspa-sdk tap-plugins swh-plugins libgsm1 libfftw3-3 libpython2.7 \
-		libperl5.14 scons libpq5 unixodbc uuid gettext libvlc5 sox flac ngrep memcached
-do apt-get -y install "${i}" ; done
+for i in screen pkg-config libtiff5 libtiff-tools autotalent ladspa-sdk tap-plugins swh-plugins libfftw3-3 unixodbc uuid memcached ;do apt-get -y install "${i}" ; done
 
 # Freeswitch Base $ Modules Install Options.
 echo " Installing freeswitch all modules"
@@ -1341,11 +1337,11 @@ while ((c--)); do
 done ) >$CONFIG
 exit 0
 DELIM
-fi
+
 
 #chmod these files to be executable
 for i in confgen genclient.sh genserver.sh ;do chmod +x /usr/bin/${i} ; done
-fi
+
 
 #Install admin shell menu
 if [[ $install_admin_menu == y ]]; then
@@ -1806,6 +1802,7 @@ chmod +x /usr/bin/debian.menu
 
 /bin/cat >> "/etc/profile" <<DELIM
 /usr/bin/debian.menu
+DELIM
 fi
 
 #apt-get cleanup
