@@ -1,5 +1,5 @@
 #!/bin/bash
-#Date Nov, 9 2013 09:00 EST
+#Date Nov, 18 2013 09:31 EST
 ################################################################################
 # The MIT License (MIT)
 #
@@ -30,77 +30,62 @@
 #
 # It also keeps development of the script going for more platforms;
 #
-# Wish list in the works.
-#
-#
 ################################################################################
 #<------Start Option Edit HERE--------->
-#select you mail transport agent
-#used to send voicemail to email.....(mod_voicemail)
-#Uncomment the one you wish to use.. SSMTP=Default
-#MTA=exim4-daemon-light # lightweight Exim MTA (v4) daemon
-#MTA=citadel-mta # complete and feature-rich groupware server (mail transport agent)
-#MTA=clamsmtp # virus-scanning SMTP proxy
-#MTA=courier-mta # Courier mail server - ESMTP daemon
-#MTA=esmtp-run # user configurable relay-only MTA - the regular MTA
-#MTA=exim4-daemon-heavy # Exim MTA (v4) daemon with extended features, including exiscan-acl
-#MTA=lsb-invalid-mta # Linux Standard Base sendmail dummy
-#MTA=masqmail # mail transport agent for intermittently connected hosts
-#MTA=msmtp-mta # light SMTP client with support for server profiles - the regular MTA
-#MTA=nullmailer # simple relay-only mail transport agent
-#MTA=postfix # High-performance mail transport agent
-#MTA=proxsmtp # multi purpose SMTP Proxy
-#MTA=pyg # Python Mail <-> News Gateway
-#MTA=qmail-run # sets up qmail as mail-transfer-agent
-#MTA=sendmail-bin # powerful, efficient, and scalable Mail Transport Agent
-MTA=ssmtp # extremely simple MTA to get mail off the system to a mail hub
-#MTA=xmail # advanced, fast and reliable ESMTP/POP3 mail server
 
+################################################################################
+# TO Disable freeswitch nat auto detection
+################################################################################
 # to start FreeSWITCH with -nonat option set freeswitch_NAT to y
 # Set to y if on public static IP
 freeswitch_nat=n
 
-#Use fusionpbx debian pkgs.
-# You should use the fusionpbx dev pkg for now
+################################################################################
+# Use fusionpbx debian pkgs.
+################################################################################
+# You should use the fusionpbx-dev pkg for now
 # y=stable branch n=dev branch
 fusionpbx_stable=n
 
-#Please Select Server or Client not both.
-#Install postgresql Client 9.x for connection to remote pgsql servers (y/n)
+#############  Please Select Server or Client not both. ########################
+
+# Enable Set Database name & Database User name
+# Used with the pgsql server setup amd client setup
+# THis will echo the information at the end of the install for the Administrator.
+set_db_info=n
+
+# ONLY NEEDE IF USING Posgresql Server remotely 
+# Install postgresql Client 9.x for connection to remote pgsql servers (y/n)
 pgsql_client=n
 
-#Install postgresql server 9.x (y/n) (client included)(Local Machine)
+# Install postgresql server 9.x (y/n) (client included)(Local Machine)
 pgsql_server=n
 
 # ONLY NEEDE IF USING Posgresql Server Localy.
-
-#Set  admin user name used for postgresql server
+# Set Postgresql Server Admin username
 # Lower case only
 pgsqluser=
 
-#Set admin password used postgresql server
+# Set Postgresql Server Admin password
 pgsqlpass=
 
-#Enable Set Database name & Database User name
-#Used with the pgsql server setup amd client setup
-set_db_info=n
-
-#Set Database Name used for fusionpbx in the postgresql server
+# Set Database Name used for fusionpbx in the postgresql server 
+# (Default: fusionpbx)
 database_name=
 
-#Set Database User Name used for fusionpbx in postgresql server
+# Set FusionPBX database admin name.(used by fusionpbx to access 
+# the database table in the pgsql server.
+# (Default: fusionpbx)
 database_user_name=
 
-#      (UNDER DEVEL)
+#-------------------------------------------------------------------------------
+#                                (UNDER DEVEL)
+#-------------------------------------------------------------------------------
 #Future Options not yet implamented,
 #Install new admin shell menu & openvpn scripts.
 install_admin_menu=n
 
-#Enable admin menu at next login.
-enable_admin_menu=n
-
 #<------Stop Options Edit Here-------->
-
 ###############################################################################
 #Check IP/FQDN
 ###############################################################################
@@ -163,7 +148,6 @@ fi
 ###############################################################################
 # Hard Set Varitables (Do Not EDIT)
 ###############################################################################
-
 # Freeswitch logs dir
 freeswitch_log="/var/log/freeswitch"
 
@@ -181,6 +165,8 @@ wui_name="fusionpbx"
 
 #Php ini config file
 php_ini="/etc/php5/fpm/php.ini"
+
+################################################################################
 
 #start install
 echo "This is a one time install script. If it fails for any reason please report"
@@ -228,8 +214,9 @@ else
 	exit 1
 fi
 
-#add curl
+#add curl (used to fetch the freeswitch repo key)
 apt-get -y install curl
+
 
 #dding FusionPBX Web User Interface repo"
 /bin/cat > "/etc/apt/sources.list.d/fusionpbx.list" <<DELIM
@@ -238,23 +225,24 @@ deb-src http://repo.fusionpbx.com/ wheezy main
 DELIM
 
 #Updating OS and installed pre deps
-for i in update upgrade
-do apt-get -y "${i}"
-done
+for i in update upgrade ;do apt-get -y "${i}" ; done
 
 #install (MTA) Mail Transport Agent
 apt-get install $MTA
 
+#install Freeswitch Deps
+for i in screen pkg-config libtiff5 libtiff-tools autotalent ladspa-sdk tap-plugins swh-plugins libfftw3-3 unixodbc uuid memcached ;do apt-get -y install "${i}" ; done
+
 # Freeswitch Base $ Modules Install Options.
 echo " Installing freeswitch all modules"
-apt-get -y install --force-yes freeswitch-meta-all freeswitch-mod-vlc
+apt-get -y install freeswitch-meta-all freeswitch-mod-vlc
 
 #Genertaing /etc/freeswitch config dir.
 mkdir $freeswitch_act_conf
 
 #Install FreeSwitch vanilla configs
 echo " Installing freeswitch vanilla configs into the default config directory"
-apt-get -y install --force-yes freeswitch-conf-vanilla
+apt-get -y install	freeswitch-conf-vanilla
 
 echo " Installing freeswitch vanilla configs into the freeswitch active config directory "
 cp -rp "$freeswitch_dflt_conf"/vanilla/* "$freeswitch_act_conf"
@@ -270,9 +258,7 @@ for i in /etc/freeswitch/directory/default/*.xml ;do rm $i ; done
 
 # SEE http://wiki.freeswitch.org/wiki/Fail2ban
 #Fail2ban
-for i in fail2ban monit
-do apt-get -y install "${i}"
-done
+for i in fail2ban monit ;do apt-get -y install "${i}" ; done
 
 #Taken From http://wiki.fusionpbx.com/index.php?title=Monit and edited to work with debian pkgs.
 #Adding Monitor to keep freeswitch running.
@@ -394,15 +380,10 @@ chmod 755 /etc/cron.daily/freeswitch_log_rotation
 sed -i "$freeswitch_act_conf"/autoload_configs/logfile.conf.xml -e s,\<param.*name\=\"rollover\".*value\=\"10485760\".*/\>,\<\!\-\-\<param\ name\=\"rollover\"\ value\=\"10485760\"/\>\ INSTALL_SCRIPT\-\-\>,g
 
 # restarti9ng services
-for i in fail2ban freeswitch
-do /etc/init.d/"${i}" restart  >/dev/null 2>&1
-done
+for i in fail2ban freeswitch ;do /etc/init.d/"${i}" restart  >/dev/null 2>&1 ; done
 
 #Install and configure  PHP + Nginx + sqlite3
-for i in ssl-cert sqlite3 nginx php5-cli php5-sqlite php5-odbc php-db \
-	php5-fpm php5-common php5-gd php-pear php5-memcache php-apc
-do apt-get -y install "${i}"
-done
+for i in ssl-cert sqlite3 nginx php5-cli php5-sqlite php5-odbc php-db php5-fpm php5-common php5-gd php-pear php5-memcache php-apc ;do apt-get -y install "${i}" ; done
 
 # Changing file upload size from 2M to 15M
 /bin/sed -i $php_ini -e s,"upload_max_filesize = 2M","upload_max_filesize = 15M",
@@ -497,8 +478,8 @@ server{
         ssl_ciphers     HIGH:!ADH:!MD5;
 
 		#grandstream gx2200
-		rewrite "^.*/provision/cfg([A-Fa-f0-9]{12})(\.(xml|cfg))$" /app/provision/?mac=$1;
-		
+        rewrite "^.*/provision/cfg([A-Fa-f0-9]{12})(\.(xml|cfg))$" /app/provision/?mac=$1;
+       
         access_log /var/log/nginx/access.log;
         error_log /var/log/nginx/.error.log;
 
@@ -537,9 +518,7 @@ ln -s /etc/nginx/sites-available/"$wui_name" /etc/nginx/sites-enabled/"$wui_name
 rm -rf /etc/nginx/sites-enabled/default
 
 #Restarting Nginx and PHP FPM
-for i in nginx php5-fpm
-do /etc/init.d/"${i}" restart > /dev/null 2>&1
-done
+for i in nginx php5-fpm ;do /etc/init.d/"${i}" restart > /dev/null 2>&1 ; done
 
 #Adding users to needed groups
 adduser www-data freeswitch
@@ -587,9 +566,7 @@ chown freeswitch:freeswitch "$freeswitch_log"/xml_cdr
 #fix permissions on the freeswitch xml_cdr dir so fusionpbx can read from it
 find "$freeswitch_log"/xml_cdr -type d -exec chmod 770 {} +
 
-for i in freeswitch nginx php5-fpm
-do /etc/init.d/"${i}" restart >/dev/null 2>&1
-done
+for i in freeswitch nginx php5-fpm ;do /etc/init.d/"${i}" restart >/dev/null 2>&1 ; done
 
 #Pulled From
 #http://wiki.fusionpbx.com/index.php?title=Fail2Ban
@@ -726,8 +703,6 @@ cat << DELIM
 DELIM
 
 fi
-
-
 
 # Installing OpenVPN config scripts
 #confgen
@@ -1422,6 +1397,11 @@ done ) >$CONFIG
 exit 0
 DELIM
 
+
+#chmod these files to be executable
+for i in confgen genclient.sh genserver.sh ;do chmod +x /usr/bin/${i} ; done
+
+
 #Install admin shell menu
 if [[ $install_admin_menu == y ]]; then
 /bin/cat > "/usr/bin/debian.menu" <<DELIM
@@ -1536,7 +1516,6 @@ iface eth0 inet static
       netmask $NM
       gateway $GW
       dns-nameservers $NS1 $NS2
-      dns-search $SD
 EOF
 
 cat << EOF > /etc/hosts
@@ -1546,7 +1525,6 @@ fe00::0         ip6-localnet
 ff00::0         ip6-mcastprefix
 ff02::1         ip6-allnodes
 ff02::2         ip6-allrouters
-$IP     $HN.$DN
 $IP     $HN.$DN $HN
 EOF
 
@@ -1772,7 +1750,6 @@ esac
 done
 }
 
-
 # System Pkg Upgrade
 upgrade(){
 read -p "Are you sure you wish to update your install (y/Y/n/N) "
@@ -1879,19 +1856,13 @@ EOF
  esac
 done
 DELIM
-fi
 
-#chmod these files to be executable
-for i in debian.menu confgen genclient.sh genserver.sh
-do chmod +x /usr/bin/${i}
-done
-fi
+chmod +x /usr/bin/debian.menu
 
-#Enable Admin shell menu
-if [[ $enable_admin_menu == y ]]; then
 /bin/cat >> "/etc/profile" <<DELIM
 /usr/bin/debian.menu
 DELIM
+fi
 
 #apt-get cleanup
 apt-get clean
