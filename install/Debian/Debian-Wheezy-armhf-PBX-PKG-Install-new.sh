@@ -54,7 +54,7 @@ fusionpbx_stable=n
 # THis will echo the information at the end of the install for the Administrator.
 set_db_info=n
 
-# ONLY NEEDE IF USING Posgresql Server remotely 
+# ONLY NEED IF USING Posgresql Server remotely 
 # Install postgresql Client 9.x for connection to remote pgsql servers (y/n)
 pgsql_client=n
 
@@ -181,7 +181,7 @@ echo "This Script Currently Requires a internet connection "
 wget -q --tries=10 --timeout=5 http://www.google.com -O /tmp/index.google &> /dev/null
 
 if [ ! -s /tmp/index.google ];then
-	echo "No Internet connection. Please plug in the ethernet cable into eth0"
+	echo "No Internet connection. Please check ethernet cable"
 	exit 1
 else
 	echo "continuing!"
@@ -190,7 +190,7 @@ fi
 # OS ENVIRONMENT CHECKS
 #check for root
 if [ $EUID -ne 0 ]; then
-   echo "Must Run As Root" 1>&2
+   echo "Must Run As Root and NOT SUDO" 1>&2
    exit 1
 fi
 
@@ -214,10 +214,6 @@ else
 	exit 1
 fi
 
-#add curl (used to fetch the freeswitch repo key)
-apt-get -y install curl
-
-
 #dding FusionPBX Web User Interface repo"
 /bin/cat > "/etc/apt/sources.list.d/fusionpbx.list" <<DELIM
 deb http://repo.fusionpbx.com wheezy main
@@ -231,7 +227,7 @@ for i in update upgrade ;do apt-get -y "${i}" ; done
 apt-get install $MTA
 
 #install Freeswitch Deps
-for i in screen pkg-config libtiff5 libtiff-tools autotalent ladspa-sdk tap-plugins swh-plugins libfftw3-3 unixodbc uuid memcached ;do apt-get -y install "${i}" ; done
+for i in curl screen pkg-config libtiff5 libtiff-tools autotalent ladspa-sdk tap-plugins swh-plugins libfftw3-3 unixodbc uuid memcached ;do apt-get -y install "${i}" ; done
 
 # Freeswitch Base $ Modules Install Options.
 echo " Installing freeswitch all modules"
@@ -524,8 +520,6 @@ for i in nginx php5-fpm ;do /etc/init.d/"${i}" restart > /dev/null 2>&1 ; done
 adduser www-data freeswitch
 adduser freeswitch www-data
 
-apt-get update
-
 # Install FusionPBX Web User Interface
 echo "Installing FusionPBX Web User Interface Debian pkg"
 
@@ -684,6 +678,7 @@ DELIM
 else
 
 clear
+
 echo
 echo
 	printf '	Please open a web-browser to http://'; ip -f inet addr show dev eth0 | sed -n 's/^ *inet *\([.0-9]*\).*/\1/p'
@@ -1867,4 +1862,4 @@ fi
 #apt-get cleanup
 apt-get clean
 
-echo " Install Finished "
+echo " Install Has Finished...  "
