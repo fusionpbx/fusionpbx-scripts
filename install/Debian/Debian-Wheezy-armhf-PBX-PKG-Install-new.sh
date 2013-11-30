@@ -231,14 +231,14 @@ for i in curl screen pkg-config libtiff5 libtiff-tools autotalent ladspa-sdk tap
 
 # Freeswitch Base $ Modules Install Options.
 echo " Installing freeswitch all modules"
-apt-get -y install freeswitch-meta-all freeswitch-mod-vlc
+apt-get -y install --force-yes freeswitch-meta-all freeswitch-mod-vlc
 
 #Genertaing /etc/freeswitch config dir.
 mkdir $freeswitch_act_conf
 
 #Install FreeSwitch vanilla configs
 echo " Installing freeswitch vanilla configs into the default config directory"
-apt-get -y install	freeswitch-conf-vanilla
+apt-get -y install --force-yes	freeswitch-conf-vanilla
 
 echo " Installing freeswitch vanilla configs into the freeswitch active config directory "
 cp -rp "$freeswitch_dflt_conf"/vanilla/* "$freeswitch_act_conf"
