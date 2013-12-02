@@ -1,5 +1,5 @@
 #!/bin/bash
-#Date Nov, 18 2013 09:31 EST
+#Date Dec, 1 2013 12:00 EST
 ################################################################################
 # The MIT License (MIT)
 #
@@ -50,31 +50,34 @@ fusionpbx_stable=n
 #############  Please Select Server or Client not both. ########################
 
 # Enable Set Database name & Database User name
-# Used with the pgsql server setup amd client setup
+# Used with the postgresql server setup amd client setup
 # THis will echo the information at the end of the install for the Administrator.
 set_db_info=n
 
 # ONLY NEED IF USING Posgresql Server remotely 
-# Install postgresql Client 9.x for connection to remote pgsql servers (y/n)
-pgsql_client=n
+# Install postgresql Client 9.x for connection to remote postgresql servers (y/n)
+postgresql_client=n
 
 # Install postgresql server 9.x (y/n) (client included)(Local Machine)
-pgsql_server=n
+# You should not use postgresql server on a emmc/sd. It cuts the performance 
+# life in half due to all the needed reads and writes. This cuts the life of 
+# your pbx emmc/sd in half. 
+postgresql_server=n
 
 # ONLY NEEDE IF USING Posgresql Server Localy.
 # Set Postgresql Server Admin username
 # Lower case only
-pgsqluser=
+postgresqluser=
 
 # Set Postgresql Server Admin password
-pgsqlpass=
+postgresqlpass=
 
 # Set Database Name used for fusionpbx in the postgresql server 
 # (Default: fusionpbx)
 database_name=
 
 # Set FusionPBX database admin name.(used by fusionpbx to access 
-# the database table in the pgsql server.
+# the database table in the postgresql server.
 # (Default: fusionpbx)
 database_user_name=
 
@@ -101,7 +104,7 @@ then
 # Configure hostename
 read -r -p "Please set your system hostname (example: pbx):" HN
 read -r -p "Please set your system domain name (example: mydomain.com):" DN
-# Configure WAN network interface
+# Configure WAN/Realvworld network interface
 read -r -p "Please  set your system IP (local ip or domain ip)  :" IP
 read -r -p "Please enter the network mask :" NM
 read -r -p "Please enter the network gateway :" GW
@@ -150,28 +153,22 @@ fi
 ###############################################################################
 # Freeswitch logs dir
 freeswitch_log="/var/log/freeswitch"
-
 #Freeswitch default configs location
 freeswitch_dflt_conf="/usr/share/freeswitch/conf"
-
 #Freeswitch active config directory
 freeswitch_act_conf="/etc/freeswitch"
-
 #Nginx default www dir
 WWW_PATH="/usr/share/nginx/www" #debian nginx default dir
-
 #set Web User Interface Dir Name
 wui_name="fusionpbx"
-
 #Php ini config file
 php_ini="/etc/php5/fpm/php.ini"
-
 ################################################################################
 
 #start install
-echo "This is a one time install script. If it fails for any reason please report"
-echo "to r.neese@gmail.com . Include any screen output you can to show where it"
-echo "fails."
+echo "This is a one time install script. It is not intended to be run multi times"
+echo "If it fails for any reason please report to r.neese@gmail.com. Include any "
+echo "screen output you can to show where it fails."
 echo
 echo "This Script Currently Requires a internet connection "
 
@@ -204,8 +201,7 @@ if [ ! -s /usr/bin/lsb_release ]; then
 fi
 
 # Os/Distro Check
-lsb_release -c |grep -i wheezy > /dev/null
-
+lsb_release -c | grep -i wheezy > /dev/null
 if [[ $? -eq 0 ]]; then
 	DISTRO=wheezy
 	echo "Found Debian 7 (wheezy)"
@@ -214,11 +210,27 @@ else
 	exit 1
 fi
 
-#dding FusionPBX Web User Interface repo"
+#adding FusionPBX Web User Interface repo"
+arch | grep -i armv71 > /dev/null
+if [[ $? -eq 0 ]]; then
 /bin/cat > "/etc/apt/sources.list.d/fusionpbx.list" <<DELIM
 deb http://repo.fusionpbx.com wheezy main
 deb-src http://repo.fusionpbx.com/ wheezy main
 DELIM
+else
+/bin/cat > "/etc/apt/sources.list.d/freeswitch.list" <<DELIM
+deb http://files.freeswitch.org/repo/deb/debian/ wheezy main
+deb-src http://files.freeswitch.org/repo/deb/debian/ wheezy main
+DELIM
+
+#adding key for freeswitch repo
+curl http://files.freeswitch.org/repo/deb/debian/freeswitch_archive_g0.pub | apt-key add -
+
+/bin/cat > "/etc/apt/sources.list.d/fusionpbx.list" <<DELIM
+deb http://repo.fusionpbx.com wheezy main
+deb-src http://repo.fusionpbx.com/ wheezy main
+DELIM
+fi
 
 #Updating OS and installed pre deps
 for i in update upgrade ;do apt-get -y "${i}" ; done
@@ -605,8 +617,8 @@ else
 	db_passwd="Admin Please Select A Secure Password for your Postgresql Fusionpbx Database"
 fi
 
-#Install pgsql-client
-if [[ $pgsql_client == y ]]; then
+#Install postgresql-client
+if [[ $postgresql_client == y ]]; then
 	clear
 	for i in postgresql-client-9.1 php5-pgsql
 	do apt-get -y install "${i}"
@@ -629,19 +641,19 @@ cat << DELIM
 	On the Second Configuration Page of the web user intercae please fill in the following fields:
 
 	Server: Use the IP or Doamin name assigned to the remote postgresql database server machine
-	Port: use the port for the remote pgsql server
+	Port: use the port for the remote postgresql server
 	Database Name: "$db_name"
 	Database Username: "$db_user_name"
 	Database Password: "$db_passwd"
-	Create Database Username: Database_Superuser_Name of the remote pgsql server
-	Create Database Password: Database_Superuser_password of the remote pgsql server
+	Create Database Username: Database_Superuser_Name of the remote postgresql server
+	Create Database Password: Database_Superuser_password of the remote postgresql server
 
 DELIM
 
 fi
 
-#install pgsql-server
-if [[ $pgsql_server == y ]]; then
+#install postgresql-server
+if [[ $postgresql_server == y ]]; then
 	clear
 	for i in postgresql-9.1 php5-pgsql
 	do apt-get -y install "${i}"
@@ -650,7 +662,7 @@ if [[ $pgsql_server == y ]]; then
 	/etc/init.d/php5-fpm restart
 
 	#Adding a SuperUser and Password for Postgresql database.
-	su -l postgres -c "/usr/bin/psql -c \"create role $pgsqluser with superuser login password '$pgsqlpass'\""
+	su -l postgres -c "/usr/bin/psql -c \"create role $postgresqluser with superuser login password '$postgresqlpass'\""
 	clear
 	echo
 	echo
@@ -670,15 +682,13 @@ cat << DELIM
 	Database Name: "$db_name"
 	Database Username: "$db_user_name"
 	Database Password: "$db_passwd"
-	Create Database Username: "$pgsqluser"
-	Create Database Password: "$pgsqlpass"
+	Create Database Username: "$postgresqluser"
+	Create Database Password: "$postgresqlpass"
 
 DELIM
 
 else
-
 clear
-
 echo
 echo
 	printf '	Please open a web-browser to http://'; ip -f inet addr show dev eth0 | sed -n 's/^ *inet *\([.0-9]*\).*/\1/p'
@@ -1392,16 +1402,14 @@ done ) >$CONFIG
 exit 0
 DELIM
 
-
 #chmod these files to be executable
 for i in confgen genclient.sh genserver.sh ;do chmod +x /usr/bin/${i} ; done
 
-
 #Install admin shell menu
 if [[ $install_admin_menu == y ]]; then
-/bin/cat > "/usr/bin/debian.menu" <<DELIM
+/bin/cat > "/usr/bin/menu.sh" <<DELIM
 #!/bin/bash
-#Date AUG, 14 2013 18:20 EST
+#Date Dec, 1 2013 8:30 EST
 ################################################################################
 # The MIT License (MIT)
 #
@@ -1426,51 +1434,6 @@ if [[ $install_admin_menu == y ]]; then
 # THE SOFTWARE.
 ################################################################################
 
-set -eu
-
-#Base Varitables
-USRBASE="/usr"
-BACKUPDIR="/root/pbx-backup"
-
-#Freeswitch Directories
-# Freeswitch logs dir
-FS_LOG="/var/log/freeswitch"
-
-#freeswitch db/recording/storage/voicemail/fax dir
-FS_LIB="/var/lib/freeswitch"
-FS_DB="/var/lib/freeswitch/db"
-FS_REC="/var/lib/freeswitch/recordings"
-FS_STOR="/var/lib/freeswitch/storage"
-
-#freeswitch modules dir
-FS_MOD="/usr/lib/freeswitch/mod"
-
-#defalt configs dir / grammer / lang / sounds
-FS_DFLT_CONF="/usr/share/freeswitch/conf"
-FS_GRAM="/usr/share/freeswitch/grammar"
-FS_LANG="/usr/share/freeswitch/lang"
-FS_SCRPT="/usr/share/freeswitch/scripts"
-
-#Freeswitch Sounds Dir
-FS_SNDS="/usr/share/freeswitch/sounds"
-
-#Freeswitch active config files
-FS_ACT_CONF="/etc/freeswitch"
-
-#WWW directory
-WWW_PATH="$USRBASE/share/nginx/www"
-
-#WUI Name
-WUI_NAME="fusionpbx"
-
-#Fusionpbx DB Dir
-FPBX_DB="/var/lib/fusionpbx/db"
-
-#FusionPBX Scripts Dir (DialPLan Scripts for use with Freeswitch)
-FPBX_SCRPT="/var/lib/fusionpbx/scripts"
-
-################################################################
-
 # Disacle CTL C (Disable CTL-C so you can not escape the menu)
 #trap "" SIGTSTP
 trap "" 2
@@ -1478,32 +1441,70 @@ trap "" 2
 # Reassign ctl+d to ctl+_
 stty eof  '^_'
 
+################################################################################
+
+#Base Varitables
+USRBASE="/usr"
+BACKUPDIR="/root/pbx-backup"
+
+#Freeswitch/Fusionpbx Directories
+# Freeswitch logs dir
+FS_LOG="/var/log/freeswitch"
+#freeswitch db/recording/storage/voicemail/fax dir
+FS_LIB="/var/lib/freeswitch"
+FS_DB="/var/lib/freeswitch/db"
+FS_REC="/var/lib/freeswitch/recordings"
+FS_STOR="/var/lib/freeswitch/storage"
+#freeswitch modules dir
+FS_MOD="/$USRBASE/lib/freeswitch/mod"
+#defalt configs dir / grammer / lang / sounds
+FS_DFLT_CONF="/$USRBASE/share/freeswitch/conf"
+FS_GRAM="/$USRBASE/share/freeswitch/grammar"
+FS_LANG="/$USRBASE/share/freeswitch/lang"
+FS_SCRPT="/$USRBASE/share/freeswitch/scripts"
+#Freeswitch Sounds Dir
+FS_SNDS="/$USRBASE/share/freeswitch/sounds"
+#Freeswitch active config files
+FS_ACT_CONF="/etc/freeswitch"
+#WWW directory
+WWW_PATH="$USRBASE/share/nginx/www"
+#WUI Name
+WUI_NAME="fusionpbx"
+#Fusionpbx DB Dir
+FPBX_DB="/var/lib/fusionpbx/db"
+#FusionPBX Scripts Dir (DialPLan Scripts for use with Freeswitch)
+FPBX_SCRPT="/var/lib/fusionpbx/scripts"
+
+################################################################################
 # Set Root Password
-set_root_password(){
+set_root(){
 /usr/bin/passwd
 }
 
 # Set System Time Zone
-set_local_tz(){
+set_tz(){
 /usr/sbin/dpkg-reconfigure tzdata
 }
 
-# Setup Primary Network Interface
-set_net_1(){
+#Networking
+# Wide Area Network Interface
+set_wan(){
 # Configure hostename
 read -r -p "Please set your system hostname (pbx):" HN
+#Configure domain
 read -r -p "Please set your system domainname (mydomain.com):" DN
-# Configure WAN network interface
+# Configure WAN / Primary network interface
 read -r -p "Please  set your system doman IP (Same as the Domain IP ) :" IP
 read -r -p "Please enter the network mask :" NM
 read -r -p "Please enter the network gateway :" GW
 read -r -p "Please enter the primary dns source:" NS1
 read -r -p "Please enter the secondary dns source :" NS2
-read -r -p "Please enter the dns search domain :" SD
 cat << EOF > /etc/network/interfaces
+
 # The loopback network interface
 auto lo
 iface lo inet loopback
+
 # The primary network interface
 allow-hotplug eth0
 iface eth0 inet static
@@ -1528,20 +1529,51 @@ $HN
 EOF
 }
 
-# Setup Secondary Network Interface
-set_net_2(){
+# Local Area Network Interface
+set_lan(){
 # Configure LAN network interface
 read -r -p "Please  set your system doman IP (Same as the Domain IP ) :" IP
 read -r -p "Please enter the network mask :" NM
 read -r -p "Please enter the network gateway :" GW
 
 cat << EOF >> /etc/network/interfaces
+
 # The secondary network interface
 allow-hotplug eth1
 iface eth0 inet static
         address $IP
         netmask $NM
         gateway $GW
+EOF
+}
+
+# Setup Wifi Interface
+set_wlan(){
+# Configure WIFI network interface
+read -r -p "Please set your wireless IP  :" WIP
+read -r -p "Please enter the network mask :" WNM
+read -r -p "Please enter the network gateway :" WGW
+cat << EOF >> /etc/network/interfaces
+
+# The wifi network interface
+allow-hotplug wlan0
+iface wlan0 inet static
+        wpa-conf /etc/wpa_supplicant/wpa_supplicant.conf
+        address $WIP
+        netmask $WNM
+        gateway $WGW
+EOF
+
+#configuring wpa security
+read -r -p "Please set your wireless network SSID :" MYSSID
+read -r -p "Please enter your wireless security password :" PHRASE
+cat << EOF >> /etc/wap_supplicant/wpa_supplicant.conf
+network={
+        ssid="$MYSSID"
+        scan_ssid=1
+        key_mgmt=WPA-PSK
+        psk="$PHRASE"
+}
 EOF
 }
 
@@ -1566,9 +1598,9 @@ done
 
 list_web_options(){
 cat << EOF
-1) start
-2) stop
-3) restart
+1) start / enable Web Interface
+2) stop /disable Web Interface
+3) restart if non responsive.
 4) Return to main menu
 Choice:
 EOF
@@ -1624,7 +1656,7 @@ find "$FS_ACT_CONF" -type d -exec chmod 770 {} +
 
 # remove fusionpbx db and config files
 
-if exists "$FBPX_DB"/fusionpbx.db 
+if [ -f "$FBPX_DB"/fusionpbx.db ] 
 then
 rm -f "$FBPX_DB"/fusionpbx.db
 fi
@@ -1658,10 +1690,10 @@ done
 }
 
 # Factory Reset Postgresql Database
-drop_pgsql_db(){
+drop_db(){
 echo "This will drop the current postgresql database table for the pbx."
 while : ;do
-read -p "Are you sure you wish drop the current pgsql db table? (y/Y/n/N)"
+read -p "Are you sure you wish drop the current postgresql db table? (y/Y/n/N)"
 case "$REPLY" in
  n|N) break ;;
  y|Y)
@@ -1783,11 +1815,28 @@ if [[ $REPLY =~ ^[Dd]$ ]]
 then
 /bin/sed -i /etc/default/freeswitch -e s,'^DAEMON_OPTS=.*','DAEMON_OPTS="-scripts /var/lib/fusionpbx/scripts -rp"',
 /bin/echo "init script set to start 'freeswitch -nc -scripts /var/lib/fusionpbx/scripts -rp'"
-/etc/init.d/freeswitch restart  >/dev/null 2>&1
+/etc/init.d/ssh restart  >/dev/null 2>&1
 else
 if [[ $REPLY =~ ^[Ee]$ ]]
 then
 /bin/sed -i /etc/default/freeswitch -e s,'^DAEMON_OPTS=.*','DAEMON_OPTS="-scripts /var/lib/fusionpbx/scripts -rp -nonat"',
+/bin/echo "init script set to start 'freeswitch -nc -scripts /var/lib/fusionpbx/scripts -rp -nonat'"
+/etc/init.d/ssh restart  >/dev/null 2>&1
+fi
+fi
+}
+
+root_ssh() {
+read -p "Are you sure you wish to enable/disable ssh root login e/E=enable d/D=disable (e/E/d/D) "
+if [[ $REPLY =~ ^[Dd]$ ]]
+then
+/bin/sed -i /etc/ssh/sshd_config -e s,'^#PermitRootLogin no','PermitRootLogin no',
+/bin/echo "init script set to start 'freeswitch -nc -scripts /var/lib/fusionpbx/scripts -rp'"
+/etc/init.d/freeswitch restart  >/dev/null 2>&1
+else
+if [[ $REPLY =~ ^[Ee]$ ]]
+then
+/bin/sed -i /etc/ssh/sshd_config -e s,'^PermitRootLogin no','#PermitRootLogin no',
 /bin/echo "init script set to start 'freeswitch -nc -scripts /var/lib/fusionpbx/scripts -rp -nonat'"
 /etc/init.d/freeswitch restart  >/dev/null 2>&1
 fi
@@ -1799,60 +1848,88 @@ while : ;do
 #Clears Screen & Displays System Info
 /usr/bin/clear
 echo ""
-printf 'HostName/DomainName: '; /bin/hostname
 printf 'System Uptime: '; /usr/bin/uptime
-printf 'System Primary IP: '; ip -f inet addr show dev eth0 | sed -n 's/^ *inet *\([.0-9]*\).*/\1/p'
-printf 'System Secondary IP: '; ip -f inet addr show dev eth1 | sed -n 's/^ *inet *\([.0-9]*\).*/\1/p'
+printf 'HostName/DomainName: '; /bin/hostname
+ip link show "eth0" &> /dev/null 
+printf 'WAN IP: '; ip -f inet addr show dev eth0 | sed -n 's/^ *inet *\([.0-9]*\).*/\1/p'
+ip link show "eth1" &> /dev/null 2>&1
+if [[ $? -eq 0 ]]; then
+	printf 'Lan IP: '; ip -f inet addr show dev eth1 | sed -n 's/^ *inet *\([.0-9]*\).*/\1/p'
+fi
+ip link show "wlan0" &> /dev/null 2>&1
+if [[ $? -eq 0 ]]; then
+	printf 'WLan IP: '; ip -f inet addr show dev wlan0 | sed -n 's/^ *inet *\([.0-9]*\).*/\1/p'
+fi
+echo ""
 #Displays Option Menu
-cat << EOF
-
-	PBX Administration Menu:
-
- *** Setup / Configuration ***
- 1) Set/Change Root Password      2) Set Timezone & Time
- 3) Setup Network Interface(WAN)  4) Setup Network Interface (LAN)
- 5) Setup OpenVPN Connections
-
-  ******** Maintance *********
- 6) Web Service Options	      7) Freeswitch CLI       8) Restart Freeswitch
- 9) Clear & Rotate logs       10) Backup PBX System   11) Factory Reset System
- 12) Drop Postgres Database   13) Reboot System       14) Power Off System
- 15) Disable/Enable nat       16) Drop to Shell       x) Logout
-     Freeswitch
-
-  ***** Upgrade Options *****
- u) Upgrade
-
-Choice:
-EOF
+echo '	PBX Administration Menu:'
+echo ''
+echo '----- Network Configuration -------'
+echo ''
+echo ' w) Configure Wide Area Network (WAN)'
+ip link show "eth1" &> /dev/null 2>&1
+if [[ $? -eq 0 ]]; then
+	echo ' l ) Configure Local Area Network (LAN)'
+fi 
+ ip link show "wlan0" &> /dev/null 2>&1
+if [[ $? -eq 0 ]]; then
+	echo ' wl ) Configure Wireless Local Area Network (WLAN)'
+fi 
+echo ''
+echo '-------- VPN Configuration -------'
+echo ""
+echo ' vpn) Configure OpenVPN Connections'
+echo ''
+echo '--------- Maintance ---------------'
+echo ''
+echo ' 1) Set Root Password     2) Configure System Timezone & Time'
+echo ' 3) Web Service Options   4) Freeswitch CLI           5) Restart Freeswitch'
+echo ' 6) Clear & Rotate logs   7) Backup PBX System        8) Factory Reset System'
+echo ' 9) Reboot System         10) Power Off System        11) Disable/Enable nat'
+echo ' 12) Drop to Shell        13) Enable/Disable SSH Root'
+echo ' x) Logout'
+echo ''
+echo '---------Upgrade Options ----------'
+echo ' u) Upgrade'
+echo ''
+if [ -f "$USRBASE"/bin/pg_config ]
+then
+echo '---------Postgresql--Database------'
+echo ''
+echo ' db) Drop Database Table'
+fi
+echo ''
+echo 'Choice:'
 
 # Aminastrator Option Menu Functions
  read -r ans
  case "$ans" in
-  1) set_root_password ;;
-  2) set_local_tz ;;
-  3) set_net_1 ;;
-  4) set_net_2 ;;
-  5) set_vpnvpn ;;
-  6) web_options ;;
-  7) /usr/bin/fs_cli ;;
-  8) fs_restart ;;
-  9) rotate_logs ;;
-  10) backup_pbx ;;
-  11) factory_reset ;;
-  12) drop pgsql_db ;;
-  13) reboot;  kill -HUP "$(pgrep -s 0 -o)" ;;
-  14) poweroff; kill -HUP "$(pgrep -s 0 -o)" ;;
-  15) config_nat ;;
-  16) /bin/bash ;;
+  w) set_wan ;;
+  l) set_lan ;;
+  wl) set_wlan ;;
+  vpn) set_vpnvpn ;;
+  1) set_root ;;
+  2) set_tz ;;
+  3) web_options ;;
+  4) /usr/bin/fs_cli ;;
+  5) fs_restart ;;
+  6) rotate_logs ;;
+  7) backup_pbx ;;
+  8) factory_reset ;;
+  9) reboot; kill -HUP "$(pgrep -s 0 -o)" ;;
+  10) poweroff; kill -HUP "$(pgrep -s 0 -o)" ;;
+  11) config_nat ;;
+  12) /bin/bash ;;
+  13) root_ssh ;;
   x|X) clear; kill -HUP "$(pgrep -s 0 -o)" ;;
   u|U) upgrade ;;
-  *) echo "you must select a valid option (one of: 1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,x|X,u|U)" && continue ;;
+  db) drop_db ;;
+  *) echo ' you must select a valid option (one of: w,l,wl,1,2,3,4,5,6,7,8,9,10,11,12,13,x|X,u|U,db) ' && continue ;;
  esac
 done
 DELIM
 
-chmod +x /usr/bin/debian.menu
+chmod +x /usr/bin/menu.sh
 
 /bin/cat >> "/etc/profile" <<DELIM
 /usr/bin/debian.menu
@@ -1861,5 +1938,6 @@ fi
 
 #apt-get cleanup
 apt-get clean
+apt-get autoremove
 
 echo " Install Has Finished...  "
