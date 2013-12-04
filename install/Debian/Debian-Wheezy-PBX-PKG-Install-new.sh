@@ -198,7 +198,7 @@ fi
 
 # Os/Distro Check
 lsb_release -c | grep -i wheezy &> /dev/null 2>&1
-if [[ $? -eq 0 ]]; then
+if [[ "$?" -eq 0 ]]; then
 	DISTRO=wheezy
 	echo "Found Debian 7 (wheezy)"
 else
@@ -207,8 +207,8 @@ else
 fi
 
 #adding FusionPBX Web User Interface repo"
-arch | grep -i armv71 &> /dev/null 2>&1
-if [[ $? -eq 0 ]]; then
+arch | grep -i armv7l &> /dev/null 2>&1
+if [[ $(arch) == "archv7l" ]] ; then
 /bin/cat > "/etc/apt/sources.list.d/fusionpbx.list" <<DELIM
 deb http://repo.fusionpbx.com wheezy main
 deb-src http://repo.fusionpbx.com/ wheezy main
@@ -221,7 +221,7 @@ deb-src http://files.freeswitch.org/repo/deb/debian/ wheezy main
 DELIM
 
 #adding key for freeswitch repo
-curl http://files.freeswitch.org/repo/deb/debian/freeswitch_archive_g0.pub | apt-key add -
+curl "http://files.freeswitch.org/repo/deb/debian/freeswitch_archive_g0.pub | apt-key add -"
 fi
 
 #Updating OS and installed pre deps
