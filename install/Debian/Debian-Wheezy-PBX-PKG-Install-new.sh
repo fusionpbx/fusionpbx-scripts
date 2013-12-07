@@ -1,5 +1,5 @@
 #!/bin/bash
-#Date Dec, 1 2013 12:00 EST
+#Date Dec, 7 2013 16:00 EST
 ################################################################################
 # The MIT License (MIT)
 #
@@ -24,13 +24,6 @@
 # THE SOFTWARE.
 #
 ################################################################################
-# If you appreciate the work, please consider purchasing something from my
-# wishlist. That pays bigger dividends to this coder than anything else I
-# can think of ;). Email me and I will give the shipping address....
-#
-# It also keeps development of the script going for more platforms;
-#
-################################################################################
 #<------Start Option Edit HERE--------->
 
 ################################################################################
@@ -52,7 +45,7 @@ fusionpbx_stable=n
 # Enable Set Database name & Database User name
 # Used with the postgresql server setup amd client setup
 # THis will echo the information at the end of the install for the Administrator.
-set_db_info=n
+echo_db_info=n
 
 # ONLY NEED IF USING Posgresql Server remotely 
 # Install postgresql Client 9.x for connection to remote postgresql servers (y/n)
@@ -85,65 +78,6 @@ database_user_name=
 enable_admin_menu=y
 
 #<------Stop Options Edit Here-------->
-###############################################################################
-#Check IP/FQDN
-###############################################################################
-echo " This install requires the system have a (FQDN) fully qualified domain name and a static ip. "
-echo " This is due to the Mail Trandport Agent pkgs looking for a FQDN "
-echo " So if you have not set a static ip and a fqdn please answer n to the next question. It will "
-echo " then allow you to configure the network ip and fqdn. Then it will continue on with th install."
-echo " Note you can change these at anytime from the admin menu."
-echo
-read -p "Does your system have a static ip and a fqdn if yes hit enter else if no hit (n/N/enter)"
-if [[ $REPLY =~ ^[Nn]$ ]]
-then
-# Configure hostename
-read -r -p "Please set your system hostname (example: pbx):" HN
-read -r -p "Please set your system domain name (example: mydomain.com):" DN
-# Configure WAN/Realvworld network interface
-read -r -p "Please  set your system IP (local ip or domain ip)  :" IP
-read -r -p "Please enter the network mask :" NM
-read -r -p "Please enter the network gateway :" GW
-read -r -p "Please enter the primary dns source:" NS1
-read -r -p "Please enter the secondary dns source :" NS2
-cat << EOF > /etc/network/interfaces
-# The loopback network interface
-auto lo
-iface lo inet loopback
-# The primary network interface
-allow-hotplug eth0
-iface eth0 inet static
-      address $IP
-      netmask $NM
-      gateway $GW
-      dns-nameservers $NS1 $NS2
-EOF
-
-cat << EOF > /etc/hosts
-127.0.0.1       localhost $HN
-::1             localhost ip6-localhost ip6-loopback
-fe00::0         ip6-localnet
-ff00::0         ip6-mcastprefix
-ff02::1         ip6-allnodes
-ff02::2         ip6-allrouters
-$IP     $HN.$DN $HN
-EOF
-
-cat << EOF > /etc/hostname
-$HN
-EOF
-
-hostname $HN
-
-echo "Rebooting for networkign changes to take effect."
-echo "You will need to relogin and restart the script."
-echo "when it ask you the fqdn/ip question just hit enter and it will continue."
-echo "Please ssh to $IP and relogin"
-
-reboot
-exit 1
-fi
-
 ###############################################################################
 # Hard Set Varitables (Do Not EDIT)
 ###############################################################################
@@ -199,7 +133,6 @@ fi
 # Os/Distro Check
 lsb_release -c | grep -i wheezy &> /dev/null 2>&1
 if [[ "$?" -eq 0 ]]; then
-	DISTRO=wheezy
 	echo "Found Debian 7 (wheezy)"
 else
 	echo "Reqires Debian 7 (Wheezy)"
@@ -207,32 +140,25 @@ else
 fi
 
 #adding FusionPBX Web User Interface repo"
-arch | grep -i armv7l &> /dev/null 2>&1
-if [[ $(arch) == "archv7l" ]] ; then
+case $(uname -m) in armv7l)
 /bin/cat > "/etc/apt/sources.list.d/fusionpbx.list" <<DELIM
 deb http://repo.fusionpbx.com wheezy main
 deb-src http://repo.fusionpbx.com/ wheezy main
 DELIM
-else
-/bin/cat > "/etc/apt/sources.list.d/fusionpbx.list" <<DELIM
-deb http://repo.fusionpbx.com wheezy main
-deb-src http://repo.fusionpbx.com/ wheezy main
-DELIM
+esac
+
+case $(uname -m) in x86_64|i[4-6]86)
 apt-get install curl
 /bin/cat > "/etc/apt/sources.list.d/freeswitch.list" <<DELIM
 deb http://files.freeswitch.org/repo/deb/debian/ wheezy main
 deb-src http://files.freeswitch.org/repo/deb/debian/ wheezy main
 DELIM
-
 #adding key for freeswitch repo
 curl http://files.freeswitch.org/repo/deb/debian/freeswitch_archive_g0.pub | apt-key add -
-fi
+esac
 
 #Updating OS and installed pre deps
 for i in update upgrade ;do apt-get -y "${i}" ; done
-
-#install (MTA) Mail Transport Agent
-apt-get install $MTA
 
 #install Freeswitch Deps
 for i in curl screen pkg-config libtiff5 libtiff-tools autotalent ladspa-sdk tap-plugins swh-plugins libfftw3-3 unixodbc uuid memcached ;do apt-get -y install "${i}" ; done
@@ -258,7 +184,7 @@ chown -R freeswitch:freeswitch "$freeswitch_act_conf"
 sed -i /etc/default/freeswitch -e s,'^DAEMON_OPTS=.*','DAEMON_OPTS="-rp"',
 
 #remove the default extensions
-for i in /etc/freeswitch/directory/default/*.xml ;do rm $i ; done
+for i in /etc/freeswitch/directory/default/*.xml ;do rm "$i" ; done
 
 # SEE http://wiki.freeswitch.org/wiki/Fail2ban
 #Fail2ban
@@ -528,6 +454,14 @@ for i in nginx php5-fpm ;do /etc/init.d/"${i}" restart > /dev/null 2>&1 ; done
 adduser www-data freeswitch
 adduser freeswitch www-data
 
+#adding FusionPBX Web User Interface repo"
+case $(uname -m) in x86_64|i[4-6]86)
+/bin/cat > "/etc/apt/sources.list.d/fusionpbx.list" <<DELIM
+deb http://repo.fusionpbx.com wheezy main
+deb-src http://repo.fusionpbx.com/ wheezy main
+DELIM
+esac
+
 # Install FusionPBX Web User Interface
 echo "Installing FusionPBX Web User Interface Debian pkg"
 
@@ -603,7 +537,7 @@ DELIM
 /etc/init.d/fail2ban restart
 
 #setting database name /user name / password
-if [[ $set_db_info == y ]]; then
+if [[ $echo_db_info == y ]]; then
     db_name="$database_name"
     db_user_name="$database_user_name"
     db_passwd="$(openssl rand -base64 32;)"
@@ -619,23 +553,15 @@ if [[ $postgresql_client == y ]]; then
 	for i in postgresql-client-9.1 php5-pgsql
 	do apt-get -y install "${i}"
 	done
-
 	/etc/init.d/php5-fpm restart
-	
 	echo
 	printf '	Please open a web-browser to http://'; ip -f inet addr show dev eth0 | sed -n 's/^ *inet *\([.0-9]*\).*/\1/p'
 cat << DELIM
-
 	Or the Doamin name assigned to the machine like http://"$(hostname).$(dnsdomainname)".
-
 	On the First configuration page of the web user interface.
-
 	Please Select the PostgreSQL option in the pull-down menu as your Database
-
 	Also Please fill in the SuperUser Name and Password fields.
-
 	On the Second Configuration Page of the web user intercae please fill in the following fields:
-
 	Server: Use the IP or Doamin name assigned to the remote postgresql database server machine
 	Port: use the port for the remote postgresql server
 	Database Name: "$db_name"
@@ -654,27 +580,18 @@ if [[ $postgresql_server == y ]]; then
 	for i in postgresql-9.1 php5-pgsql
 	do apt-get -y install "${i}"
 	done
-
 	/etc/init.d/php5-fpm restart
-
 	#Adding a SuperUser and Password for Postgresql database.
 	su -l postgres -c "/usr/bin/psql -c \"create role $postgresqluser with superuser login password '$postgresqlpass'\""
 	clear
-	echo
-	echo
+echo ''
 	printf '	Please open a web browser to http://'; ip -f inet addr show dev eth0 | sed -n 's/^ *inet *\([.0-9]*\).*/\1/p'   
 cat << DELIM
-
 	Or the Doamin name assigned to the machine like http://"$(hostname).$(dnsdomainname)".
-
 	On the First configuration page of the web user interface
-
 	Please Select the PostgreSQL option in the pull-down menu as your Database
-
 	Also Please fill in the SuperUser Name and Password fields.
-
 	On the Second Configuration Page of the web user interface please fill in the following fields:
-
 	Database Name: "$db_name"
 	Database Username: "$db_user_name"
 	Database Password: "$db_passwd"
@@ -685,22 +602,15 @@ DELIM
 
 else
 clear
-echo
-echo
+echo ''
 	printf '	Please open a web-browser to http://'; ip -f inet addr show dev eth0 | sed -n 's/^ *inet *\([.0-9]*\).*/\1/p'
 cat << DELIM
-
 	or the Doamin name assigned to the machine like http://"$(hostname).$(dnsdomainname)".
-
-    on the First Configuration page of the web usre interface "$wui_name".
-
-	also Please fill in the SuperUser Name and Password fields.
-
+	On the First Configuration page of the web usre interface "$wui_name".
+	Also Please fill in the SuperUser Name and Password fields.
     Freeswitch & FusionPBX Web User Interface Installation Completed.
-
     Now you can configure FreeSWITCH using the FusionPBX web user interface
 
-                         Please reboot your system
 DELIM
 fi
 
