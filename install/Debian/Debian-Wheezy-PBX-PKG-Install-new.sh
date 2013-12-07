@@ -214,6 +214,10 @@ deb http://repo.fusionpbx.com wheezy main
 deb-src http://repo.fusionpbx.com/ wheezy main
 DELIM
 else
+/bin/cat > "/etc/apt/sources.list.d/fusionpbx.list" <<DELIM
+deb http://repo.fusionpbx.com wheezy main
+deb-src http://repo.fusionpbx.com/ wheezy main
+DELIM
 apt-get install curl
 /bin/cat > "/etc/apt/sources.list.d/freeswitch.list" <<DELIM
 deb http://files.freeswitch.org/repo/deb/debian/ wheezy main
