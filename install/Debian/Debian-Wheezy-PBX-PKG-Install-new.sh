@@ -141,7 +141,6 @@ deb http://repo.fusionpbx.com wheezy main
 deb-src http://repo.fusionpbx.com/ wheezy main
 DELIM
 for i in update upgrade ;do apt-get -y "${i}" ; done
-
 esac
 
 case $(uname -m) in x86_64|i[4-6]86)
@@ -153,7 +152,6 @@ DELIM
 #adding key for freeswitch repo
 curl http://files.freeswitch.org/repo/deb/debian/freeswitch_archive_g0.pub | apt-key add -
 for i in update upgrade ;do apt-get -y "${i}" ; done
-
 esac
 
 #install Freeswitch Deps
