@@ -42,11 +42,6 @@ fusionpbx_stable=n
 
 #############  Please Select Server or Client not both. ########################
 
-# Enable Set Database name & Database User name
-# Used with the postgresql server setup amd client setup
-# THis will echo the information at the end of the install for the Administrator.
-echo_db_info=n
-
 # ONLY NEED IF USING Posgresql Server remotely 
 # Install postgresql Client 9.x for connection to remote postgresql servers (y/n)
 postgresql_client=n
@@ -145,6 +140,8 @@ case $(uname -m) in armv7l)
 deb http://repo.fusionpbx.com wheezy main
 deb-src http://repo.fusionpbx.com/ wheezy main
 DELIM
+for i in update upgrade ;do apt-get -y "${i}" ; done
+
 esac
 
 case $(uname -m) in x86_64|i[4-6]86)
@@ -155,17 +152,16 @@ deb-src http://files.freeswitch.org/repo/deb/debian/ wheezy main
 DELIM
 #adding key for freeswitch repo
 curl http://files.freeswitch.org/repo/deb/debian/freeswitch_archive_g0.pub | apt-key add -
-esac
-
-#Updating OS and installed pre deps
 for i in update upgrade ;do apt-get -y "${i}" ; done
+
+esac
 
 #install Freeswitch Deps
 for i in curl screen pkg-config libtiff5 libtiff-tools autotalent ladspa-sdk tap-plugins swh-plugins libfftw3-3 unixodbc uuid memcached ;do apt-get -y install "${i}" ; done
 
 # Freeswitch Base $ Modules Install Options.
 echo " Installing freeswitch all modules"
-apt-get -y install --force-yes freeswitch-meta-all freeswitch-mod-vlc
+for i in freeswitch-meta-all freeswitch-mod-vlc ;do apt-get -y install "${i}" ; done
 
 #Genertaing /etc/freeswitch config dir.
 mkdir $freeswitch_act_conf
@@ -460,6 +456,7 @@ case $(uname -m) in x86_64|i[4-6]86)
 deb http://repo.fusionpbx.com wheezy main
 deb-src http://repo.fusionpbx.com/ wheezy main
 DELIM
+apt-get update
 esac
 
 # Install FusionPBX Web User Interface
@@ -536,19 +533,11 @@ DELIM
 #restarting fail2ban
 /etc/init.d/fail2ban restart
 
-#setting database name /user name / password
-if [[ $echo_db_info == y ]]; then
-    db_name="$database_name"
-    db_user_name="$database_user_name"
-    db_passwd="$(openssl rand -base64 32;)"
-else
+#Install postgresql-client
+if [[ $postgresql_client == y ]]; then
 	db_name="$wui_name"
 	db_user_name="$wui_name"
 	db_passwd="Admin Please Select A Secure Password for your Postgresql Fusionpbx Database"
-fi
-
-#Install postgresql-client
-if [[ $postgresql_client == y ]]; then
 	clear
 	for i in postgresql-client-9.1 php5-pgsql
 	do apt-get -y install "${i}"
@@ -576,6 +565,9 @@ fi
 
 #install postgresql-server
 if [[ $postgresql_server == y ]]; then
+    db_name="$database_name"
+    db_user_name="$database_user_name"
+    db_passwd="$(openssl rand -base64 32;)"
 	clear
 	for i in postgresql-9.1 php5-pgsql
 	do apt-get -y install "${i}"
@@ -625,7 +617,6 @@ EOF
 fi
 
 #apt-get cleanup
-apt-get clean
-apt-get autoremove
+apt-get clean && apt-get autoremove
 
 echo " Install Has Finished...  "
