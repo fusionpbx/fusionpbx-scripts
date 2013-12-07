@@ -225,7 +225,7 @@ deb-src http://files.freeswitch.org/repo/deb/debian/ wheezy main
 DELIM
 
 #adding key for freeswitch repo
-curl "http://files.freeswitch.org/repo/deb/debian/freeswitch_archive_g0.pub | apt-key add -"
+curl http://files.freeswitch.org/repo/deb/debian/freeswitch_archive_g0.pub | apt-key add -
 fi
 
 #Updating OS and installed pre deps
