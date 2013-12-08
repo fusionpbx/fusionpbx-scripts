@@ -292,7 +292,7 @@ chown -R freeswitch:freeswitch "$freeswitch_act_conf"
 #fix music dir issue
 if [ -f "$freeswitch_act_conf"/autoload_configs/local_stream.conf.xml ]
 then
-/bin/sed -i /etc/freeswitch/autoload_configs/local_stream.conf.xml -e s,"<directory name="default" path="$${sounds_dir}/music/8000">','<directory name="default" path="$${sounds_dir}/music/default">"
+/bin/sed -i "$freeswitch_act_conf"/autoload_configs/local_stream.conf.xml -e s,'<directory name="default" path="$${sounds_dir}/music/8000">','<directory name="default" path="$${sounds_dir}/music/default">',
 fi
 
 # Proper file to change init strings in. (/etc/defalut/freeswitch)
@@ -613,11 +613,10 @@ rm -rf "$freeswitch_act_conf"/*
 #Put Fusionpbx Freeswitch configs into place
 cp -r "$WWW_PATH/$wui_name"/resources/templates/conf/* "$freeswitch_act_conf"
 
-#fix music dir bug.
 #fix music dir issue
 if [ -f "$freeswitch_act_conf"/autoload_configs/local_stream.conf.xml ]
 then
-/bin/sed -i /etc/freeswitch/autoload_configs/local_stream.conf.xml -e s,"<directory name="default" path="$${sounds_dir}/music/8000">','<directory name="default" path="$${sounds_dir}/music/default">"
+/bin/sed -i "$freeswitch_act_conf"/autoload_configs/local_stream.conf.xml -e s,'<directory name="default"\path="$${sounds_dir}/music/8000">','<directory name="default"\path="$${sounds_dir}/music/default">',
 fi
 
 #chown freeswitch  conf files
@@ -694,7 +693,6 @@ cat << DELIM
 	Database Password: "$db_passwd"
 	Create Database Username: Database_Superuser_Name of the remote postgresql server
 	Create Database Password: Database_Superuser_password of the remote postgresql server
-
 DELIM
 
 fi
@@ -725,7 +723,6 @@ cat << DELIM
 	Database Password: "$db_passwd"
 	Create Database Username: "$postgresqluser"
 	Create Database Password: "$postgresqlpass"
-
 DELIM
 
 else
@@ -736,9 +733,8 @@ cat << DELIM
 	or the Doamin name assigned to the machine like http://"$(hostname).$(dnsdomainname)".
 	On the First Configuration page of the web usre interface "$wui_name".
 	Also Please fill in the SuperUser Name and Password fields.
-    Freeswitch & FusionPBX Web User Interface Installation Completed.
+	Freeswitch & FusionPBX Web User Interface Installation Completed
     Now you can configure FreeSWITCH using the FusionPBX web user interface
-
 DELIM
 fi
 
@@ -747,6 +743,7 @@ apt-get -y install --force-yes openvpn-scripts pbx-admin-menu
 
 #Enable admin shell menu
 if [[ $enable_admin_menu == y ]]; then
+echo " Enabling Admin Shell Menu "
 cat << EOF>> /root/.profile
 /usr/bin/pbx-admin-menu.sh
 EOF
