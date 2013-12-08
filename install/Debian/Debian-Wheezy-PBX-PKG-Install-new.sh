@@ -42,7 +42,9 @@
 # here: https://www.miniand.com/products/Hackberry%20A10%20Developer%20Board#buy
 ################################################################################
 #<------Start Option Edit HERE--------->
-# Freeswitch Options
+#
+# Freeswitch Optional intalls
+#
 freeswitch_install="all" # This is a metapackage which recommends or suggests all packaged FreeSWITCH modules.(Default)
 #freeswitch_install="bare" # This is a metapackage which depends on the packages needed for a very bare FreeSWITCH install.
 #freeswitch_install="codecs" # This is a metapackage which depends on the packages needed to install most FreeSWITCH codecs.
@@ -50,26 +52,35 @@ freeswitch_install="all" # This is a metapackage which recommends or suggests al
 #freeswitch_install="sorbet" # This is a metapackage which recommends most packaged FreeSWITCH modules except a few which aren't recommended.
 #freeswitch_install="vanilla" # This is a metapackage which depends on the packages needed for running the FreeSWITCH vanilla example configuration.
 
+#Notice:
+# "freeswitch_install=all" (freeswitch-meta-all) installs all the differant configs
+# in the "/usr/share/freeswith/conf" dir so you do not need to select any below.
+#
 #FreeSwitch Configs Options installed in /usr/share/freeswitch/conf/(configname)
 #This also copies the default configs into the default active config dir /etc/freeswitch
-#Notice:
-# "freeswitch_install=all" (freeswitch-meta-all) installs all the differant configs in the "/usr/share/freeswith/conf" dir
-# so you do not need to select any below.
 #
 #freeswitch_conf="curl" # FreeSWITCH curl configuration
 #freeswitch_conf="indiseout" # FreeSWITCH insideout configuration
 #freeswitch_conf="sbc" # FreeSWITCH session border controller (sbc) configuration
 #freeswitch_conf="vanilla" # FreeSWITCH vanilla configuration
 
-################################################################################
 # TO Disable freeswitch nat auto detection
-################################################################################
-# to start FreeSWITCH with -nonat option set freeswitch_NAT to y
+#
+# To start FreeSWITCH with -nonat option set freeswitch_NAT to y
 # Set to y if on public static IP
 freeswitch_nat=n
 
-#Set how long to keep freeswitch/fusionpbx log files 1 to 30 dasy
+#
+#Set how long to keep freeswitch/fusionpbx log files 1 to 30 dasy (Default:5)
 KEEP_LOGS=5
+
+################################################################################
+#Install and use FusionPBX GUI
+################################################################################
+#Option to install the fusionpbx gui / nginx / php5.
+#If this option is not selected it will only install freeswitch/fail2ban/monit 
+#setup for freeswitch only.
+install_pbx=y
 
 ################################################################################
 # Use fusionpbx debian pkgs.
@@ -78,13 +89,23 @@ KEEP_LOGS=5
 # y=stable branch n=dev branch
 fusionpbx_stable=n
 
-#############  Please Select Server or Client not both. ########################
+################################################################################
+# Enable shell admin menu for ease of system maintance
+################################################################################
+#Enable pbx admin shell menu
+enable_admin_menu=y
 
-# ONLY NEED IF USING Posgresql Server remotely 
+################################################################################
+# Database options
+################################################################################
+# Please Select Server or Client not both. 
+################################################################################
+# Used for connecting to remote postgresql database servers
 # Install postgresql Client 9.x for connection to remote postgresql servers (y/n)
 postgresql_client=n
 
 # Install postgresql server 9.x (y/n) (client included)(Local Machine)
+# Notice:
 # You should not use postgresql server on a emmc/sd. It cuts the performance 
 # life in half due to all the needed reads and writes. This cuts the life of 
 # your pbx emmc/sd in half. 
@@ -106,9 +127,6 @@ database_name=
 # the database table in the postgresql server.
 # (Default: fusionpbx)
 database_user_name=
-
-#Enable pbx admin shell menu
-enable_admin_menu=y
 
 #<------Stop Options Edit Here-------->
 ###############################################################################
@@ -400,9 +418,25 @@ chmod 755 /etc/cron.daily/freeswitch_log_rotation
 #Now dropping 10MB limit from FreeSWITCH"
 sed -i "$freeswitch_act_conf"/autoload_configs/logfile.conf.xml -e s,\<param.*name\=\"rollover\".*value\=\"10485760\".*/\>,\<\!\-\-\<param\ name\=\"rollover\"\ value\=\"10485760\"/\>\ INSTALL_SCRIPT\-\-\>,g
 
+#DAEMON_Optional ARGS
+/bin/sed -i /etc/default/freeswitch -e s,'^DAEMON_OPTS=.*','DAEMON_OPTS="-scripts /var/lib/fusionpbx/scripts -rp"',
+
+#DISABLE NAT
+if [[ $freeswitch_nat == y ]]; then
+	/bin/sed -i /etc/default/freeswitch -e s,'^DAEMON_OPTS=.*','DAEMON_OPTS="-scripts /var/lib/fusionpbx/scripts -rp -nonat"',
+fi
+
+#create xml_cdr dir
+mkdir "$freeswitch_log"/xml_cdr
+
+#chown the xml_cdr dir
+chown freeswitch:freeswitch "$freeswitch_log"/xml_cdr
+
 # restarti9ng services
 for i in fail2ban freeswitch ;do /etc/init.d/"${i}" restart  >/dev/null 2>&1 ; done
 
+#Start of FusionPBX / nginx / php5 
+if [[ $install_PBX == "y" ]]; then
 #Install and configure  PHP + Nginx + sqlite3
 for i in ssl-cert sqlite3 nginx php5-cli php5-sqlite php5-odbc php-db php5-fpm php5-common php5-gd php-pear php5-memcache php-apc ;do apt-get -y install "${i}" ; done
 
@@ -565,13 +599,6 @@ fi
 
 #"Re-Configuring /etc/default/freeswitch to use fusionpbx scripts dir"
 
-#DAEMON_Optional ARGS
-/bin/sed -i /etc/default/freeswitch -e s,'^DAEMON_OPTS=.*','DAEMON_OPTS="-scripts /var/lib/fusionpbx/scripts -rp"',
-
-if [[ $freeswitch_nat == y ]]; then
-	/bin/sed -i /etc/default/freeswitch -e s,'^DAEMON_OPTS=.*','DAEMON_OPTS="-scripts /var/lib/fusionpbx/scripts -rp -nonat"',
-fi
-
 #Clean out the freeswitch default configs from the active conf dir
 rm -rf "$freeswitch_act_conf"/*
 
@@ -584,12 +611,6 @@ chown -R freeswitch:freeswitch "$freeswitch_act_conf"
 #fix permissions for "$freeswitch_act_conf" so www-data can write to it
 find "$freeswitch_act_conf" -type f -exec chmod 660 {} +
 find "$freeswitch_act_conf" -type d -exec chmod 770 {} +
-
-#create xml_cdr dir
-mkdir "$freeswitch_log"/xml_cdr
-
-#chown the xml_cdr dir
-chown freeswitch:freeswitch "$freeswitch_log"/xml_cdr
 
 #fix permissions on the freeswitch xml_cdr dir so fusionpbx can read from it
 find "$freeswitch_log"/xml_cdr -type d -exec chmod 770 {} +
@@ -628,6 +649,10 @@ DELIM
 #restarting fail2ban
 /etc/init.d/fail2ban restart
 
+fi
+#end of pbx install
+
+# Database options (Currently only Postgresql)
 #Install postgresql-client
 if [[ $postgresql_client == y ]]; then
 	db_name="$wui_name"
@@ -704,7 +729,7 @@ fi
 #Install openvpn & pbx admin menu shell script.
 apt-get -y install --force-yes openvpn-scripts pbx-admin-menu
 
-#Install admin shell menu
+#Enable admin shell menu
 if [[ $enable_admin_menu == y ]]; then
 cat << EOF>> /root/.profile
 /usr/bin/pbx-admin-menu.sh
