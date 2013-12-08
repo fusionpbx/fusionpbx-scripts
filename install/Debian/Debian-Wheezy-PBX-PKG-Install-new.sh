@@ -52,6 +52,10 @@ freeswitch_install="all" # This is a metapackage which recommends or suggests al
 #freeswitch_install="sorbet" # This is a metapackage which recommends most packaged FreeSWITCH modules except a few which aren't recommended.
 #freeswitch_install="vanilla" # This is a metapackage which depends on the packages needed for running the FreeSWITCH vanilla example configuration.
 
+#Due to licensing issues this is a optional module and is not included in the freeswitch-mete-* files.
+#It must me added on its own.
+freeswitch_vlc="y"
+
 #Notice:
 # "freeswitch_install=all" (freeswitch-meta-all) installs all the differant configs
 # in the "/usr/share/freeswith/conf" dir so you do not need to select any below.
@@ -62,7 +66,7 @@ freeswitch_install="all" # This is a metapackage which recommends or suggests al
 #freeswitch_conf="curl" # FreeSWITCH curl configuration
 #freeswitch_conf="indiseout" # FreeSWITCH insideout configuration
 #freeswitch_conf="sbc" # FreeSWITCH session border controller (sbc) configuration
-#freeswitch_conf="vanilla" # FreeSWITCH vanilla configuration
+freeswitch_conf="vanilla" # FreeSWITCH vanilla configuration
 
 # TO Disable freeswitch nat auto detection
 #
@@ -70,7 +74,6 @@ freeswitch_install="all" # This is a metapackage which recommends or suggests al
 # Set to y if on public static IP
 freeswitch_nat=n
 
-#
 #Set how long to keep freeswitch/fusionpbx log files 1 to 30 dasy (Default:5)
 KEEP_LOGS=5
 
@@ -145,24 +148,23 @@ wui_name="fusionpbx"
 #Php ini config file
 php_ini="/etc/php5/fpm/php.ini"
 ################################################################################
-
-#start install
+#Start installation
+#
+#check for internet connection. Pulled from and modified
+#http://www.linuxscrew.com/2009/04/02/tiny-bash-scripts-check-internet-connection-availability/
 echo "This is a one time install script. It is not intended to be run multi times"
 echo "If it fails for any reason please report to r.neese@gmail.com. Include any "
 echo "screen output you can to show where it fails."
-echo
+echo ""
 echo "This Script Currently Requires a internet connection "
-
-#check for internet connection. Pulled from and modified
-#http://www.linuxscrew.com/2009/04/02/tiny-bash-scripts-check-internet-connection-availability/
-
 wget -q --tries=10 --timeout=5 http://www.google.com -O /tmp/index.google &> /dev/null
 
 if [ ! -s /tmp/index.google ];then
 	echo "No Internet connection. Please check ethernet cable"
 	exit 1
 else
-	echo "continuing!"
+	echo "Found the Internet ... continuing!"
+	echo ''
 fi
 
 # OS ENVIRONMENT CHECKS
@@ -172,7 +174,7 @@ if [ $EUID -ne 0 ]; then
    exit 1
 fi
 
-echo "You're root."
+echo "You're root.... continuing!"
 
 sed -i '/cdrom:/d' /etc/apt/sources.list
 sed -i '2,4d' /etc/apt/sources.list
@@ -200,7 +202,7 @@ for i in update upgrade ;do apt-get -y "${i}" ; done
 esac
 
 case $(uname -m) in x86_64|i[4-6]86)
-apt-get install curl
+apt-get -y install curl
 /bin/cat > "/etc/apt/sources.list.d/freeswitch.list" <<DELIM
 deb http://files.freeswitch.org/repo/deb/debian/ wheezy main
 deb-src http://files.freeswitch.org/repo/deb/debian/ wheezy main
@@ -215,34 +217,40 @@ for i in curl screen pkg-config libtiff5 libtiff-tools autotalent ladspa-sdk tap
 
 # Freeswitch Install Options.
 if [[ $freeswitch_install == "all" ]]; then
-	echo " Installing freeswitch all"
-	apt-get -y install --force-yes freeswitch-meta-all mod_vlc
+	echo " Installing freeswitch all "
+	apt-get -y install --force-yes freeswitch-meta-all
 fi
 
 if [[ $freeswitch_install == "bare" ]]; then
-	echo " Installing freeswitch bare"
+	echo " Installing freeswitch bare "
 	apt-get -y install --force-yes freeswitch-meta-bare
 fi
 
 if [[ $freeswitch_install == "codecs" ]]; then
-	echo " Installing freeswitch all codecs"
+	echo " Installing freeswitch all codecs "
 	apt-get -y install --force-yes freeswitch-meta-codecs
 fi
 
 if [[ $freeswitch_install == "default" ]]; then
-	echo " Installing freeswitch default"
+	echo " Installing freeswitch default "
 	apt-get -y install --force-yes freeswitch-meta-default
 fi
 
 if [[ $freeswitch_install == "sorbet" ]]; then
-	echo " Installing freeswitch sorbet"
+	echo " Installing freeswitch sorbet "
 	apt-get -y install --force-yes freeswitch-meta-sorbet
 fi
 
 if [[ $freeswitch_install == "vanilla" ]]; then
-	echo " Installing freeswitch vanilla"
-	apt-get -y install --force-yes	freeswitch-meta-vanilla
+	echo " Installing freeswitch vanilla "
+	apt-get -y install --force-yes freeswitch-meta-vanilla
 fi
+
+if [[ $freeswitch_vlc == "y" ]]; then
+	echo " Installing freeswitch mod_vlc "
+	apt-get -y install --force-yes freeswitch-mod-vlc
+fi
+
 
 #Genertaing /etc/freeswitch config dir.
 mkdir $freeswitch_act_conf
@@ -282,9 +290,9 @@ fi
 chown -R freeswitch:freeswitch "$freeswitch_act_conf"
 
 #fix music dir issue
-if [ -f "$"freeswitch_act_conf"/autoload_configs/local_stream.conf.xml ]
+if [ -f "$freeswitch_act_conf"/autoload_configs/local_stream.conf.xml ]
 then
-/bin/sed -i /etc/freeswitch/autoload_configs/local_stream.conf.xml -e s,'<directory name="default" path="$${sounds_dir}/music/8000">','<directory name="default" path="$${sounds_dir}/music/default">'
+/bin/sed -i /etc/freeswitch/autoload_configs/local_stream.conf.xml -e s,"<directory name="default" path="$${sounds_dir}/music/8000">','<directory name="default" path="$${sounds_dir}/music/default">"
 fi
 
 # Proper file to change init strings in. (/etc/defalut/freeswitch)
@@ -436,6 +444,7 @@ for i in fail2ban freeswitch ;do /etc/init.d/"${i}" restart  >/dev/null 2>&1 ; d
 
 #Start of FusionPBX / nginx / php5 
 if [[ $install_pbx == "y" ]]; then
+
 #Install and configure  PHP + Nginx + sqlite3
 for i in ssl-cert sqlite3 nginx php5-cli php5-sqlite php5-odbc php-db php5-fpm php5-common php5-gd php-pear php5-memcache php-apc ;do apt-get -y install "${i}" ; done
 
@@ -606,9 +615,9 @@ cp -r "$WWW_PATH/$wui_name"/resources/templates/conf/* "$freeswitch_act_conf"
 
 #fix music dir bug.
 #fix music dir issue
-if [ -f "$"freeswitch_act_conf"/autoload_configs/local_stream.conf.xml ]
+if [ -f "$freeswitch_act_conf"/autoload_configs/local_stream.conf.xml ]
 then
-/bin/sed -i /etc/freeswitch/autoload_configs/local_stream.conf.xml -e s,'<directory name="default" path="$${sounds_dir}/music/8000">','<directory name="default" path="$${sounds_dir}/music/default">'
+/bin/sed -i /etc/freeswitch/autoload_configs/local_stream.conf.xml -e s,"<directory name="default" path="$${sounds_dir}/music/8000">','<directory name="default" path="$${sounds_dir}/music/default">"
 fi
 
 #chown freeswitch  conf files
@@ -656,6 +665,7 @@ DELIM
 /etc/init.d/fail2ban restart
 
 fi
+
 #end of pbx install
 
 # Database options (Currently only Postgresql)
