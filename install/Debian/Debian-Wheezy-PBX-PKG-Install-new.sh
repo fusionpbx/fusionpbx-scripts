@@ -272,13 +272,6 @@ if [[ $freeswitch_conf == "sbc" ]]; then
 	chown -R freeswitch:freeswitch "$freeswitch_act_conf"
 fi
 
-if [[ $freeswitch_conf == "softphone" ]]; then
-	echo "Installing softphone configs"
-	apt-get -y install	freeswitch-conf-softphone
-	cp -rp "$freeswitch_dflt_conf"/softphone/* "$freeswitch_act_conf"
-	chown -R freeswitch:freeswitch "$freeswitch_act_conf"
-fi
-
 if [[ $freeswitch_conf == "vanilla" ]]; then
 	echo " Installing Vanilla configs"
 	apt-get -y install	freeswitch-conf-vanilla
@@ -287,6 +280,12 @@ if [[ $freeswitch_conf == "vanilla" ]]; then
 fi
 
 chown -R freeswitch:freeswitch "$freeswitch_act_conf"
+
+#fix music dir issue
+if [ -f "$"freeswitch_act_conf"/autoload_configs/local_stream.conf.xml ]
+then
+/bin/sed -i /etc/freeswitch/autoload_configs/local_stream.conf.xml -e s,'<directory name="default" path="$${sounds_dir}/music/8000">','<directory name="default" path="$${sounds_dir}/music/default">'
+fi
 
 # Proper file to change init strings in. (/etc/defalut/freeswitch)
 # Configuring /etc/default/freeswitch DAEMON_Optional ARGS
@@ -604,6 +603,13 @@ rm -rf "$freeswitch_act_conf"/*
 
 #Put Fusionpbx Freeswitch configs into place
 cp -r "$WWW_PATH/$wui_name"/resources/templates/conf/* "$freeswitch_act_conf"
+
+#fix music dir bug.
+#fix music dir issue
+if [ -f "$"freeswitch_act_conf"/autoload_configs/local_stream.conf.xml ]
+then
+/bin/sed -i /etc/freeswitch/autoload_configs/local_stream.conf.xml -e s,'<directory name="default" path="$${sounds_dir}/music/8000">','<directory name="default" path="$${sounds_dir}/music/default">'
+fi
 
 #chown freeswitch  conf files
 chown -R freeswitch:freeswitch "$freeswitch_act_conf"
