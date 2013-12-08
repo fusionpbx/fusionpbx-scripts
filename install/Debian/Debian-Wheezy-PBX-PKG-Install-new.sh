@@ -24,7 +24,42 @@
 # THE SOFTWARE.
 #
 ################################################################################
+################################################################################
+# If you appreciate the work, please consider purchasing something from my
+# wishlist. That pays bigger dividends to this coder than anything else I
+# can think of ;). It allows me to test on more platforms.
+#
+#Email me and I will email back the shipping address.
+##
+# It also keeps development of the script going for more platforms;
+##
+# Wish list in the works.
+##
+# 1) Dreamplug + jtag 
+# here: http://www.globalscaletechnologies.com/p-54-dreamplug-devkit.aspx
+##
+# 2) Hackberry + jtag
+# here: https://www.miniand.com/products/Hackberry%20A10%20Developer%20Board#buy
+################################################################################
 #<------Start Option Edit HERE--------->
+# Freeswitch Options
+freeswitch_install="all" # This is a metapackage which recommends or suggests all packaged FreeSWITCH modules.(Default)
+#freeswitch_install="bare" # This is a metapackage which depends on the packages needed for a very bare FreeSWITCH install.
+#freeswitch_install="codecs" # This is a metapackage which depends on the packages needed to install most FreeSWITCH codecs.
+#freeswitch_install="default" # This is a metapackage which depends on the packages needed for a reasonably basic FreeSWITCH install.
+#freeswitch_install="sorbet" # This is a metapackage which recommends most packaged FreeSWITCH modules except a few which aren't recommended.
+#freeswitch_install="vanilla" # This is a metapackage which depends on the packages needed for running the FreeSWITCH vanilla example configuration.
+
+#FreeSwitch Configs Options installed in /usr/share/freeswitch/conf/(configname)
+#This also copies the default configs into the default active config dir /etc/freeswitch
+#Notice:
+# "freeswitch_install=all" (freeswitch-meta-all) installs all the differant configs in the "/usr/share/freeswith/conf" dir
+# so you do not need to select any below.
+#
+#freeswitch_conf="curl" # FreeSWITCH curl configuration
+#freeswitch_conf="indiseout" # FreeSWITCH insideout configuration
+#freeswitch_conf="sbc" # FreeSWITCH session border controller (sbc) configuration
+#freeswitch_conf="vanilla" # FreeSWITCH vanilla configuration
 
 ################################################################################
 # TO Disable freeswitch nat auto detection
@@ -32,6 +67,9 @@
 # to start FreeSWITCH with -nonat option set freeswitch_NAT to y
 # Set to y if on public static IP
 freeswitch_nat=n
+
+#Set how long to keep freeswitch/fusionpbx log files 1 to 30 dasy
+KEEP_LOGS=5
 
 ################################################################################
 # Use fusionpbx debian pkgs.
@@ -157,19 +195,78 @@ esac
 #install Freeswitch Deps
 for i in curl screen pkg-config libtiff5 libtiff-tools autotalent ladspa-sdk tap-plugins swh-plugins libfftw3-3 unixodbc uuid memcached ;do apt-get -y install "${i}" ; done
 
-# Freeswitch Base $ Modules Install Options.
-echo " Installing freeswitch all modules"
-for i in freeswitch-meta-all freeswitch-mod-vlc ;do apt-get -y install "${i}" ; done
+# Freeswitch Install Options.
+if [[ $freeswitch_install == "all" ]]; then
+	echo " Installing freeswitch all"
+	apt-get -y install --force-yes freeswitch-meta-all mod_vlc
+fi
+
+if [[ $freeswitch_install == "bare" ]]; then
+	echo " Installing freeswitch bare"
+	apt-get -y install --force-yes freeswitch-meta-bare
+fi
+
+if [[ $freeswitch_install == "codecs" ]]; then
+	echo " Installing freeswitch all codecs"
+	apt-get -y install --force-yes freeswitch-meta-codecs
+fi
+
+if [[ $freeswitch_install == "default" ]]; then
+	echo " Installing freeswitch default"
+	apt-get -y install --force-yes freeswitch-meta-default
+fi
+
+if [[ $freeswitch_install == "sorbet" ]]; then
+	echo " Installing freeswitch sorbet"
+	apt-get -y install --force-yes freeswitch-meta-sorbet
+fi
+
+if [[ $freeswitch_install == "vanilla" ]]; then
+	echo " Installing freeswitch vanilla"
+	apt-get -y install --force-yes	freeswitch-meta-vanilla
+fi
 
 #Genertaing /etc/freeswitch config dir.
 mkdir $freeswitch_act_conf
 
-#Install FreeSwitch vanilla configs
-echo " Installing freeswitch vanilla configs into the default config directory"
-apt-get -y install --force-yes	freeswitch-conf-vanilla
+#FreeSwitch Configs
+if [[ $freeswitch_conf == "curl" ]]; then
+	echo " Installing Freeswitch curl configs"
+	# Installing defailt configs into /usr/share/freeswitch/conf/(configname).
+	apt-get -y install	freeswitch-conf-curl
+	#Copy configs into Freeswitch active conf dir.
+	cp -rp "$freeswitch_dflt_conf"/curl/* "$freeswitch_act_conf"
+	#Chowning files for correct user/group in the active conf dir.
+	chown -R freeswitch:freeswitch "$freeswitch_act_conf" 
+fi
 
-echo " Installing freeswitch vanilla configs into the freeswitch active config directory "
-cp -rp "$freeswitch_dflt_conf"/vanilla/* "$freeswitch_act_conf"
+if [[ $freeswitch_conf == "insideout" ]]; then
+	echo " Installing Freeswitch insideout configs"
+	apt-get -y install	freeswitch-conf-insideout
+	cp -rp "$freeswitch_dflt_conf"/insideoout/* "$freeswitch_act_conf"
+	chown -R freeswitch:freeswitch "$freeswitch_act_conf"
+fi
+
+if [[ $freeswitch_conf == "sbc" ]]; then
+	echo " Installing Freeswitch session border control configs"
+	apt-get -y install	freeswitch-conf-sbc
+	cp -rp "$freeswitch_dflt_conf"/sbc/* "$freeswitch_act_conf"
+	chown -R freeswitch:freeswitch "$freeswitch_act_conf"
+fi
+
+if [[ $freeswitch_conf == "softphone" ]]; then
+	echo "Installing softphone configs"
+	apt-get -y install	freeswitch-conf-softphone
+	cp -rp "$freeswitch_dflt_conf"/softphone/* "$freeswitch_act_conf"
+	chown -R freeswitch:freeswitch "$freeswitch_act_conf"
+fi
+
+if [[ $freeswitch_conf == "vanilla" ]]; then
+	echo " Installing Vanilla configs"
+	apt-get -y install	freeswitch-conf-vanilla
+	cp -rp "$freeswitch_dflt_conf"/vanilla/* "$freeswitch_act_conf"
+	chown -R freeswitch:freeswitch "$freeswitch_act_conf"
+fi
 
 chown -R freeswitch:freeswitch "$freeswitch_act_conf"
 
@@ -278,7 +375,7 @@ done
 #!/bin/bash
 
 #number of days of logs to keep
-NUMBERDAYS=30
+NUMBERDAYS="$KEEP_LOGS"
 FSPATH="/var/log/freeswitch"
 
 $FSPATH/bin/freeswitch_cli -x "fsctl send_sighup" |grep '+OK' >/tmp/<<DELIM
