@@ -436,7 +436,7 @@ chown freeswitch:freeswitch "$freeswitch_log"/xml_cdr
 for i in fail2ban freeswitch ;do /etc/init.d/"${i}" restart  >/dev/null 2>&1 ; done
 
 #Start of FusionPBX / nginx / php5 
-if [[ $install_PBX == "y" ]]; then
+if [[ $install_pbx == "y" ]]; then
 #Install and configure  PHP + Nginx + sqlite3
 for i in ssl-cert sqlite3 nginx php5-cli php5-sqlite php5-odbc php-db php5-fpm php5-common php5-gd php-pear php5-memcache php-apc ;do apt-get -y install "${i}" ; done
 
