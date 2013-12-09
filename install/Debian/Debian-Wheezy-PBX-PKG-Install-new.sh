@@ -739,17 +739,17 @@ cat << DELIM
 DELIM
 fi
 
-#ADD Ajenti repo
+#ADD Ajenti repo & ajenti
 if [[ -f /etc/ajenti ]]; then
 /bin/cat > "/etc/apt/sources.list.d/ajenti.list" <<DELIM
 deb http://repo.ajenti.org/debian main main debian
 DELIM
 wget http://repo.ajenti.org/debian/key -O- | apt-key add -
-apt-get update &> /dev/null
+apt-get update &> /dev/null && apt-get -y install ajenti
 fi
 
-#Install ajenti openvpn openvpn-scripts pbx-admin-menu
-for i in ajenti openvpn openvpn-scripts pbx-admin-menu ;do apt-get -y install --force-yes "${i}" ; done
+#Install openvpn openvpn-scripts pbx-admin-menu
+for i in  openvpn openvpn-scripts pbx-admin-menu ;do apt-get -y install --force-yes "${i}" ; done
 
 #Enable admin shell menu
 if [[ $enable_admin_menu == y ]]; then
