@@ -213,7 +213,8 @@ for i in update upgrade ;do apt-get -y "${i}" ; done
 esac
 
 #install Freeswitch Deps
-for i in curl screen pkg-config libtiff5 libtiff-tools autotalent ladspa-sdk tap-plugins swh-plugins libfftw3-3 unixodbc uuid memcached ajenti openvpn ;do apt-get -y install "${i}" ; done
+for i in curl screen libtiff5 libtiff-tools autotalent ladspa-sdk tap-plugins swh-plugins \
+         libfftw3-3 unixodbc uuid memcached ;do apt-get -y install "${i}" ; done
 
 # Freeswitch Install Options.
 if [[ $freeswitch_install == "all" ]]; then
@@ -738,8 +739,8 @@ cat << DELIM
 DELIM
 fi
 
-#Install openvpn & pbx admin menu shell script.
-apt-get -y install --force-yes openvpn-scripts pbx-admin-menu
+#Install ajenti openvpn openvpn-scripts pbx-admin-menu
+for i in ajenti openvpn openvpn-scripts pbx-admin-menu ;do apt-get -y install --force-yes "${i}" ; done
 
 #Enable admin shell menu
 if [[ $enable_admin_menu == y ]]; then
