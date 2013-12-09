@@ -293,7 +293,7 @@ chown -R freeswitch:freeswitch "$freeswitch_act_conf"
 #fix music dir issue
 if [ -f "$freeswitch_act_conf"/autoload_configs/local_stream.conf.xml ]
 then
-/bin/sed -i "$freeswitch_act_conf"/autoload_configs/local_stream.conf.xml -e s,'<directory name="default" path="$${sounds_dir}/music/8000">','<directory name="default" path="$${sounds_dir}/music/default">',
+/bin/sed /etc/freeswitch/autoload_configs/local_stream.conf.xml -i -e s,'<directory name="default" path="$${sounds_dir}/music/8000">','<directory name="default" path="$${sounds_dir}/music/default">',g
 fi
 
 # Proper file to change init strings in. (/etc/defalut/freeswitch)
@@ -321,10 +321,10 @@ DELIM
 #Adding changes to freeswitch profiles
 sed -i "$freeswitch_act_conf"/sip_profiles/internal.xml -e s,'<param name="log-auth-failures" value="false"/>','<param name="log-auth-failures" value="true"/>',
 
-sed -i "$freeswitch_act_conf"/sip_profiles/internal.xml -e s,'<!-- *<param name="log-auth-failures" value="false"/>','<param name="log-auth-failures" value="true"/>', \
+sed "$freeswitch_act_conf"/sip_profiles/internal.xml -i -e s,'<!-- *<param name="log-auth-failures" value="false"/>','<param name="log-auth-failures" value="true"/>', \
 				-e s,'<param name="log-auth-failures" value="false"/> *-->','<param name="log-auth-failures" value="true"/>', \
 				-e s,'<!--<param name="log-auth-failures" value="false"/>','<param name="log-auth-failures" value="true"/>', \
-				-e s,'<param name="log-auth-failures" value="false"/>-->','<param name="log-auth-failures" value="true"/>',
+				-e s,'<param name="log-auth-failures" value="false"/>-->','<param name="log-auth-failures" value="true"/>',g
 
 #Setting up Fail2ban freeswitch config files.
 /bin/cat > "/etc/fail2ban/filter.d/freeswitch.conf"  <<DELIM
@@ -617,7 +617,7 @@ cp -r "$WWW_PATH/$wui_name"/resources/templates/conf/* "$freeswitch_act_conf"
 #fix music dir issue
 if [ -f "$freeswitch_act_conf"/autoload_configs/local_stream.conf.xml ]
 then
-/bin/sed -i "$freeswitch_act_conf"/autoload_configs/local_stream.conf.xml -e s,'<directory name="default" path="$${sounds_dir}/music/8000">','<directory name="default" path="$${sounds_dir}/music/default">',
+/bin/sed /etc/freeswitch/autoload_configs/local_stream.conf.xml -i -e s,'<directory name="default" path="$${sounds_dir}/music/8000">','<directory name="default" path="$${sounds_dir}/music/default">',g
 fi
 
 #chown freeswitch  conf files
