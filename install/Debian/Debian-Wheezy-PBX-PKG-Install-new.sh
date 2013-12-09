@@ -744,6 +744,7 @@ fi
 deb http://repo.ajenti.org/debian main main debian
 DELIM
 wget http://repo.ajenti.org/debian/key -O- | apt-key add -
+apt-get update &> /dev/null
 
 #Install ajenti openvpn openvpn-scripts pbx-admin-menu
 for i in ajenti openvpn openvpn-scripts pbx-admin-menu ;do apt-get -y install --force-yes "${i}" ; done
