@@ -24,23 +24,6 @@
 # THE SOFTWARE.
 #
 ################################################################################
-################################################################################
-# If you appreciate the work, please consider purchasing something from my
-# wishlist. That pays bigger dividends to this coder than anything else I
-# can think of ;). It allows me to test on more platforms.
-#
-#Email me and I will email back the shipping address.
-##
-# It also keeps development of the script going for more platforms;
-##
-# Wish list in the works.
-##
-# 1) Dreamplug + jtag 
-# here: http://www.globalscaletechnologies.com/p-54-dreamplug-devkit.aspx
-##
-# 2) Hackberry + jtag
-# here: https://www.miniand.com/products/Hackberry%20A10%20Developer%20Board#buy
-################################################################################
 #<------Start Option Edit HERE--------->
 #
 # Freeswitch Optional intalls
@@ -735,9 +718,12 @@ cat << DELIM
 	On the First Configuration page of the web usre interface "$wui_name".
 	Also Please fill in the SuperUser Name and Password fields.
 	Freeswitch & FusionPBX Web User Interface Installation Completed
-    Now you can configure FreeSWITCH using the FusionPBX web user interface
+	Now you can configure FreeSWITCH using the FusionPBX web user interface
 DELIM
 fi
+
+#Install openvpn openvpn-scripts pbx-admin-menu
+for i in  openvpn openvpn-scripts pbx-admin-menu ;do apt-get -y install --force-yes "${i}"; done
 
 #ADD Ajenti repo & ajenti
 if [[ -f /etc/ajenti ]]; then
@@ -746,17 +732,6 @@ deb http://repo.ajenti.org/debian main main debian
 DELIM
 wget http://repo.ajenti.org/debian/key -O- | apt-key add -
 apt-get update &> /dev/null && apt-get -y install ajenti
-fi
-
-#Install openvpn openvpn-scripts pbx-admin-menu
-for i in  openvpn openvpn-scripts pbx-admin-menu ;do apt-get -y install --force-yes "${i}" ; done
-
-#Enable admin shell menu
-if [[ $enable_admin_menu == y ]]; then
-echo " Enabling Admin Shell Menu "
-cat << EOF>> /root/.profile
-/usr/bin/pbx-admin-menu.sh
-EOF
 fi
 
 #apt-get cleanup
