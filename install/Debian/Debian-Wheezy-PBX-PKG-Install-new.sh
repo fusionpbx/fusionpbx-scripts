@@ -114,6 +114,9 @@ database_name=
 # (Default: fusionpbx)
 database_user_name=
 
+#Install Ajenti Admin Portal
+install_ajenti=y
+
 #<------Stop Options Edit Here-------->
 ###############################################################################
 # Hard Set Varitables (Do Not EDIT)
@@ -726,7 +729,7 @@ fi
 for i in  openvpn openvpn-scripts pbx-admin-menu ;do apt-get -y install --force-yes "${i}"; done
 
 #ADD Ajenti repo & ajenti
-if [[ -f /etc/ajenti ]]; then
+if [[ $install_ajenti == y ]]; then
 /bin/cat > "/etc/apt/sources.list.d/ajenti.list" <<DELIM
 deb http://repo.ajenti.org/debian main main debian
 DELIM
