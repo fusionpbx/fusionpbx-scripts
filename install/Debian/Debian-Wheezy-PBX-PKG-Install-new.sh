@@ -196,7 +196,7 @@ for i in update upgrade ;do apt-get -y "${i}" ; done
 esac
 
 #install Freeswitch Deps
-for i in curl screen libtiff5 libtiff-tools autotalent ladspa-sdk tap-plugins swh-plugins \
+for i in curl screen libtiff5 libtiff-tools ghostscript autotalent ladspa-sdk tap-plugins swh-plugins \
          libfftw3-3 unixodbc uuid memcached ;do apt-get -y install "${i}" ; done
 
 # Freeswitch Install Options.
