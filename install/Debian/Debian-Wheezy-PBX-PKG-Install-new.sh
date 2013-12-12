@@ -28,12 +28,81 @@
 #
 # Freeswitch Optional intalls
 #
-freeswitch_install="all" # This is a metapackage which recommends or suggests all packaged FreeSWITCH modules.(Default)
+#freeswitch_install="all" # This is a metapackage which recommends or suggests all packaged FreeSWITCH modules.(Default)
+# freeswitch-meta-all
+# Installs: freeswitch freeswitch-mod-vlc freeswitch-init freeswitch-lang freeswitch-meta-codecs freeswitch-meta-conf freeswitch-meta-lang freeswitch-meta-mod-say 
+# freeswitch-music freeswitch-sounds freeswitch-mod-abstraction freeswitch-mod-avmd freeswitch-mod-blacklist freeswitch-mod-callcenter freeswitch-mod-cidlookup 
+# freeswitch-mod-cluechoo freeswitch-mod-commands freeswitch-mod-conference freeswitch-mod-curl freeswitch-mod-db freeswitch-mod-directory freeswitch-mod-distributor
+# freeswitch-mod-dptools freeswitch-mod-easyroute freeswitch-mod-enum freeswitch-mod-esf freeswitch-mod-esl freeswitch-mod-expr freeswitch-mod-fifo freeswitch-mod-fsk
+# freeswitch-mod-fsv freeswitch-mod-hash freeswitch-mod-httapi freeswitch-mod-http-cache freeswitch-mod-ladspa freeswitch-mod-lcr freeswitch-mod-memcache 
+# freeswitch-mod-nibblebill freeswitch-mod-oreka freeswitch-mod-random freeswitch-mod-redis freeswitch-mod-rss freeswitch-mod-sms freeswitch-mod-snapshot 
+# freeswitch-mod-snipe-hunt freeswitch-mod-snom freeswitch-mod-sonar freeswitch-mod-soundtouch freeswitch-mod-spandsp freeswitch-mod-spy freeswitch-mod-stress 
+# freeswitch-mod-translate freeswitch-mod-valet-parking freeswitch-mod-vmd freeswitch-mod-voicemail freeswitch-mod-voicemail-ivr freeswitch-mod-flite 
+# freeswitch-mod-pocketsphinx freeswitch-mod-tts-commandline freeswitch-mod-unimrcp freeswitch-mod-dialplan-asterisk freeswitch-mod-dialplan-directory
+# freeswitch-mod-dialplan-xml freeswitch-mod-ldap freeswitch-mod-alsa freeswitch-mod-dingaling <freeswitch-mod-html5>  freeswitch-mod-loopback freeswitch-mod-portaudio 
+# freeswitch-mod-rtmp freeswitch-mod-skinny freeswitch-mod-skypopen freeswitch-mod-sofia freeswitch-mod-cdr-csv freeswitch-mod-cdr-mongodb freeswitch-mod-cdr-pg-csv 
+# freeswitch-mod-cdr-sqlite freeswitch-mod-erlang-event freeswitch-mod-event-multicast freeswitch-mod-event-socket freeswitch-mod-event-test  freeswitch-mod-event-zmq 
+# freeswitch-mod-json-cdr freeswitch-mod-radius-cdr freeswitch-mod-snmp freeswitch-mod-local-stream  freeswitch-mod-native-file freeswitch-mod-portaudio-stream 
+# freeswitch-mod-shell-stream freeswitch-mod-sndfile freeswitch-mod-tone-stream freeswitch-mod-java freeswitch-mod-lua freeswitch-mod-perl freeswitch-mod-python 
+# freeswitch-mod-yaml freeswitch-mod-console freeswitch-mod-logfile freeswitch-mod-syslog freeswitch-mod-posix-timer freeswitch-mod-timerfd freeswitch-mod-xml-cdr 
+# freeswitch-mod-xml-curl freeswitch-mod-xml-rpc freeswitch-mod-xml-scgi
+
 #freeswitch_install="bare" # This is a metapackage which depends on the packages needed for a very bare FreeSWITCH install.
+# freeswitch-meta-bare
+# Installs: freeswitch freeswitch-doc freeswitch-mod-commands freeswitch-init freeswitch-lang freeswitch-music freeswitch-sounds
+
 #freeswitch_install="codecs" # This is a metapackage which depends on the packages needed to install most FreeSWITCH codecs.
+# freeswitch-meta-codecs
+# Installs: freeswitch freeswitch-mod-amr freeswitch-mod-amrwb freeswitch-mod-b64 freeswitch-mod-bv freeswitch-mod-celt freeswitch-mod-codec2 freeswitch-mod-dahdi-codec  
+# freeswitch-mod-g723-1 freeswitch-mod-g729 freeswitch-mod-h26x freeswitch-mod-isac freeswitch-mod-mp4v freeswitch-mod-opus freeswitch-mod-silk freeswitch-mod-spandsp
+# freeswitch-mod-speex  freeswitch-mod-theora freeswitch-mod-vp8 
+# Suggests <freeswitch-mod-ilbc> <freeswitch-mod-siren>
+
 #freeswitch_install="default" # This is a metapackage which depends on the packages needed for a reasonably basic FreeSWITCH install.
+# freeswitch-meta-default
+# freeswitch freeswitch-mod-commands freeswitch-mod-conference freeswitch-mod-db freeswitch-mod-dptools freeswitch-mod-fifo freeswitch-mod-hash freeswitch-mod-spandsp
+# freeswitch-mod-voicemail freeswitch-mod-dialplan-xml freeswitch-mod-loopback freeswitch-mod-sofia freeswitch-mod-local-stream freeswitch-mod-native-file
+# freeswitch-mod-sndfile freeswitch-mod-tone-stream freeswitch-mod-lua freeswitch-mod-console freeswitch-mod-say-en
+# Suggests: freeswitch-mod-cidlookup freeswitch-mod-curl freeswitch-mod-directory freeswitch-mod-enum freeswitch-mod-spy freeswitch-mod-valet-parking freeswitch-init
+# Recommends: freeswitch-lang freeswitch-meta-codecs freeswitch-music freeswitch-sounds
+
+#freeswitch_install="lang"
+# freeswitch-meta-lang
+# Installs: freeswitch-lang-de freeswitch-lang-en freeswitch-lang-es freeswitch-lang-fr freeswitch-lang-he freeswitch-lang-pt freeswitch-lang-ru
+
+#freeswitch_install="says"
+# freeswitch-meta-mod-say
+# Installs freeswitch-mod-say-de freeswitch-mod-say-en freeswitch-mod-say-de freeswitch-mod-say-fa freeswitch-mod-say-fr freeswitch-mod-say-he
+# freeswitch-mod-say-hr freeswitch-mod-say-hu freeswitch-mod-say-it freeswitch-mod-say-ja freeswitch-mod-say-nl freeswitch-mod-say-pl
+# freeswitch-mod-say-pt freeswitch-mod-say-ru freeswitch-mod-say-th freeswitch-mod-say-zh
+
 #freeswitch_install="sorbet" # This is a metapackage which recommends most packaged FreeSWITCH modules except a few which aren't recommended.
-#freeswitch_install="vanilla" # This is a metapackage which depends on the packages needed for running the FreeSWITCH vanilla example configuration.
+# freeswitch-meta-sorbet
+# Installs: freeswitch freeswitch-init freeswitch-lang freeswitch-meta-codecs freeswitch-music freeswitch-sounds freeswitch-mod-abstraction freeswitch-mod-avmd 
+# freeswitch-mod-blacklist freeswitch-mod-callcenter freeswitch-mod-cidlookup freeswitch-mod-commands freeswitch-mod-conference freeswitch-mod-curl freeswitch-mod-db 
+# freeswitch-mod-directory freeswitch-mod-distributor freeswitch-mod-dptools freeswitch-mod-easyroute freeswitch-mod-enum freeswitch-mod-esf freeswitch-mod-esl 
+# freeswitch-mod-expr freeswitch-mod-fifo freeswitch-mod-fsk freeswitch-mod-fsv freeswitch-mod-hash freeswitch-mod-httapi freeswitch-mod-http-cache freeswitch-mod-lcr 
+# freeswitch-mod-nibblebill freeswitch-mod-oreka freeswitch-mod-random freeswitch-mod-redis freeswitch-mod-rss freeswitch-mod-sms freeswitch-mod-snapshot freeswitch-mod-snom 
+# freeswitch-mod-sonar freeswitch-mod-soundtouch freeswitch-mod-spandsp freeswitch-mod-spy freeswitch-mod-stress freeswitch-mod-valet-parking freeswitch-mod-vmd 
+# freeswitch-mod-voicemail freeswitch-mod-voicemail-ivr freeswitch-mod-flite freeswitch-mod-pocketsphinx freeswitch-mod-tts-commandline freeswitch-mod-dialplan-xml 
+# <freeswitch-mod-html5> freeswitch-mod-loopback freeswitch-mod-rtmp freeswitch-mod-skinny freeswitch-mod-sofia freeswitch-mod-cdr-csv freeswitch-mod-cdr-sqlite 
+# freeswitch-mod-event-socket freeswitch-mod-json-cdr freeswitch-mod-local-stream freeswitch-mod-native-file freeswitch-mod-shell-stream freeswitch-mod-sndfile 
+# freeswitch-mod-tone-stream freeswitch-mod-lua freeswitch-mod-console freeswitch-mod-logfile freeswitch-mod-syslog freeswitch-mod-say-en freeswitch-mod-posix-timer 
+# freeswitch-mod-timerfd  freeswitch-mod-xml-cdr freeswitch-mod-xml-curl
+
+# freeswitch_install="vanilla" # This is a metapackage which depends on the packages needed for running the FreeSWITCH vanilla example configuration.
+# freeswitch-meta-vanilla
+# freeswitch freeswitch-mod-console freeswitch-mod-logfile freeswitch-mod-enum freeswitch-mod-cdr-csv freeswitch-mod-event-socket freeswitch-mod-sofia
+# freeswitch-mod-loopback freeswitch-mod-commands freeswitch-mod-conference freeswitch-mod-db freeswitch-mod-dptools freeswitch-mod-expr freeswitch-mod-fifo 
+# freeswitch-mod-hash freeswitch-mod-voicemail freeswitch-mod-esf freeswitch-mod-fsv freeswitch-mod-cluechoo freeswitch-mod-valet-parking freeswitch-mod-httapi
+# freeswitch-mod-dialplan-xml freeswitch-mod-dialplan-asterisk freeswitch-mod-spandsp freeswitch-mod-g723-1 freeswitch-mod-g729 freeswitch-mod-amr freeswitch-mod-speex
+# freeswitch-mod-h26x freeswitch-mod-sndfile freeswitch-mod-native-file freeswitch-mod-local-stream freeswitch-mod-tone-stream freeswitch-mod-lua freeswitch-mod-say-en
+# Suggests: <freeswitch-mod-spidermonkey>
+# Recommends: freeswitch-init freeswitch-lang freeswitch-music freeswitch-sounds freeswitch-conf-vanilla
+
+#freeswitch_install="sounds"
+
+#freeswitch_install="music"
 
 #Due to licensing issues this is a optional module and is not included in the freeswitch-mete-* files.
 #It must me added on its own.
@@ -218,9 +287,24 @@ if [[ $freeswitch_install == "codecs" ]]; then
 	apt-get -y install --force-yes freeswitch-meta-codecs
 fi
 
+if [[ $freeswitch_install == "conf" ]]; then
+	echo " Installing all freeswitch config files "
+	apt-get -y install --force-yes freeswitch-meta-conf
+fi
+
 if [[ $freeswitch_install == "default" ]]; then
 	echo " Installing freeswitch default "
 	apt-get -y install --force-yes freeswitch-meta-default
+fi
+
+if [[ $freeswitch_install == "lang" ]]; then
+	echo " Installing freeswitch languages "
+	apt-get -y install --force-yes freeswitch-meta-lang
+fi
+
+if [[ $freeswitch_install == "say" ]]; then
+	echo " Installing freeswitch say language files "
+	apt-get -y install --force-yes freeswitch-meta-say
 fi
 
 if [[ $freeswitch_install == "sorbet" ]]; then
@@ -231,6 +315,16 @@ fi
 if [[ $freeswitch_install == "vanilla" ]]; then
 	echo " Installing freeswitch vanilla "
 	apt-get -y install --force-yes freeswitch-meta-vanilla
+fi
+
+if [[ $freeswitch_install == "sounds" ]]; then
+	echo " Installing freeswitch sounds_en_us_calie "
+	apt-get -y install --force-yes freeswitch-sounds
+fi
+
+if [[ $freeswitch_install == "music" ]]; then
+	echo " Installing freeswitch music "
+	apt-get -y install --force-yes freeswitch-music
 fi
 
 if [[ $freeswitch_vlc == "y" ]]; then
