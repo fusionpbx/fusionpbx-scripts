@@ -101,12 +101,14 @@
 # Recommends: freeswitch-init freeswitch-lang freeswitch-music freeswitch-sounds freeswitch-conf-vanilla
 
 #freeswitch_install="sounds"
+# Installs the freeswitch sounds en-us-callie
 
 #freeswitch_install="music"
+# Installs freeswitch music files.
 
 #Due to licensing issues this is a optional module and is not included in the freeswitch-mete-* files.
 #It must me added on its own.
-freeswitch_vlc="y"
+freeswitch_install="vlc"
 
 #Notice:
 # "freeswitch_install=all" (freeswitch-meta-all) installs all the differant configs
@@ -327,11 +329,10 @@ if [[ $freeswitch_install == "music" ]]; then
 	apt-get -y install --force-yes freeswitch-music
 fi
 
-if [[ $freeswitch_vlc == "y" ]]; then
+if [[ $freeswitch_install== "vlc" ]]; then
 	echo " Installing freeswitch mod_vlc "
 	apt-get -y install --force-yes freeswitch-mod-vlc
 fi
-
 
 #Genertaing /etc/freeswitch config dir.
 mkdir $freeswitch_act_conf
