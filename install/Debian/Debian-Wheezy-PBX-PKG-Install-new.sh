@@ -90,7 +90,7 @@ freeswitch_install="fusionpbx"
 # freeswitch-mod-event-test freeswitch-mod-local-stream freeswitch-mod-native-file # freeswitch-mod-portaudio-stream 
 # freeswitch-mod-shell-stream freeswitch-mod-sndfile freeswitch-mod-tone-stream freeswitch-mod-lua freeswitch-mod-console
 # freeswitch-mod-logfile freeswitch-mod-syslog freeswitch-mod-posix-timer freeswitch-mod-timerfd freeswitch-mod-xml-cdr 
-# freeswitch-mod-xml-rpc freeswitch-mod-say-en freeswitch-lang-en freeswitch-init freeswitch-meta-codecs
+# freeswitch-mod-xml-rpc freeswitch-mod-say-en freeswitch-lang-en freeswitch-init freeswitch-meta-codecs freeswitch-mod-fifo
 # Recommends freeswitch-conf-vanilla
 
 #freeswitch_install="lang"
@@ -353,7 +353,7 @@ if [[ $freeswitch_install == "fusionpbx" ]]; then
 	freeswitch-mod-rtmp freeswitch-mod-sofia freeswitch-mod-cdr-sqlite freeswitch-mod-event-multicast freeswitch-mod-event-socket freeswitch-mod-event-test \
 	freeswitch-mod-local-stream freeswitch-mod-native-file freeswitch-mod-portaudio-stream freeswitch-mod-shell-stream freeswitch-mod-sndfile freeswitch-mod-tone-stream \
 	freeswitch-mod-lua freeswitch-mod-console freeswitch-mod-logfile freeswitch-mod-syslog freeswitch-mod-posix-timer freeswitch-mod-timerfd freeswitch-mod-xml-cdr \
-	freeswitch-mod-xml-rpc freeswitch-mod-say-en freeswitch-lang-en freeswitch-init freeswitch-meta-codecs ;do apt-get -y install --force-yes "${i}" ; done
+	freeswitch-mod-xml-rpc freeswitch-mod-say-en freeswitch-lang-en freeswitch-init freeswitch-meta-codecs freeswitch-mod-fifo ;do apt-get -y install --force-yes "${i}" ; done
 fi
 
 if [[ $freeswitch_install == "lang" ]]; then
