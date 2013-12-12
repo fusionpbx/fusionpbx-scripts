@@ -24,6 +24,11 @@
 # THE SOFTWARE.
 #
 ################################################################################
+#Note: 
+#   Those of you running this script on openvz. You must run it as root and 
+#   bash Debian-wheezy-PBX-PKG-Install-new.sh or it fails the networking check.
+#
+################################################################################
 #<------Start Option Edit HERE--------->
 #
 # Freeswitch Optional intalls
