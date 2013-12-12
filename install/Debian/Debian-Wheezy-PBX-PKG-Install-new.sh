@@ -74,7 +74,7 @@ fi
 # Suggests: freeswitch-mod-cidlookup freeswitch-mod-curl freeswitch-mod-directory freeswitch-mod-enum freeswitch-mod-spy freeswitch-mod-valet-parking freeswitch-init
 # Recommends: freeswitch-lang freeswitch-meta-codecs freeswitch-music freeswitch-sounds
 
-#freeswitch_install="fusionpbx"
+freeswitch_install="fusionpbx"
 #installs the following pkgs used by fusionpbx-en (English US English BasedPBX)(Would like to see other sounds and lang pbx)
 # Installs: freeswitch  freeswitch-init freeswitch-lang freeswitch-meta-codecs freeswitch-music freeswitch-sounds
 # freeswitch-mod-abstraction freeswitch-mod-avmd freeswitch-mod-blacklist freeswitch-mod-callcenter freeswitch-mod-cidlookup 
