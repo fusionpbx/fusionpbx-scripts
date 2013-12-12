@@ -86,7 +86,7 @@ fi
 # freeswitch-mod-translate freeswitch-mod-valet-parking freeswitch-mod-vmd freeswitch-mod-voicemail freeswitch-mod-voicemail-ivr 
 # freeswitch-mod-flite freeswitch-mod-pocketsphinx freeswitch-mod-tts-commandline freeswitch-mod-unimrcp freeswitch-mod-dialplan-xml 
 # freeswitch-mod-ldap freeswitch-mod-dingaling freeswitch-mod-loopback freeswitch-mod-portaudio freeswitch-mod-rtmp 
-# freeswitch-mod-sofia freeswitch-mod-cdr-csv freeswitch-mod-cdr-sqlite freeswitch-mod-event-multicast freeswitch-mod-event-socket 
+# freeswitch-mod-sofia freeswitch-mod-cdr-sqlite freeswitch-mod-event-multicast freeswitch-mod-event-socket 
 # freeswitch-mod-event-test freeswitch-mod-local-stream freeswitch-mod-native-file # freeswitch-mod-portaudio-stream 
 # freeswitch-mod-shell-stream freeswitch-mod-sndfile freeswitch-mod-tone-stream freeswitch-mod-lua freeswitch-mod-console
 # freeswitch-mod-logfile freeswitch-mod-syslog freeswitch-mod-posix-timer freeswitch-mod-timerfd freeswitch-mod-xml-cdr 
