@@ -28,7 +28,7 @@ if [[ -f /proc/vz ]]; then
 echo "Note: "
 echo "Those of you running this script on openvz. You must run it as root and "
 echo "bash Debian-wheezy-PBX-PKG-Install-new.sh or it fails the networking check."
-break ;;
+break
 fi
 #
 ################################################################################
@@ -75,8 +75,8 @@ fi
 # Recommends: freeswitch-lang freeswitch-meta-codecs freeswitch-music freeswitch-sounds
 
 freeswitch_install="fusionpbx"
-#installs the following pkgs used by fusionpbx-en (English US English BasedPBX)(Would like to see other sounds and lang pbx)
-# Installs: freeswitch  freeswitch-init freeswitch-lang freeswitch-meta-codecs freeswitch-music freeswitch-sounds
+# installs the following pkgs used by fusionpbx-en (English US English BasedPBX)(Would like to see other sounds and lang pbx)
+# Installs: freeswitch   
 # freeswitch-mod-abstraction freeswitch-mod-avmd freeswitch-mod-blacklist freeswitch-mod-callcenter freeswitch-mod-cidlookup 
 # freeswitch-mod-commands freeswitch-mod-conference freeswitch-mod-curl freeswitch-mod-db freeswitch-mod-directory 
 # freeswitch-mod-distributor freeswitch-mod-dptools freeswitch-mod-easyroute freeswitch-mod-enum freeswitch-mod-esf 
@@ -90,7 +90,7 @@ freeswitch_install="fusionpbx"
 # freeswitch-mod-event-test freeswitch-mod-local-stream freeswitch-mod-native-file # freeswitch-mod-portaudio-stream 
 # freeswitch-mod-shell-stream freeswitch-mod-sndfile freeswitch-mod-tone-stream freeswitch-mod-lua freeswitch-mod-console
 # freeswitch-mod-logfile freeswitch-mod-syslog freeswitch-mod-posix-timer freeswitch-mod-timerfd freeswitch-mod-xml-cdr 
-# freeswitch-mod-xml-rpc freeswitch-mod-say-en freeswitch-lang-en
+# freeswitch-mod-xml-rpc freeswitch-mod-say-en freeswitch-lang-en freeswitch-init freeswitch-meta-codecs
 # Recommends freeswitch-conf-vanilla
 
 #freeswitch_install="lang"
@@ -135,7 +135,7 @@ freeswitch_install="music"
 
 #Due to licensing issues this is a optional module and is not included in the freeswitch-mete-* files.
 #It must me added on its own.
-#freeswitch_install="vlc"
+freeswitch_install="vlc"
 
 #Notice:
 # "freeswitch_install=all" (freeswitch-meta-all) installs all the differant configs
@@ -337,25 +337,23 @@ if [[ $freeswitch_install == "default" ]]; then
 fi
 
 if [[ $freeswitch_install == "fusionpbx" ]]; then
-	echo " Installing freeswitch default "
+	echo " Installing freeswitch fusipnpbx "
 	#install Freeswitch Deps
 	for i in curl screen unixodbc uuid memcached ;do apt-get -y install "${i}" ; done
 	#Pkgs needed for faxing (freeswitch-mod-spandsp)
 	for i in libtiff5 libtiff-tools ghostscript ;do apt-get -y install "${i}" ; done
 	# install freeswitch fusionpbx install
-	for i in freeswitch freeswitch-init freeswitch-lang freeswitch-meta-codecs freeswitch-mod-abstraction freeswitch-mod-avmd \
-	freeswitch-mod-blacklist freeswitch-mod-callcenter freeswitch-mod-cidlookup freeswitch-mod-commands freeswitch-mod-conference \
-	freeswitch-mod-curl freeswitch-mod-db freeswitch-mod-directory freeswitch-mod-distributor freeswitch-mod-dptools freeswitch-mod-easyroute \
-	freeswitch-mod-enum freeswitch-mod-esf freeswitch-mod-esl freeswitch-mod-expr freeswitch-mod-fifo freeswitch-mod-fsk freeswitch-mod-fsv \
-	freeswitch-mod-hash freeswitch-mod-httapi freeswitch-mod-http-cache freeswitch-mod-lcr freeswitch-mod-memcache freeswitch-mod-oreka \
-	freeswitch-mod-random freeswitch-mod-snom freeswitch-mod-soundtouch freeswitch-mod-spandsp freeswitch-mod-spy freeswitch-mod-translate \
-	freeswitch-mod-valet-parking freeswitch-mod-vmd freeswitch-mod-voicemail freeswitch-mod-voicemail-ivr freeswitch-mod-flite \
-	freeswitch-mod-pocketsphinx freeswitch-mod-tts-commandline freeswitch-mod-unimrcp freeswitch-mod-dialplan-xml freeswitch-mod-ldap \
-	freeswitch-mod-dingaling freeswitch-mod-loopback freeswitch-mod-portaudio freeswitch-mod-rtmp freeswitch-mod-sofia freeswitch-mod-cdr-sqlite \
-	freeswitch-mod-event-multicast freeswitch-mod-event-socket freeswitch-mod-event-test freeswitch-mod-local-stream freeswitch-mod-native-file \
-	freeswitch-mod-portaudio-stream	freeswitch-mod-shell-stream freeswitch-mod-sndfile freeswitch-mod-tone-stream freeswitch-mod-lua freeswitch-mod-console \
-	freeswitch-mod-logfile freeswitch-mod-syslog freeswitch-mod-posix-timer freeswitch-mod-timerfd freeswitch-mod-xml-cdr freeswitch-mod-xml-rpc \
-	freeswitch-mod-say-en freeswitch-lang-en ;do apt-get -y install "${i}" ; done
+	for i in libfreeswitch1 freeswitch freeswitch-mod-abstraction freeswitch-mod-avmd freeswitch-mod-blacklist freeswitch-mod-callcenter freeswitch-mod-cidlookup \
+	freeswitch-mod-commands freeswitch-mod-conference freeswitch-mod-curl freeswitch-mod-db freeswitch-mod-directory freeswitch-mod-distributor \
+	freeswitch-mod-dptools freeswitch-mod-easyroute freeswitch-mod-enum freeswitch-mod-esf freeswitch-mod-esl freeswitch-mod-expr freeswitch-mod-fifo \
+	freeswitch-mod-fsk freeswitch-mod-fsv freeswitch-mod-hash freeswitch-mod-httapi freeswitch-mod-http-cache freeswitch-mod-lcr freeswitch-mod-memcache \
+	freeswitch-mod-oreka freeswitch-mod-random freeswitch-mod-snom freeswitch-mod-soundtouch freeswitch-mod-spandsp freeswitch-mod-spy freeswitch-mod-translate \
+	freeswitch-mod-valet-parking freeswitch-mod-vmd freeswitch-mod-voicemail freeswitch-mod-voicemail-ivr freeswitch-mod-flite freeswitch-mod-pocketsphinx \
+	freeswitch-mod-tts-commandline freeswitch-mod-unimrcp freeswitch-mod-dialplan-xml freeswitch-mod-dingaling freeswitch-mod-loopback freeswitch-mod-portaudio \
+	freeswitch-mod-rtmp freeswitch-mod-sofia freeswitch-mod-cdr-sqlite freeswitch-mod-event-multicast freeswitch-mod-event-socket freeswitch-mod-event-test \
+	freeswitch-mod-local-stream freeswitch-mod-native-file freeswitch-mod-portaudio-stream freeswitch-mod-shell-stream freeswitch-mod-sndfile freeswitch-mod-tone-stream \
+	freeswitch-mod-lua freeswitch-mod-console freeswitch-mod-logfile freeswitch-mod-syslog freeswitch-mod-posix-timer freeswitch-mod-timerfd freeswitch-mod-xml-cdr \
+	freeswitch-mod-xml-rpc freeswitch-mod-say-en freeswitch-lang-en freeswitch-init freeswitch-meta-codecs ;do apt-get -y install --force-yes "${i}" ; done
 fi
 
 if [[ $freeswitch_install == "lang" ]]; then
