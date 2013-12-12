@@ -28,7 +28,7 @@
 #
 # Freeswitch Optional intalls
 #
-#freeswitch_install="all" # This is a metapackage which recommends or suggests all packaged FreeSWITCH modules.(Default)
+#freeswitch_install="all" # This is a metapackage which recommends or suggests all packaged FreeSWITCH modules.
 # freeswitch-meta-all
 # Installs: freeswitch freeswitch-mod-vlc freeswitch-init freeswitch-lang freeswitch-meta-codecs freeswitch-meta-conf freeswitch-meta-lang freeswitch-meta-mod-say 
 # freeswitch-music freeswitch-sounds freeswitch-mod-abstraction freeswitch-mod-avmd freeswitch-mod-blacklist freeswitch-mod-callcenter freeswitch-mod-cidlookup 
@@ -76,7 +76,7 @@
 # freeswitch-mod-say-hr freeswitch-mod-say-hu freeswitch-mod-say-it freeswitch-mod-say-ja freeswitch-mod-say-nl freeswitch-mod-say-pl
 # freeswitch-mod-say-pt freeswitch-mod-say-ru freeswitch-mod-say-th freeswitch-mod-say-zh
 
-#freeswitch_install="sorbet" # This is a metapackage which recommends most packaged FreeSWITCH modules except a few which aren't recommended.
+freeswitch_install="sorbet" # This is a metapackage which recommends most packaged FreeSWITCH modules except a few which aren't recommended.
 # freeswitch-meta-sorbet
 # Installs: freeswitch freeswitch-init freeswitch-lang freeswitch-meta-codecs freeswitch-music freeswitch-sounds freeswitch-mod-abstraction freeswitch-mod-avmd 
 # freeswitch-mod-blacklist freeswitch-mod-callcenter freeswitch-mod-cidlookup freeswitch-mod-commands freeswitch-mod-conference freeswitch-mod-curl freeswitch-mod-db 
@@ -108,7 +108,7 @@
 
 #Due to licensing issues this is a optional module and is not included in the freeswitch-mete-* files.
 #It must me added on its own.
-freeswitch_install="vlc"
+#freeswitch_install="vlc"
 
 #Notice:
 # "freeswitch_install=all" (freeswitch-meta-all) installs all the differant configs
@@ -120,7 +120,7 @@ freeswitch_install="vlc"
 #freeswitch_conf="curl" # FreeSWITCH curl configuration
 #freeswitch_conf="indiseout" # FreeSWITCH insideout configuration
 #freeswitch_conf="sbc" # FreeSWITCH session border controller (sbc) configuration
-freeswitch_conf="vanilla" # FreeSWITCH vanilla configuration
+#freeswitch_conf="vanilla" # FreeSWITCH vanilla configuration
 
 # TO Disable freeswitch nat auto detection
 #
@@ -131,44 +131,37 @@ freeswitch_nat=n
 #Set how long to keep freeswitch/fusionpbx log files 1 to 30 dasy (Default:5)
 KEEP_LOGS=5
 
-################################################################################
+#
 #Install and use FusionPBX GUI
-################################################################################
+#
 #Option to install the fusionpbx gui / nginx / php5.
 #If this option is not selected it will only install freeswitch/fail2ban/monit 
 #setup for freeswitch only.
 install_pbx=y
 
-################################################################################
+#
 # Use fusionpbx debian pkgs.
-################################################################################
+#
 # You should use the fusionpbx-dev pkg for now
 # y=stable branch n=dev branch
 fusionpbx_stable=n
 
-################################################################################
-# Enable shell admin menu for ease of system maintance
-################################################################################
-#Enable pbx admin shell menu
-enable_admin_menu=y
-
-################################################################################
+#
 # Database options
-################################################################################
+#
 # Please Select Server or Client not both. 
-################################################################################
+#
 # Used for connecting to remote postgresql database servers
 # Install postgresql Client 9.x for connection to remote postgresql servers (y/n)
 postgresql_client=n
 
 # Install postgresql server 9.x (y/n) (client included)(Local Machine)
 # Notice:
-# You should not use postgresql server on a emmc/sd. It cuts the performance 
+# You should not use postgresql server on a nand/emmc/sd. It cuts the performance 
 # life in half due to all the needed reads and writes. This cuts the life of 
 # your pbx emmc/sd in half. 
 postgresql_server=n
 
-# ONLY NEEDE IF USING Posgresql Server Localy.
 # Set Postgresql Server Admin username
 # Lower case only
 postgresqluser=
@@ -185,13 +178,16 @@ database_name=
 # (Default: fusionpbx)
 database_user_name=
 
+#Enable pbx admin shell menu
+enable_admin_menu=y
+
 #Install Ajenti Admin Portal
 install_ajenti=y
 
 #<------Stop Options Edit Here-------->
-###############################################################################
+#
 # Hard Set Varitables (Do Not EDIT)
-###############################################################################
+#
 # Freeswitch logs dir
 freeswitch_log="/var/log/freeswitch"
 #Freeswitch default configs location
@@ -204,16 +200,19 @@ WWW_PATH="/usr/share/nginx/www" #debian nginx default dir
 wui_name="fusionpbx"
 #Php ini config file
 php_ini="/etc/php5/fpm/php.ini"
-################################################################################
+#
+
 #Start installation
 #
 #check for internet connection. Pulled from and modified
 #http://www.linuxscrew.com/2009/04/02/tiny-bash-scripts-check-internet-connection-availability/
+
 echo "This is a one time install script. It is not intended to be run multi times"
 echo "If it fails for any reason please report to r.neese@gmail.com. Include any "
 echo "screen output you can to show where it fails."
 echo ""
 echo "This Script Currently Requires a internet connection "
+
 wget -q --tries=10 --timeout=5 http://www.google.com -O /tmp/index.google &> /dev/null
 
 if [ ! -s /tmp/index.google ];then
@@ -249,7 +248,7 @@ else
 	exit 1
 fi
 
-#adding FusionPBX Web User Interface repo"
+#adding FusionPBX repo ( contains freeswitch armhf debs, fusionpbx bed,and a few custom scripts debs)
 case $(uname -m) in armv7l)
 /bin/cat > "/etc/apt/sources.list.d/fusionpbx.list" <<DELIM
 deb http://repo.fusionpbx.com wheezy main
@@ -269,13 +268,16 @@ curl http://files.freeswitch.org/repo/deb/debian/freeswitch_archive_g0.pub | apt
 for i in update upgrade ;do apt-get -y "${i}" ; done
 esac
 
-#install Freeswitch Deps
-for i in curl screen libtiff5 libtiff-tools ghostscript autotalent ladspa-sdk tap-plugins swh-plugins \
-         libfftw3-3 unixodbc uuid memcached ;do apt-get -y install "${i}" ; done
-
 # Freeswitch Install Options.
 if [[ $freeswitch_install == "all" ]]; then
-	echo " Installing freeswitch all "
+	echo " Installing freeswitch all and freeswitch deps"
+	#install Freeswitch Deps
+	for i in curl screen unixodbc uuid memcached ;do apt-get -y install "${i}" ; done
+	#Pkgs needed for faxing (freeswitch-mod-spandsp)
+	for i in libtiff5 libtiff-tools ghostscript ;do apt-get -y install "${i}" ; done
+	#pkgs required for freeswitch-mod-ladspa
+	for i in autotalent ladspa-sdk tap-plugins swh-plugins libfftw3-3  ;do apt-get -y install "${i}" ; done
+	#install freeswitch-meta-all
 	apt-get -y install --force-yes freeswitch-meta-all
 fi
 
@@ -286,6 +288,9 @@ fi
 
 if [[ $freeswitch_install == "codecs" ]]; then
 	echo " Installing freeswitch all codecs "
+	#Pkgs needed for faxing (freeswitch-mod-spandsp)
+	for i in libtiff5 libtiff-tools ghostscript ;do apt-get -y install "${i}" ; done
+	#install freeswitch-meta-codecs
 	apt-get -y install --force-yes freeswitch-meta-codecs
 fi
 
@@ -296,6 +301,11 @@ fi
 
 if [[ $freeswitch_install == "default" ]]; then
 	echo " Installing freeswitch default "
+	#install Freeswitch Deps
+	for i in curl screen unixodbc uuid memcached ;do apt-get -y install "${i}" ; done
+	#Pkgs needed for faxing (freeswitch-mod-spandsp)
+	for i in libtiff5 libtiff-tools ghostscript ;do apt-get -y install "${i}" ; done
+	#install freeswitch-meta-default
 	apt-get -y install --force-yes freeswitch-meta-default
 fi
 
@@ -311,11 +321,20 @@ fi
 
 if [[ $freeswitch_install == "sorbet" ]]; then
 	echo " Installing freeswitch sorbet "
+	#install Freeswitch Deps
+	for i in curl screen unixodbc uuid memcached ;do apt-get -y install "${i}" ; done
+	#Pkgs needed for faxing (freeswitch-mod-spandsp)
+	for i in libtiff5 libtiff-tools ghostscript ;do apt-get -y install "${i}" ; done
+	#install freeswitch-meta-sorbet
 	apt-get -y install --force-yes freeswitch-meta-sorbet
 fi
 
 if [[ $freeswitch_install == "vanilla" ]]; then
 	echo " Installing freeswitch vanilla "
+	for i in curl screen unixodbc uuid memcached ;do apt-get -y install "${i}" ; done
+	#Pkgs needed for faxing (freeswitch-mod-spandsp)
+	for i in libtiff5 libtiff-tools ghostscript ;do apt-get -y install "${i}" ; done
+	#install freeswitch-meta-vanilla	
 	apt-get -y install --force-yes freeswitch-meta-vanilla
 fi
 
@@ -329,7 +348,7 @@ if [[ $freeswitch_install == "music" ]]; then
 	apt-get -y install --force-yes freeswitch-music
 fi
 
-if [[ $freeswitch_install== "vlc" ]]; then
+if [[ $freeswitch_install == "vlc" ]]; then
 	echo " Installing freeswitch mod_vlc "
 	apt-get -y install --force-yes freeswitch-mod-vlc
 fi
@@ -669,7 +688,7 @@ for i in nginx php5-fpm ;do /etc/init.d/"${i}" restart > /dev/null 2>&1 ; done
 adduser www-data freeswitch
 adduser freeswitch www-data
 
-#adding FusionPBX Web User Interface repo"
+#adding FusionPBX repo ( contains freeswitch armhf debs, fusionpbx bed,and a few custom scripts debs)
 case $(uname -m) in x86_64|i[4-6]86)
 /bin/cat > "/etc/apt/sources.list.d/fusionpbx.list" <<DELIM
 deb http://repo.fusionpbx.com wheezy main
@@ -744,9 +763,8 @@ DELIM
 
 #restarting fail2ban
 /etc/init.d/fail2ban restart
-
 fi
-
+}
 #end of pbx install
 
 # Database options (Currently only Postgresql)
@@ -776,7 +794,6 @@ cat << DELIM
 	Create Database Username: Database_Superuser_Name of the remote postgresql server
 	Create Database Password: Database_Superuser_password of the remote postgresql server
 DELIM
-
 fi
 
 #install postgresql-server
