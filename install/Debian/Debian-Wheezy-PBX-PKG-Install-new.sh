@@ -393,7 +393,7 @@ chown -R freeswitch:freeswitch "$freeswitch_act_conf"
 #fix music dir issue
 if [ -f "$freeswitch_act_conf"/autoload_configs/local_stream.conf.xml ]
 then
-/bin/sed /etc/freeswitch/autoload_configs/local_stream.conf.xml -i -e s,'<directory name="default" path="$${sounds_dir}/music/8000">','<directory name="default" path="$${sounds_dir}/music/default">',g
+/bin/sed /etc/freeswitch/autoload_configs/local_stream.conf.xml -i -e s,"<directory name="default" path="$${sounds_dir}/music/8000">','<directory name="default" path="$${sounds_dir}/music/default">",g
 fi
 
 # Proper file to change init strings in. (/etc/defalut/freeswitch)
@@ -717,7 +717,7 @@ cp -r "$WWW_PATH/$wui_name"/resources/templates/conf/* "$freeswitch_act_conf"
 #fix music dir issue
 if [ -f "$freeswitch_act_conf"/autoload_configs/local_stream.conf.xml ]
 then
-/bin/sed /"$freeswitch_act_conf"/autoload_configs/local_stream.conf.xml -i -e s,'<directory name="default" path="$${sounds_dir}/music/8000">','<directory name="default" path="$${sounds_dir}/music/default">',g
+/bin/sed /"$freeswitch_act_conf"/autoload_configs/local_stream.conf.xml -i -e s,"<directory name="default" path="$${sounds_dir}/music/8000">','<directory name="default" path="$${sounds_dir}/music/default">",g
 fi
 
 #chown freeswitch  conf files
@@ -764,7 +764,6 @@ DELIM
 #restarting fail2ban
 /etc/init.d/fail2ban restart
 fi
-}
 #end of pbx install
 
 # Database options (Currently only Postgresql)
@@ -834,6 +833,12 @@ cat << DELIM
 	Also Please fill in the SuperUser Name and Password fields.
 	Freeswitch & FusionPBX Web User Interface Installation Completed
 	Now you can configure FreeSWITCH using the FusionPBX web user interface
+DELIM
+fi
+
+if [[ $enable_admin_menu == y ]]; then
+/bin/cat > /root/.profile <<DELIM
+/usr/bin/pbx-admin-menu.sh
 DELIM
 fi
 
