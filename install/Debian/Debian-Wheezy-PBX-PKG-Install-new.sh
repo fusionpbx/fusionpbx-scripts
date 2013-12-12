@@ -24,9 +24,12 @@
 # THE SOFTWARE.
 #
 ################################################################################
-#Note: 
-#   Those of you running this script on openvz. You must run it as root and 
-#   bash Debian-wheezy-PBX-PKG-Install-new.sh or it fails the networking check.
+if [[ -f /proc/vz ]]; then 
+echo "Note: "
+echo "Those of you running this script on openvz. You must run it as root and "
+echo "bash Debian-wheezy-PBX-PKG-Install-new.sh or it fails the networking check."
+break ;;
+fi
 #
 ################################################################################
 #<------Start Option Edit HERE--------->
@@ -71,6 +74,25 @@
 # Suggests: freeswitch-mod-cidlookup freeswitch-mod-curl freeswitch-mod-directory freeswitch-mod-enum freeswitch-mod-spy freeswitch-mod-valet-parking freeswitch-init
 # Recommends: freeswitch-lang freeswitch-meta-codecs freeswitch-music freeswitch-sounds
 
+#freeswitch_install="fusionpbx"
+#installs the following pkgs used by fusionpbx-en (English US English BasedPBX)(Would like to see other sounds and lang pbx)
+# Installs: freeswitch  freeswitch-init freeswitch-lang freeswitch-meta-codecs freeswitch-music freeswitch-sounds
+# freeswitch-mod-abstraction freeswitch-mod-avmd freeswitch-mod-blacklist freeswitch-mod-callcenter freeswitch-mod-cidlookup 
+# freeswitch-mod-commands freeswitch-mod-conference freeswitch-mod-curl freeswitch-mod-db freeswitch-mod-directory 
+# freeswitch-mod-distributor freeswitch-mod-dptools freeswitch-mod-easyroute freeswitch-mod-enum freeswitch-mod-esf 
+# freeswitch-mod-esl freeswitch-mod-expr freeswitch-mod-fifo freeswitch-mod-fsk freeswitch-mod-fsv freeswitch-mod-hash 
+# freeswitch-mod-httapi freeswitch-mod-http-cache freeswitch-mod-lcr freeswitch-mod-memcache freeswitch-mod-oreka 
+# freeswitch-mod-random freeswitch-mod-snom freeswitch-mod-soundtouch freeswitch-mod-spandsp freeswitch-mod-spy 
+# freeswitch-mod-translate freeswitch-mod-valet-parking freeswitch-mod-vmd freeswitch-mod-voicemail freeswitch-mod-voicemail-ivr 
+# freeswitch-mod-flite freeswitch-mod-pocketsphinx freeswitch-mod-tts-commandline freeswitch-mod-unimrcp freeswitch-mod-dialplan-xml 
+# freeswitch-mod-ldap freeswitch-mod-dingaling freeswitch-mod-loopback freeswitch-mod-portaudio freeswitch-mod-rtmp 
+# freeswitch-mod-sofia freeswitch-mod-cdr-csv freeswitch-mod-cdr-sqlite freeswitch-mod-event-multicast freeswitch-mod-event-socket 
+# freeswitch-mod-event-test freeswitch-mod-local-stream freeswitch-mod-native-file # freeswitch-mod-portaudio-stream 
+# freeswitch-mod-shell-stream freeswitch-mod-sndfile freeswitch-mod-tone-stream freeswitch-mod-lua freeswitch-mod-console
+# freeswitch-mod-logfile freeswitch-mod-syslog freeswitch-mod-posix-timer freeswitch-mod-timerfd freeswitch-mod-xml-cdr 
+# freeswitch-mod-xml-rpc freeswitch-mod-say-en freeswitch-lang-en
+# Recommends freeswitch-conf-vanilla
+
 #freeswitch_install="lang"
 # freeswitch-meta-lang
 # Installs: freeswitch-lang-de freeswitch-lang-en freeswitch-lang-es freeswitch-lang-fr freeswitch-lang-he freeswitch-lang-pt freeswitch-lang-ru
@@ -81,7 +103,7 @@
 # freeswitch-mod-say-hr freeswitch-mod-say-hu freeswitch-mod-say-it freeswitch-mod-say-ja freeswitch-mod-say-nl freeswitch-mod-say-pl
 # freeswitch-mod-say-pt freeswitch-mod-say-ru freeswitch-mod-say-th freeswitch-mod-say-zh
 
-freeswitch_install="sorbet" # This is a metapackage which recommends most packaged FreeSWITCH modules except a few which aren't recommended.
+#freeswitch_install="sorbet" # This is a metapackage which recommends most packaged FreeSWITCH modules except a few which aren't recommended.
 # freeswitch-meta-sorbet
 # Installs: freeswitch freeswitch-init freeswitch-lang freeswitch-meta-codecs freeswitch-music freeswitch-sounds freeswitch-mod-abstraction freeswitch-mod-avmd 
 # freeswitch-mod-blacklist freeswitch-mod-callcenter freeswitch-mod-cidlookup freeswitch-mod-commands freeswitch-mod-conference freeswitch-mod-curl freeswitch-mod-db 
@@ -93,7 +115,7 @@ freeswitch_install="sorbet" # This is a metapackage which recommends most packag
 # <freeswitch-mod-html5> freeswitch-mod-loopback freeswitch-mod-rtmp freeswitch-mod-skinny freeswitch-mod-sofia freeswitch-mod-cdr-csv freeswitch-mod-cdr-sqlite 
 # freeswitch-mod-event-socket freeswitch-mod-json-cdr freeswitch-mod-local-stream freeswitch-mod-native-file freeswitch-mod-shell-stream freeswitch-mod-sndfile 
 # freeswitch-mod-tone-stream freeswitch-mod-lua freeswitch-mod-console freeswitch-mod-logfile freeswitch-mod-syslog freeswitch-mod-say-en freeswitch-mod-posix-timer 
-# freeswitch-mod-timerfd  freeswitch-mod-xml-cdr freeswitch-mod-xml-curl
+# freeswitch-mod-timerfd freeswitch-mod-xml-cdr freeswitch-mod-xml-curl
 
 # freeswitch_install="vanilla" # This is a metapackage which depends on the packages needed for running the FreeSWITCH vanilla example configuration.
 # freeswitch-meta-vanilla
@@ -105,10 +127,10 @@ freeswitch_install="sorbet" # This is a metapackage which recommends most packag
 # Suggests: <freeswitch-mod-spidermonkey>
 # Recommends: freeswitch-init freeswitch-lang freeswitch-music freeswitch-sounds freeswitch-conf-vanilla
 
-#freeswitch_install="sounds"
+freeswitch_install="sounds"
 # Installs the freeswitch sounds en-us-callie
 
-#freeswitch_install="music"
+freeswitch_install="music"
 # Installs freeswitch music files.
 
 #Due to licensing issues this is a optional module and is not included in the freeswitch-mete-* files.
@@ -125,7 +147,7 @@ freeswitch_install="sorbet" # This is a metapackage which recommends most packag
 #freeswitch_conf="curl" # FreeSWITCH curl configuration
 #freeswitch_conf="indiseout" # FreeSWITCH insideout configuration
 #freeswitch_conf="sbc" # FreeSWITCH session border controller (sbc) configuration
-#freeswitch_conf="vanilla" # FreeSWITCH vanilla configuration
+freeswitch_conf="vanilla" # FreeSWITCH vanilla configuration
 
 # TO Disable freeswitch nat auto detection
 #
@@ -312,6 +334,28 @@ if [[ $freeswitch_install == "default" ]]; then
 	for i in libtiff5 libtiff-tools ghostscript ;do apt-get -y install "${i}" ; done
 	#install freeswitch-meta-default
 	apt-get -y install --force-yes freeswitch-meta-default
+fi
+
+if [[ $freeswitch_install == "fusionpbx" ]]; then
+	echo " Installing freeswitch default "
+	#install Freeswitch Deps
+	for i in curl screen unixodbc uuid memcached ;do apt-get -y install "${i}" ; done
+	#Pkgs needed for faxing (freeswitch-mod-spandsp)
+	for i in libtiff5 libtiff-tools ghostscript ;do apt-get -y install "${i}" ; done
+	# install freeswitch fusionpbx install
+	for i in freeswitch freeswitch-init freeswitch-lang freeswitch-meta-codecs freeswitch-mod-abstraction freeswitch-mod-avmd \
+	freeswitch-mod-blacklist freeswitch-mod-callcenter freeswitch-mod-cidlookup freeswitch-mod-commands freeswitch-mod-conference \
+	freeswitch-mod-curl freeswitch-mod-db freeswitch-mod-directory freeswitch-mod-distributor freeswitch-mod-dptools freeswitch-mod-easyroute \
+	freeswitch-mod-enum freeswitch-mod-esf freeswitch-mod-esl freeswitch-mod-expr freeswitch-mod-fifo freeswitch-mod-fsk freeswitch-mod-fsv \
+	freeswitch-mod-hash freeswitch-mod-httapi freeswitch-mod-http-cache freeswitch-mod-lcr freeswitch-mod-memcache freeswitch-mod-oreka \
+	freeswitch-mod-random freeswitch-mod-snom freeswitch-mod-soundtouch freeswitch-mod-spandsp freeswitch-mod-spy freeswitch-mod-translate \
+	freeswitch-mod-valet-parking freeswitch-mod-vmd freeswitch-mod-voicemail freeswitch-mod-voicemail-ivr freeswitch-mod-flite \
+	freeswitch-mod-pocketsphinx freeswitch-mod-tts-commandline freeswitch-mod-unimrcp freeswitch-mod-dialplan-xml freeswitch-mod-ldap \
+	freeswitch-mod-dingaling freeswitch-mod-loopback freeswitch-mod-portaudio freeswitch-mod-rtmp freeswitch-mod-sofia freeswitch-mod-cdr-sqlite \
+	freeswitch-mod-event-multicast freeswitch-mod-event-socket freeswitch-mod-event-test freeswitch-mod-local-stream freeswitch-mod-native-file \
+	freeswitch-mod-portaudio-stream	freeswitch-mod-shell-stream freeswitch-mod-sndfile freeswitch-mod-tone-stream freeswitch-mod-lua freeswitch-mod-console \
+	freeswitch-mod-logfile freeswitch-mod-syslog freeswitch-mod-posix-timer freeswitch-mod-timerfd freeswitch-mod-xml-cdr freeswitch-mod-xml-rpc \
+	freeswitch-mod-say-en freeswitch-lang-en ;do apt-get -y install "${i}" ; done
 fi
 
 if [[ $freeswitch_install == "lang" ]]; then
