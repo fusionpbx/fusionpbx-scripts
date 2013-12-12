@@ -127,15 +127,15 @@ freeswitch_install="fusionpbx"
 # Suggests: <freeswitch-mod-spidermonkey>
 # Recommends: freeswitch-init freeswitch-lang freeswitch-music freeswitch-sounds freeswitch-conf-vanilla
 
-freeswitch_install="sounds"
+freeswitch_sounds="y"
 # Installs the freeswitch sounds en-us-callie
 
-freeswitch_install="music"
+freeswitch_music="y"
 # Installs freeswitch music files.
 
 #Due to licensing issues this is a optional module and is not included in the freeswitch-mete-* files.
 #It must me added on its own.
-freeswitch_install="vlc"
+freeswitch_vlc="y"
 
 #Notice:
 # "freeswitch_install=all" (freeswitch-meta-all) installs all the differant configs
@@ -343,7 +343,7 @@ if [[ $freeswitch_install == "fusionpbx" ]]; then
 	#Pkgs needed for faxing (freeswitch-mod-spandsp)
 	for i in libtiff5 libtiff-tools ghostscript ;do apt-get -y install "${i}" ; done
 	# install freeswitch fusionpbx install
-	for i in libfreeswitch1 freeswitch freeswitch-mod-abstraction freeswitch-mod-avmd freeswitch-mod-blacklist freeswitch-mod-callcenter freeswitch-mod-cidlookup \
+	for i in freeswitch freeswitch-mod-abstraction freeswitch-mod-avmd freeswitch-mod-blacklist freeswitch-mod-callcenter freeswitch-mod-cidlookup \
 	freeswitch-mod-commands freeswitch-mod-conference freeswitch-mod-curl freeswitch-mod-db freeswitch-mod-directory freeswitch-mod-distributor \
 	freeswitch-mod-dptools freeswitch-mod-easyroute freeswitch-mod-enum freeswitch-mod-esf freeswitch-mod-esl freeswitch-mod-expr freeswitch-mod-fifo \
 	freeswitch-mod-fsk freeswitch-mod-fsv freeswitch-mod-hash freeswitch-mod-httapi freeswitch-mod-http-cache freeswitch-mod-lcr freeswitch-mod-memcache \
@@ -385,17 +385,17 @@ if [[ $freeswitch_install == "vanilla" ]]; then
 	apt-get -y install --force-yes freeswitch-meta-vanilla
 fi
 
-if [[ $freeswitch_install == "sounds" ]]; then
+if [[ $freeswitch_sounds == "y" ]]; then
 	echo " Installing freeswitch sounds_en_us_calie "
 	apt-get -y install --force-yes freeswitch-sounds
 fi
 
-if [[ $freeswitch_install == "music" ]]; then
+if [[ $freeswitch_music == "y" ]]; then
 	echo " Installing freeswitch music "
 	apt-get -y install --force-yes freeswitch-music
 fi
 
-if [[ $freeswitch_install == "vlc" ]]; then
+if [[ $freeswitch_vlc == "y" ]]; then
 	echo " Installing freeswitch mod_vlc "
 	apt-get -y install --force-yes freeswitch-mod-vlc
 fi
