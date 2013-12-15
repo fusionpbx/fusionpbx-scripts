@@ -770,6 +770,7 @@ then
 /bin/sed /etc/freeswitch/autoload_configs/logfile.conf.xml -i -e s,\<param.*name\=\"rollover\".*value\=\"10485760\".*/\>,\<\!\-\-\<param\ name\=\"rollover\"\ value\=\"10485760\"/\>\ INSTALL_SCRIPT\-\-\>,g
 fi
 
+# Enable log-auth-failure logging
 if [ -f "$freeswitch_act_conf"/sip_profiles/internal.xml ]
 then
 sed -i "$freeswitch_act_conf"/sip_profiles/internal.xml -e s,'<param name="log-auth-failures" value="false"/>','<param name="log-auth-failures" value="true"/>',g
