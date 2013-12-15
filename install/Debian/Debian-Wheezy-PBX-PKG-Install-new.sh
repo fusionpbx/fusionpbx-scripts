@@ -156,7 +156,7 @@ freeswitch_conf="vanilla" # FreeSWITCH vanilla configuration
 freeswitch_nat=n
 
 #Set how long to keep freeswitch/fusionpbx log files 1 to 30 dasy (Default:5)
-KEEP_LOGS=5
+keep_logs=5
 
 #
 #Install and use FusionPBX GUI
@@ -164,7 +164,7 @@ KEEP_LOGS=5
 #Option to install the fusionpbx gui / nginx / php5.
 #If this option is not selected it will only install freeswitch/fail2ban/monit 
 #setup for freeswitch only.
-install_pbx=y
+install_gui="y"
 
 #
 # Use fusionpbx debian pkgs.
@@ -206,10 +206,10 @@ database_name=
 database_user_name=
 
 #Enable pbx admin shell menu
-enable_admin_menu=y
+enable_admin_menu=n
 
 #Install Ajenti Admin Portal
-install_ajenti=y
+install_ajenti=n
 
 #<------Stop Options Edit Here-------->
 #
@@ -440,7 +440,10 @@ chown -R freeswitch:freeswitch "$freeswitch_act_conf"
 #fix music dir issue
 if [ -f "$freeswitch_act_conf"/autoload_configs/local_stream.conf.xml ]
 then
-/bin/sed /etc/freeswitch/autoload_configs/local_stream.conf.xml -i -e s,'<directory name="default" path="$${sounds_dir}/music/8000">','<directory name="default" path="$${sounds_dir}/music/default/8000">',g
+/bin/sed "$freeswitch_act_conf"/autoload_configs/local_stream.conf.xml -i -e s,'<directory name="default" path="$${sounds_dir}/music/8000">','<directory name="default" path="$${sounds_dir}/music/default/8000">',g
+/bin/sed "$freeswitch_act_conf"/autoload_configs/local_stream.conf.xml -i -e s,'<directory name="moh/8000" path="$${sounds_dir}/music/8000">','<directory name="default" path="$${sounds_dir}/music/default/8000">',g
+/bin/sed "$freeswitch_act_conf"/autoload_configs/local_stream.conf.xml -i -e s,'<directory name="moh/16000" path="$${sounds_dir}/music/8000">','<directory name="default" path="$${sounds_dir}/music/default/16000">',g
+/bin/sed "$freeswitch_act_conf"/autoload_configs/local_stream.conf.xml -i -e s,'<directory name="moh/32000" path="$${sounds_dir}/music/8000">','<directory name="default" path="$${sounds_dir}/music/default/32000">',g
 fi
 
 # Proper file to change init strings in. (/etc/defalut/freeswitch)
@@ -548,16 +551,16 @@ done
 #!/bin/bash
 
 #number of days of logs to keep
-NUMBERDAYS="$KEEP_LOGS"
+NUMBERDAYS="$keep_logs"
 FSPATH="/var/log/freeswitch"
 
-$FSPATH/bin/freeswitch_cli -x "fsctl send_sighup" |grep '+OK' >/tmp/
+"$FSPATH"/bin/freeswitch_cli -x "fsctl send_sighup" |grep '+OK' >/tmp/
 DELIM
 
 if [ $? -eq 0 ]; then
        #-cmin 2 could bite us (leave some files uncompressed, eg 11M auto-rotate). Maybe -1440 is better?
-       find $FSPATH -name "freeswitch.log.*" -cmin -2 -exec gzip {} \;
-       find $FSPATH -name "freeswitch.log.*.gz" -mtime +$NUMBERDAYS -exec /bin/rm {} \;
+       find "$FSPATH" -name "freeswitch.log.*" -cmin -2 -exec gzip {} \;
+       find "$FSPATH" -name "freeswitch.log.*.gz" "-mtime" "+$NUMBERDAYS" -exec /bin/rm {} \;
        chown freeswitch:freeswitch "$FSPATH"/freeswitch.log
        chmod 660 "$FSPATH"/freeswitch.log
        logger FreeSWITCH Logs rotated
@@ -567,7 +570,7 @@ else
        mail -s '$HOST FS Log Rotate Error' root < /tmp/<<DELIM
        rm /tmp/<<DELIM
 fi
-DELIM
+
 
 chmod 755 /etc/cron.daily/freeswitch_log_rotation
 
@@ -592,7 +595,7 @@ chown freeswitch:freeswitch "$freeswitch_log"/xml_cdr
 for i in fail2ban freeswitch ;do /etc/init.d/"${i}" restart  >/dev/null 2>&1 ; done
 
 #Start of FusionPBX / nginx / php5 
-if [[ $install_pbx == "y" ]]; then
+if [[ $install_gui == "y" ]]; then
 
 #Install and configure  PHP + Nginx + sqlite3
 for i in ssl-cert sqlite3 nginx php5-cli php5-sqlite php5-odbc php-db php5-fpm php5-common php5-gd php-pear php5-memcache php-apc ;do apt-get -y install "${i}" ; done
@@ -783,7 +786,10 @@ fi
 #fix music dir issue
 if [ -f "$freeswitch_act_conf"/autoload_configs/local_stream.conf.xml ]
 then
-/bin/sed /"$freeswitch_act_conf"/autoload_configs/local_stream.conf.xml -i -e s,'<directory name="default" path="$${sounds_dir}/music/8000">','<directory name="default" path="$${sounds_dir}/music/default/8000">',g
+/bin/sed "$freeswitch_act_conf"/autoload_configs/local_stream.conf.xml -i -e s,'<directory name="default" path="$${sounds_dir}/music/8000">','<directory name="default" path="$${sounds_dir}/music/default/8000">',g
+/bin/sed "$freeswitch_act_conf"/autoload_configs/local_stream.conf.xml -i -e s,'<directory name="moh/8000" path="$${sounds_dir}/music/8000">','<directory name="default" path="$${sounds_dir}/music/default/8000">',g
+/bin/sed "$freeswitch_act_conf"/autoload_configs/local_stream.conf.xml -i -e s,'<directory name="moh/16000" path="$${sounds_dir}/music/8000">','<directory name="default" path="$${sounds_dir}/music/default/16000">',g
+/bin/sed "$freeswitch_act_conf"/autoload_configs/local_stream.conf.xml -i -e s,'<directory name="moh/32000" path="$${sounds_dir}/music/8000">','<directory name="default" path="$${sounds_dir}/music/default/32000">',g
 fi
 
 #chown freeswitch  conf files
