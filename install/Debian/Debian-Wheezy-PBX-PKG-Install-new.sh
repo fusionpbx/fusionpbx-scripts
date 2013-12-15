@@ -551,7 +551,8 @@ done
 NUMBERDAYS="$KEEP_LOGS"
 FSPATH="/var/log/freeswitch"
 
-$FSPATH/bin/freeswitch_cli -x "fsctl send_sighup" |grep '+OK' >/tmp/<<DELIM
+$FSPATH/bin/freeswitch_cli -x "fsctl send_sighup" |grep '+OK' >/tmp/
+DELIM
 
 if [ $? -eq 0 ]; then
        #-cmin 2 could bite us (leave some files uncompressed, eg 11M auto-rotate). Maybe -1440 is better?
@@ -571,7 +572,7 @@ DELIM
 chmod 755 /etc/cron.daily/freeswitch_log_rotation
 
 #Now dropping 10MB limit from FreeSWITCH"
-/bin/sed /etc/freeswitch/autoload_configs/logfile.conf.xml -i -e s,\<param.*name\=\"rollover\".*value\=\"10485760\".*/\>,\<\!\-\-\<param\ name\=\"rollover\"\ value\=\"10485760\"/\>\ INSTALL_SCRIPT\-\-\>,
+/bin/sed /etc/freeswitch/autoload_configs/logfile.conf.xml -i -e s,\<param.*name\=\"rollover\".*value\=\"10485760\".*/\>,\<\!\-\-\<param\ name\=\"rollover\"\ value\=\"10485760\"/\>\ INSTALL_SCRIPT\-\-\>,g
 
 #DAEMON_Optional ARGS
 /bin/sed -i /etc/default/freeswitch -e s,'^DAEMON_OPTS=.*','DAEMON_OPTS="-scripts /var/lib/fusionpbx/scripts -rp"',
@@ -760,6 +761,23 @@ rm -rf "$freeswitch_act_conf"/*
 
 #Put Fusionpbx Freeswitch configs into place
 cp -r "$WWW_PATH/$wui_name"/resources/templates/conf/* "$freeswitch_act_conf"
+
+#Reapply sed lines to fusionpbx config files
+
+#Now dropping 10MB limit from FreeSWITCH"
+if [ -f "$freeswitch_act_conf"/autoload_configs/logfile.conf.xml ]
+then
+/bin/sed /etc/freeswitch/autoload_configs/logfile.conf.xml -i -e s,\<param.*name\=\"rollover\".*value\=\"10485760\".*/\>,\<\!\-\-\<param\ name\=\"rollover\"\ value\=\"10485760\"/\>\ INSTALL_SCRIPT\-\-\>,g
+fi
+
+if [ -f "$freeswitch_act_conf"/sip_profiles/internal.xml ]
+then
+sed -i "$freeswitch_act_conf"/sip_profiles/internal.xml -e s,'<param name="log-auth-failures" value="false"/>','<param name="log-auth-failures" value="true"/>',g
+sed "$freeswitch_act_conf"/sip_profiles/internal.xml -i -e s,'<!-- *<param name="log-auth-failures" value="false"/>','<param name="log-auth-failures" value="true"/>', \
+				-e s,'<param name="log-auth-failures" value="false"/> *-->','<param name="log-auth-failures" value="true"/>', \
+				-e s,'<!--<param name="log-auth-failures" value="false"/>','<param name="log-auth-failures" value="true"/>', \
+				-e s,'<param name="log-auth-failures" value="false"/>-->','<param name="log-auth-failures" value="true"/>',g
+fi
 
 #fix music dir issue
 if [ -f "$freeswitch_act_conf"/autoload_configs/local_stream.conf.xml ]
