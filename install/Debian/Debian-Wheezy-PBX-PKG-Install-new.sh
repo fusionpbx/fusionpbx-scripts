@@ -1,5 +1,5 @@
 #!/bin/bash
-#Date Dec, 7 2013 16:00 EST
+#Date Dec, 15 2013 13:00 EST
 ################################################################################
 # The MIT License (MIT)
 #
@@ -536,7 +536,7 @@ DELIM
 sed -i 's/RepeatedMsgReduction\ on/RepeatedMsgReduction\ off/' /etc/rsyslog.conf
 /etc/init.d/rsyslog restart
 
-sed -i /usr/bin/fail2ban-client -e s,beautifier\.setInputCmd\(c\),'time.sleep\(0\.1\)\n\t\t\tbeautifier.setInputCmd\(c\)',
+sed -i /usr/bin/fail2ban-client -e s,^\.setInputCmd\(c\),'time.sleep\(0\.1\)\n\t\t\tbeautifier.setInputCmd\(c\)',
 
 #Restarting Nginx and PHP FPM
 for i in freeswitch fail2ban
