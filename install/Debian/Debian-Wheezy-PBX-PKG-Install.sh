@@ -216,6 +216,8 @@ install_ajenti=n
 #
 # Hard Set Varitables (Do Not EDIT)
 #
+#Freeswitch module dir
+freeswitch_mod="/usr/lib/freeswitch/mod"
 # Freeswitch logs dir
 freeswitch_log="/var/log/freeswitch"
 #Freeswitch default configs location
@@ -479,12 +481,15 @@ DELIM
 
 #Adding changes to freeswitch profiles
 #Enableing device login auth failures ing the sip profiles.
+if [ -f "$freeswitch_act_conf"/sip_profiles/internal.xml ]
+then
 sed -i "$freeswitch_act_conf"/sip_profiles/internal.xml -e s,'<param name="log-auth-failures" value="false"/>','<param name="log-auth-failures" value="true"/>',g
 
 sed "$freeswitch_act_conf"/sip_profiles/internal.xml -i -e s,'<!-- *<param name="log-auth-failures" value="false"/>','<param name="log-auth-failures" value="true"/>', \
 				-e s,'<param name="log-auth-failures" value="false"/> *-->','<param name="log-auth-failures" value="true"/>', \
 				-e s,'<!--<param name="log-auth-failures" value="false"/>','<param name="log-auth-failures" value="true"/>', \
 				-e s,'<param name="log-auth-failures" value="false"/>-->','<param name="log-auth-failures" value="true"/>',g
+fi
 
 #Setting up Fail2ban freeswitch config files.
 /bin/cat > "/etc/fail2ban/filter.d/freeswitch.conf"  <<DELIM
@@ -585,29 +590,39 @@ fi
 chmod 755 /etc/cron.daily/freeswitch_log_rotation
 
 #Now dropping 10MB limit from FreeSWITCH"
+if [ -f "$freeswitch_act_conf"/autoload_configs/logfile.conf.xml ]
+then
 /bin/sed /etc/freeswitch/autoload_configs/logfile.conf.xml -i -e s,\<param.*name\=\"rollover\".*value\=\"10485760\".*/\>,\<\!\-\-\<param\ name\=\"rollover\"\ value\=\"10485760\"/\>\ INSTALL_SCRIPT\-\-\>,g
+fi
 
+#Settinf /etc/default freeswitch stratup options with proper scripts dir and to run behind nat.
 #DAEMON_Optional ARGS
+if [ -f /etc/default/freeswitch ]
+then
 /bin/sed -i /etc/default/freeswitch -e s,'^DAEMON_OPTS=.*','DAEMON_OPTS="-scripts /var/lib/fusionpbx/scripts -rp"',
+fi
 
+#Settinf /etc/default freeswitch stratup options with proper scripts dir and to run without nat.
 #DISABLE NAT
 if [[ $freeswitch_nat == y ]]; then
 	/bin/sed -i /etc/default/freeswitch -e s,'^DAEMON_OPTS=.*','DAEMON_OPTS="-scripts /var/lib/fusionpbx/scripts -rp -nonat"',
 fi
 
-#create xml_cdr dir
+#create xml_cdr dir and chown it properly if the module is installed
+if [ -f "$freeswitch_mod"/mod_xml_cdr.so ]
+then
 mkdir "$freeswitch_log"/xml_cdr
-
 #chown the xml_cdr dir
 chown freeswitch:freeswitch "$freeswitch_log"/xml_cdr
+fi
 
-# restarti9ng services
+# restarting services
 for i in fail2ban freeswitch ;do /etc/init.d/"${i}" restart  >/dev/null 2>&1 ; done
 
-#Start of FusionPBX / nginx / php5 
+#Start of FusionPBX / nginx / php5 install
 if [[ $install_gui == "y" ]]; then
 
-#Install and configure  PHP + Nginx + sqlite3
+#Install and configure  PHP + Nginx + sqlite3 for use with the fusionpbx gui.
 for i in ssl-cert sqlite3 nginx php5-cli php5-sqlite php5-odbc php-db php5-fpm php5-common php5-gd php-pear php5-memcache php-apc ;do apt-get -y install "${i}" ; done
 
 # Changing file upload size from 2M to 15M
@@ -927,6 +942,7 @@ fi
 #Install openvpn openvpn-scripts 
 for i in  openvpn openvpn-scripts ;do apt-get -y install --force-yes "${i}"; done
 
+#Ajenti admin portal. Makes maintaining the system easier.
 #ADD Ajenti repo & ajenti
 if [[ $install_ajenti == y ]]; then
 /bin/cat > "/etc/apt/sources.list.d/ajenti.list" <<DELIM
