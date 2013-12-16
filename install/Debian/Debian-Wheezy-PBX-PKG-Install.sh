@@ -273,7 +273,7 @@ fi
 # Os/Distro Check
 lsb_release -c |grep -i wheezy &> /dev/null 2>&1
 if [ $? -eq 0 ]; then
-        /bin/echo "Good, you're running Ubuntu 10.04 LTS codename Lucid"
+        /bin/echo "Good, you're running Debian 7 codename: wheezy"
         /bin/echo
 else
         lsb_release -c |grep -i jessie > /dev/null
