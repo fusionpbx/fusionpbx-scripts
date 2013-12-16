@@ -250,10 +250,12 @@ wget -q --tries=10 --timeout=5 http://www.google.com -O /tmp/index.google &> /de
 
 if [ ! -s /tmp/index.google ];then
 	echo "No Internet connection. Please check ethernet cable"
+	/bin/rm /tmp/index.google
 	exit 1
 else
 	echo "Found the Internet ... continuing!"
 	echo ''
+	/bin/rm /tmp/index.google
 fi
 
 # OS ENVIRONMENT CHECKS
@@ -276,10 +278,12 @@ fi
 # Os/Distro Check
 lsb_release -c | grep -i wheezy &> /dev/null 2>&1
 if [[ "$?" -eq 0 ]]; then
-	echo "Found Debian 7 (wheezy)"
+	echo "Found Debian 7 (wheezy)(current stable)"
 else
-	echo "Reqires Debian 7 (Wheezy)"
-	exit 1
+lsb_release -c | grep -i jessie &> /dev/null 2>&1
+if [[ "$?" -eq 0 ]]; then
+	echo "Found Debian 8 (jessie)(current testing)"
+fi
 fi
 
 #adding FusionPBX repo ( contains freeswitch armhf debs, fusionpbx debs ,and a few custom scripts debs)
@@ -493,7 +497,7 @@ sed "$freeswitch_act_conf"/sip_profiles/internal.xml -i -e s,'<!-- *<param name=
 fi
 
 #Setting up Fail2ban freeswitch config files.
-/bin/cat > "/etc/fail2ban/filter.d/freeswitch.conf"  <<DELIM
+/bin/cat > "/etc/fail2ban/filter.d/freeswitch.conf" <<DELIM
 
 # Fail2Ban configuration file
 
