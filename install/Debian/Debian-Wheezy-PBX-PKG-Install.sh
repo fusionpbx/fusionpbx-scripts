@@ -24,6 +24,7 @@
 # THE SOFTWARE.
 #
 ################################################################################
+#checks to see if installing on openvz server
 if [[ -f /proc/vz ]]; then 
 echo "Note: "
 echo "Those of you running this script on openvz. You must run it as root and "
@@ -34,7 +35,7 @@ fi
 ################################################################################
 #<------Start Option Edit HERE--------->
 #
-# Freeswitch Optional intalls
+# Freeswitch Optional /Customized installs
 #
 #freeswitch_install="all" # This is a metapackage which recommends or suggests all packaged FreeSWITCH modules.
 # freeswitch-meta-all
@@ -227,7 +228,7 @@ WWW_PATH="/usr/share/nginx/www" #debian nginx default dir
 wui_name="fusionpbx"
 #Php ini config file
 php_ini="/etc/php5/fpm/php.ini"
-#
+
 
 #Start installation
 #
@@ -239,6 +240,8 @@ echo "It is not intended to be run multi times"
 echo "If it fails for any reason please report to r.neese@gmail.com. "
 echo "Please include any screen output you can to show where it fails."
 echo ""
+
+#test internet connection..
 echo "This Script Currently Requires a internet connection "
 
 wget -q --tries=10 --timeout=5 http://www.google.com -O /tmp/index.google &> /dev/null
@@ -443,7 +446,7 @@ fi
 
 chown -R freeswitch:freeswitch "$freeswitch_act_conf"
 
-#fix music dir issue
+#fix music dir issue ( when using pkgs the music dir is /usr/share/freeswitch/sounds/music/default/8000 not /usr/share/freeswitch/sounds/music/8000)
 if [ -f "$freeswitch_act_conf"/autoload_configs/local_stream.conf.xml ]
 then
 /bin/sed "$freeswitch_act_conf"/autoload_configs/local_stream.conf.xml -i -e s,'<directory name="default" path="$${sounds_dir}/music/8000">','<directory name="default" path="$${sounds_dir}/music/default/8000">',g
@@ -475,6 +478,7 @@ stop program = "/etc/init.d/freeswitch stop"
 DELIM
 
 #Adding changes to freeswitch profiles
+#Enableing device login auth failures ing the sip profiles.
 sed -i "$freeswitch_act_conf"/sip_profiles/internal.xml -e s,'<param name="log-auth-failures" value="false"/>','<param name="log-auth-failures" value="true"/>',g
 
 sed "$freeswitch_act_conf"/sip_profiles/internal.xml -i -e s,'<!-- *<param name="log-auth-failures" value="false"/>','<param name="log-auth-failures" value="true"/>', \
