@@ -271,14 +271,43 @@ if [ ! -s /usr/bin/lsb_release ]; then
 fi
 
 # Os/Distro Check
-lsb_release -c | grep -i wheezy &> /dev/null 2>&1
-if [[ "$?" -eq 0 ]]; then
-	echo "Found Debian 7 (wheezy)(current stable)"
+lsb_release -c |grep -i wheezy &> /dev/null 2>&1
+if [ $? -eq 0 ]; then
+        /bin/echo "Good, you're running Ubuntu 10.04 LTS codename Lucid"
+        /bin/echo
 else
-	lsb_release -c | grep -i jessie &> /dev/null 2>&1
-	if [[ "$?" -eq 0 ]]; then
-		echo "Found Debian 8 (jessie)(current testing)"
-	fi
+        lsb_release -c |grep -i jessie > /dev/null
+        if [ $? -eq 0 ]; then
+                DISTRO=jessie
+                /bin/echo "OK you're running Debian 8 CodeName (Jessie). This script is known to work"
+				/bin/echo
+                CONTINUE=YES
+        fi
+        lsb_release -c |grep -i saucy > /dev/null
+        if [ $? -eq 0 ]; then
+                /bin/echo "OK you're running Ubuntu 13.10 [saucy].  This script is a work in progress.
+                /bin/echo "   It is not recommended that you try it at this time."
+                /bin/echo 
+                CONTINUE=YES
+        else
+                /bin/echo "This script was written for Debian 7 codename wheezy"
+                /bin/echo
+                /bin/echo "Your OS appears to be:"
+                lsb_release -a
+                read -p "Do you wish to continue [y|n]? " CONTINUE
+
+                case "$CONTINUE" in
+                [yY]*)
+                        /bin/echo "Ok, this doesn't always work..,"
+                        /bin/echo "  but we'll give it a go."
+                ;;
+
+                *)
+                        /bin/echo "Exiting the install."
+                        exit 1
+                ;;
+                esac
+        fi
 fi
 
 #adding FusionPBX repo ( contains freeswitch armhf debs, fusionpbx debs ,and a few custom scripts debs)
