@@ -33,7 +33,7 @@ break
 fi
 #
 ################################################################################
-#<------Start Option Edit HERE--------->
+#<------Start Edit HERE--------->
 #
 # Freeswitch Optional /Customized installs
 #
@@ -212,7 +212,8 @@ enable_admin_menu=n
 #Install Ajenti Admin Portal
 install_ajenti=n
 
-#<------Stop Options Edit Here-------->
+#<------Stop Edit Here-------->
+################################################################################
 #
 # Hard Set Varitables (Do Not EDIT)
 #
@@ -230,19 +231,18 @@ WWW_PATH="/usr/share/nginx/www" #debian nginx default dir
 wui_name="fusionpbx"
 #Php ini config file
 php_ini="/etc/php5/fpm/php.ini"
-
-
+#
+################################################################################
 #Start installation
 #
-#Testing for internet connection. Pulled from and modified
-#http://www.linuxscrew.com/2009/04/02/tiny-bash-scripts-check-internet-connection-availability/
-
 echo "This is a one time install script. 
 echo "It is not intended to be run multi times"
 echo "If it fails for any reason please report to r.neese@gmail.com. "
 echo "Please include any screen output you can to show where it fails."
 echo ""
-
+#
+#Testing for internet connection. Pulled from and modified
+#http://www.linuxscrew.com/2009/04/02/tiny-bash-scripts-check-internet-connection-availability/
 #test internet connection..
 echo "This Script Currently Requires a internet connection "
 
@@ -262,7 +262,6 @@ if [ $EUID -ne 0 ]; then
    echo "Must Run As Root and NOT SUDO" 1>&2
    exit 1
 fi
-
 echo "You're root.... continuing!"
 
 #removes the cd img from the /etc/apt/sources.list file (not needed after base install)
