@@ -207,16 +207,14 @@ database_name=
 database_user_name=
 
 #Install & Enable pbx admin shell menu
-enable_admin_menu=n
+enable_admin_menu="n"
 
 #Install Ajenti Admin Portal
-install_ajenti=n
+install_ajenti="n"
 
 #<------Stop Edit Here-------->
 ################################################################################
-#
 # Hard Set Varitables (Do Not EDIT)
-#
 #Freeswitch module dir
 freeswitch_mod="/usr/lib/freeswitch/mod"
 # Freeswitch logs dir
@@ -231,21 +229,19 @@ WWW_PATH="/usr/share/nginx/www" #debian nginx default dir
 wui_name="fusionpbx"
 #Php ini config file
 php_ini="/etc/php5/fpm/php.ini"
-#
-################################################################################
+#################################################################################
 #Start installation
-#
-echo "This is a one time install script. 
+
+echo "This is a one time install script."
 echo "It is not intended to be run multi times"
 echo "If it fails for any reason please report to r.neese@gmail.com. "
 echo "Please include any screen output you can to show where it fails."
 echo ""
-#
+
 #Testing for internet connection. Pulled from and modified
 #http://www.linuxscrew.com/2009/04/02/tiny-bash-scripts-check-internet-connection-availability/
 #test internet connection..
 echo "This Script Currently Requires a internet connection "
-
 wget -q --tries=10 --timeout=5 http://www.google.com -O /tmp/index.google &> /dev/null
 
 if [ ! -s /tmp/index.google ];then
@@ -254,7 +250,6 @@ if [ ! -s /tmp/index.google ];then
 	exit 1
 else
 	echo "Found the Internet ... continuing!"
-	echo ''
 	/bin/rm /tmp/index.google
 fi
 
@@ -280,10 +275,10 @@ lsb_release -c | grep -i wheezy &> /dev/null 2>&1
 if [[ "$?" -eq 0 ]]; then
 	echo "Found Debian 7 (wheezy)(current stable)"
 else
-lsb_release -c | grep -i jessie &> /dev/null 2>&1
-if [[ "$?" -eq 0 ]]; then
-	echo "Found Debian 8 (jessie)(current testing)"
-fi
+	lsb_release -c | grep -i jessie &> /dev/null 2>&1
+	if [[ "$?" -eq 0 ]]; then
+		echo "Found Debian 8 (jessie)(current testing)"
+	fi
 fi
 
 #adding FusionPBX repo ( contains freeswitch armhf debs, fusionpbx debs ,and a few custom scripts debs)
@@ -464,7 +459,10 @@ fi
 
 # Proper file to change init strings in. (/etc/defalut/freeswitch)
 # Configuring /etc/default/freeswitch DAEMON_Optional ARGS
+if [ -f /etc/default/freeswitch ]
+then
 sed -i /etc/default/freeswitch -e s,'^DAEMON_OPTS=.*','DAEMON_OPTS="-rp"',
+fi
 
 #remove the default extensions
 for i in /etc/freeswitch/directory/default/*.xml ;do rm "$i" ; done
@@ -488,7 +486,7 @@ DELIM
 #Enableing device login auth failures ing the sip profiles.
 if [ -f "$freeswitch_act_conf"/sip_profiles/internal.xml ]
 then
-sed -i "$freeswitch_act_conf"/sip_profiles/internal.xml -e s,'<param name="log-auth-failures" value="false"/>','<param name="log-auth-failures" value="true"/>',g
+sed "$freeswitch_act_conf"/sip_profiles/internal.xml -i -e s,'<param name="log-auth-failures" value="false"/>','<param name="log-auth-failures" value="true"/>',g
 
 sed "$freeswitch_act_conf"/sip_profiles/internal.xml -i -e s,'<!-- *<param name="log-auth-failures" value="false"/>','<param name="log-auth-failures" value="true"/>', \
 				-e s,'<param name="log-auth-failures" value="false"/> *-->','<param name="log-auth-failures" value="true"/>', \
@@ -566,7 +564,7 @@ for i in freeswitch fail2ban
 do /etc/init.d/"${i}" restart  >/dev/null 2>&1
 done
 
-# see http://wiki.fusionpbx.com/index.php?title=<<DELIM
+# see http://wiki.fusionpbx.com/index.php?title=RotateFSLogs
 /bin/cat > "/etc/cron.daily/freeswitch_log_rotation" <<DELIM
 #!/bin/bash
 
@@ -574,8 +572,7 @@ done
 NUMBERDAYS="$keep_logs"
 FSPATH="/var/log/freeswitch"
 
-"$FSPATH"/bin/freeswitch_cli -x "fsctl send_sighup" |grep '+OK' >/tmp/
-DELIM
+"$FSPATH"/bin/freeswitch_cli -x "fsctl send_sighup" |grep '+OK' >/tmp/rotateFSlogs
 
 if [ $? -eq 0 ]; then
        #-cmin 2 could bite us (leave some files uncompressed, eg 11M auto-rotate). Maybe -1440 is better?
@@ -591,6 +588,7 @@ else
        rm /tmp/<<DELIM
 fi
 
+DELIM
 
 chmod 755 /etc/cron.daily/freeswitch_log_rotation
 
@@ -937,7 +935,7 @@ DELIM
 fi
 
 #install and enable custom shell admin menu
-if [[ $enable_admin_menu == y ]]; then
+if [[ $enable_admin_menu == "y" ]]; then
 apt-get -y install --force-yes pbx-admin-menu
 /bin/cat > /root/.profile <<DELIM
 /usr/bin/pbx-admin-menu.sh
@@ -949,7 +947,7 @@ for i in  openvpn openvpn-scripts ;do apt-get -y install --force-yes "${i}"; don
 
 #Ajenti admin portal. Makes maintaining the system easier.
 #ADD Ajenti repo & ajenti
-if [[ $install_ajenti == y ]]; then
+if [[ $install_ajenti == "y" ]]; then
 /bin/cat > "/etc/apt/sources.list.d/ajenti.list" <<DELIM
 deb http://repo.ajenti.org/debian main main debian
 DELIM
