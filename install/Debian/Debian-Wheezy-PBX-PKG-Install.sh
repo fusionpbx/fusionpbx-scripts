@@ -257,7 +257,7 @@ else
 fi
 
 # OS ENVIRONMENT CHECKS
-#check for root
+#check to confirm running as root
 if [ $EUID -ne 0 ]; then
    echo "Must Run As Root and NOT SUDO" 1>&2
    exit 1
@@ -265,9 +265,11 @@ fi
 
 echo "You're root.... continuing!"
 
+#removes the cd img from the /etc/apt/sources.list file (not needed after base install)
 sed -i '/cdrom:/d' /etc/apt/sources.list
 sed -i '2,4d' /etc/apt/sources.list
 
+#if lsb_release is not installed it installs it
 if [ ! -s /usr/bin/lsb_release ]; then
 	apt-get update && apt-get -y install lsb-release
 fi
