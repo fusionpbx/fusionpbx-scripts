@@ -205,7 +205,7 @@ database_name=
 # (Default: fusionpbx)
 database_user_name=
 
-#Enable pbx admin shell menu
+#Install & Enable pbx admin shell menu
 enable_admin_menu=n
 
 #Install Ajenti Admin Portal
@@ -231,12 +231,13 @@ php_ini="/etc/php5/fpm/php.ini"
 
 #Start installation
 #
-#check for internet connection. Pulled from and modified
+#Testing for internet connection. Pulled from and modified
 #http://www.linuxscrew.com/2009/04/02/tiny-bash-scripts-check-internet-connection-availability/
 
-echo "This is a one time install script. It is not intended to be run multi times"
-echo "If it fails for any reason please report to r.neese@gmail.com. Include any "
-echo "screen output you can to show where it fails."
+echo "This is a one time install script. 
+echo "It is not intended to be run multi times"
+echo "If it fails for any reason please report to r.neese@gmail.com. "
+echo "Please include any screen output you can to show where it fails."
 echo ""
 echo "This Script Currently Requires a internet connection "
 
@@ -275,23 +276,28 @@ else
 	exit 1
 fi
 
-#adding FusionPBX repo ( contains freeswitch armhf debs, fusionpbx bed,and a few custom scripts debs)
+#adding FusionPBX repo ( contains freeswitch armhf debs, fusionpbx debs ,and a few custom scripts debs)
 case $(uname -m) in armv7l)
 /bin/cat > "/etc/apt/sources.list.d/fusionpbx.list" <<DELIM
 deb http://repo.fusionpbx.com wheezy main
 deb-src http://repo.fusionpbx.com/ wheezy main
 DELIM
+#running update and upgrade on existing pkgs
 for i in update upgrade ;do apt-get -y "${i}" ; done
 esac
 
+#freeswitch repo for x86 x86-64 bit pkgs 
 case $(uname -m) in x86_64|i[4-6]86)
+# install curl to fetch repo key
 apt-get -y install curl
+#adding in freeswitch reop to /etc/apt/sources.list.d/freeswitch.lists
 /bin/cat > "/etc/apt/sources.list.d/freeswitch.list" <<DELIM
 deb http://files.freeswitch.org/repo/deb/debian/ wheezy main
 deb-src http://files.freeswitch.org/repo/deb/debian/ wheezy main
 DELIM
 #adding key for freeswitch repo
 curl http://files.freeswitch.org/repo/deb/debian/freeswitch_archive_g0.pub | apt-key add -
+#running update and upgrade on existing pkgs
 for i in update upgrade ;do apt-get -y "${i}" ; done
 esac
 
@@ -748,7 +754,7 @@ DELIM
 apt-get update
 esac
 
-# Install FusionPBX Web User Interface
+# Install FusionPBX Web User Interface stable/devel
 echo "Installing FusionPBX Web User Interface Debian pkg"
 
 if [[ $fusionpbx_stable == y ]]; then
@@ -767,13 +773,13 @@ cp -r "$WWW_PATH/$wui_name"/resources/templates/conf/* "$freeswitch_act_conf"
 
 #Reapply sed lines to fusionpbx config files
 
-#Now dropping 10MB limit from FreeSWITCH"
+#Now dropping 10MB limit from FreeSWITCH"(less log files to sift thro)
 if [ -f "$freeswitch_act_conf"/autoload_configs/logfile.conf.xml ]
 then
 /bin/sed /etc/freeswitch/autoload_configs/logfile.conf.xml -i -e s,\<param.*name\=\"rollover\".*value\=\"10485760\".*/\>,\<\!\-\-\<param\ name\=\"rollover\"\ value\=\"10485760\"/\>\ INSTALL_SCRIPT\-\-\>,g
 fi
 
-# Enable log-auth-failure logging
+# Enable log-auth-failure logging( tracks device login failure)
 if [ -f "$freeswitch_act_conf"/sip_profiles/internal.xml ]
 then
 sed -i "$freeswitch_act_conf"/sip_profiles/internal.xml -e s,'<param name="log-auth-failures" value="false"/>','<param name="log-auth-failures" value="true"/>',g
@@ -783,7 +789,7 @@ sed "$freeswitch_act_conf"/sip_profiles/internal.xml -i -e s,'<!-- *<param name=
 				-e s,'<param name="log-auth-failures" value="false"/>-->','<param name="log-auth-failures" value="true"/>',g
 fi
 
-#fix music dir issue
+#fix music dir issue ( when using pkgs the music dir is /usr/share/freeswitch/sounds/music/default/8000 not /usr/share/freeswitch/sounds/music/8000)
 if [ -f "$freeswitch_act_conf"/autoload_configs/local_stream.conf.xml ]
 then
 /bin/sed "$freeswitch_act_conf"/autoload_configs/local_stream.conf.xml -i -e s,'<directory name="default" path="$${sounds_dir}/music/8000">','<directory name="default" path="$${sounds_dir}/music/default/8000">',g
@@ -833,9 +839,10 @@ DELIM
 #restarting fail2ban
 /etc/init.d/fail2ban restart
 fi
-#end of pbx install
+#end of fusionpbx install
 
 # Database options (Currently only Postgresql)
+
 #Install postgresql-client
 if [[ $postgresql_client == y ]]; then
 	db_name="$wui_name"
@@ -864,7 +871,7 @@ cat << DELIM
 DELIM
 fi
 
-#install postgresql-server
+#install & configure basic postgresql-server
 if [[ $postgresql_server == y ]]; then
     db_name="$database_name"
     db_user_name="$database_user_name"
@@ -905,14 +912,16 @@ cat << DELIM
 DELIM
 fi
 
+#install and enable custom shell admin menu
 if [[ $enable_admin_menu == y ]]; then
+apt-get -y install --force-yes pbx-admin-menu
 /bin/cat > /root/.profile <<DELIM
 /usr/bin/pbx-admin-menu.sh
 DELIM
 fi
 
-#Install openvpn openvpn-scripts pbx-admin-menu
-for i in  openvpn openvpn-scripts pbx-admin-menu ;do apt-get -y install --force-yes "${i}"; done
+#Install openvpn openvpn-scripts 
+for i in  openvpn openvpn-scripts ;do apt-get -y install --force-yes "${i}"; done
 
 #ADD Ajenti repo & ajenti
 if [[ $install_ajenti == y ]]; then
@@ -923,7 +932,7 @@ wget http://repo.ajenti.org/debian/key -O- | apt-key add -
 apt-get update &> /dev/null && apt-get -y install ajenti
 fi
 
-#apt-get cleanup
+#apt-get cleanup (clean and remove unused pkgs)
 apt-get clean && apt-get autoremove
 
-echo " Install Has Finished...  "
+echo " THe install has finished...  "
