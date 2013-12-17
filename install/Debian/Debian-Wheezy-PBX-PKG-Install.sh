@@ -310,7 +310,7 @@ else
 fi
 
 #adding FusionPBX repo ( contains freeswitch armhf debs, fusionpbx debs ,and a few custom scripts debs)
-case $(uname -m) in armv7l)
+case $(uname -m) in armv[6-7]l)
 /bin/cat > "/etc/apt/sources.list.d/fusionpbx.list" <<DELIM
 deb http://repo.fusionpbx.com wheezy main
 deb-src http://repo.fusionpbx.com/ wheezy main
