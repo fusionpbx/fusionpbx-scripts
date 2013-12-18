@@ -181,7 +181,9 @@ freeswitch_vlc="y"
 #
 #freeswitch_conf="curl" # FreeSWITCH curl configuration
 #freeswitch_conf="indiseout" # FreeSWITCH insideout configuration
+#freeswitch_conf="rayo" # FreeSWITCH rayo configuration
 #freeswitch_conf="sbc" # FreeSWITCH session border controller (sbc) configuration
+#freeswitch_conf="softphone" # FreeSWITCH softphone configuration
 freeswitch_conf="vanilla" # FreeSWITCH vanilla configuration
 
 # TO Disable freeswitch nat auto detection
@@ -507,10 +509,24 @@ if [[ $freeswitch_conf == "insideout" ]]; then
 	chown -R freeswitch:freeswitch "$freeswitch_act_conf"
 fi
 
+if [[ $freeswitch_conf == "rayo" ]]; then
+	echo " Installing Freeswitch rayo configs"
+	apt-get -y install	freeswitch-conf-rayo
+	cp -rp "$freeswitch_dflt_conf"/rayo/* "$freeswitch_act_conf"
+	chown -R freeswitch:freeswitch "$freeswitch_act_conf"
+fi
+
 if [[ $freeswitch_conf == "sbc" ]]; then
 	echo " Installing Freeswitch session border control configs"
 	apt-get -y install	freeswitch-conf-sbc
 	cp -rp "$freeswitch_dflt_conf"/sbc/* "$freeswitch_act_conf"
+	chown -R freeswitch:freeswitch "$freeswitch_act_conf"
+fi
+
+if [[ $freeswitch_conf == "softphone" ]]; then
+	echo " Installing Freeswitch softphone configs"
+	apt-get -y install	freeswitch-conf-softphone
+	cp -rp "$freeswitch_dflt_conf"/softphone/* "$freeswitch_act_conf"
 	chown -R freeswitch:freeswitch "$freeswitch_act_conf"
 fi
 
