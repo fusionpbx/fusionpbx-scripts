@@ -34,6 +34,7 @@ fi
 #
 ################################################################################
 #<------Start Edit HERE--------->
+install_freeswitch="y"
 #
 # Freeswitch Optional /Customized installs
 #
@@ -185,6 +186,12 @@ freeswitch_vlc="y"
 #freeswitch_conf="sbc" # FreeSWITCH session border controller (sbc) configuration
 #freeswitch_conf="softphone" # FreeSWITCH softphone configuration
 freeswitch_conf="vanilla" # FreeSWITCH vanilla configuration
+
+#Remove the default extensions for security .
+freeswitch_exten="y"
+
+#install fail2ban for port security and monit service
+install_fail2ban="y"
 
 # TO Disable freeswitch nat auto detection
 #
@@ -370,6 +377,8 @@ curl http://files.freeswitch.org/repo/deb/debian/freeswitch_archive_g0.pub | apt
 for i in update upgrade ;do apt-get -y "${i}" ; done
 esac
 
+if [[ $install_freeswitch == "y" ]]; then
+
 # Freeswitch Install Options.
 if [[ $freeswitch_install == "all" ]]; then
 	echo " Installing freeswitch all and freeswitch deps"
@@ -554,10 +563,14 @@ if [ -f /etc/default/freeswitch ]
 then
 sed -i /etc/default/freeswitch -e s,'^DAEMON_OPTS=.*','DAEMON_OPTS="-rp"',
 fi
+fi
 
+if [[ $freeswitch_exten == "y" ]]; then
 #remove the default extensions
 for i in /etc/freeswitch/directory/default/*.xml ;do rm "$i" ; done
+fi
 
+if [[ $install_fail2ban == "all" ]]; then
 # SEE http://wiki.freeswitch.org/wiki/Fail2ban
 #Fail2ban
 for i in fail2ban monit ;do apt-get -y install "${i}" ; done
@@ -654,6 +667,7 @@ sed -i /usr/bin/fail2ban-client -e s,^\.setInputCmd\(c\),'time.sleep\(0\.1\)\n\t
 for i in freeswitch fail2ban
 do /etc/init.d/"${i}" restart  >/dev/null 2>&1
 done
+fi
 
 # see http://wiki.fusionpbx.com/index.php?title=RotateFSLogs
 /bin/cat > "/etc/cron.daily/freeswitch_log_rotation" <<DELIM
@@ -687,13 +701,6 @@ chmod 755 /etc/cron.daily/freeswitch_log_rotation
 if [ -f "$freeswitch_act_conf"/autoload_configs/logfile.conf.xml ]
 then
 /bin/sed /etc/freeswitch/autoload_configs/logfile.conf.xml -i -e s,\<param.*name\=\"rollover\".*value\=\"10485760\".*/\>,\<\!\-\-\<param\ name\=\"rollover\"\ value\=\"10485760\"/\>\ INSTALL_SCRIPT\-\-\>,g
-fi
-
-#Settinf /etc/default freeswitch stratup options with proper scripts dir and to run behind nat.
-#DAEMON_Optional ARGS
-if [ -f /etc/default/freeswitch ]
-then
-/bin/sed -i /etc/default/freeswitch -e s,'^DAEMON_OPTS=.*','DAEMON_OPTS="-scripts /var/lib/fusionpbx/scripts -rp"',
 fi
 
 #Settinf /etc/default freeswitch stratup options with proper scripts dir and to run without nat.
@@ -883,6 +890,13 @@ rm -rf "$freeswitch_act_conf"/*
 
 #Put Fusionpbx Freeswitch configs into place
 cp -r "$WWW_PATH/$wui_name"/resources/templates/conf/* "$freeswitch_act_conf"
+
+#Settinf /etc/default freeswitch stratup options with proper scripts dir and to run behind nat.
+#DAEMON_Optional ARGS
+if [ -f /etc/default/freeswitch ]
+then
+/bin/sed -i /etc/default/freeswitch -e s,'^DAEMON_OPTS=.*','DAEMON_OPTS="-scripts /var/lib/fusionpbx/scripts -rp"',
+fi
 
 #Reapply sed lines to fusionpbx config files
 
