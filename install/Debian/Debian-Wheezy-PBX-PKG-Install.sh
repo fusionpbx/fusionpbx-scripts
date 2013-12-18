@@ -37,7 +37,41 @@ fi
 #
 # Freeswitch Optional /Customized installs
 #
-#freeswitch_install="all" # This is a metapackage which recommends or suggests all packaged FreeSWITCH modules.
+#freeswitch_install="all"
+#freeswitch-all 
+#libfreeswitch1 libfreeswitch-dev freeswitch-sysvinit freeswitch-systemd freeswitch-sounds-en-us freeswitch-sounds-en freeswitch-sounds freeswitch-music 
+#freeswitch-mod-yaml freeswitch-mod-xml-scgi freeswitch-mod-xml-rpc freeswitch-mod-xml-radius freeswitch-mod-xml-ldap freeswitch-mod-xml-curl 
+#freeswitch-mod-xml-cdr freeswitch-mod-vp8 freeswitch-mod-voipcodecs freeswitch-mod-voicemail-ivr freeswitch-mod-voicemail freeswitch-mod-vmd 
+#freeswitch-mod-vlc freeswitch-mod-valet-parking freeswitch-mod-unimrcp freeswitch-mod-unicall freeswitch-mod-tts-commandline freeswitch-mod-translate 
+#freeswitch-mod-tone-stream freeswitch-mod-timerfd freeswitch-mod-theora freeswitch-mod-syslog freeswitch-mod-stress freeswitch-mod-ssml 
+#freeswitch-mod-spy freeswitch-mod-spidermonkey freeswitch-mod-speex freeswitch-mod-spandsp freeswitch-mod-soundtouch freeswitch-mod-sonar 
+#freeswitch-mod-sofia freeswitch-mod-snom freeswitch-mod-snmp freeswitch-mod-snipe-hunt freeswitch-mod-sndfile freeswitch-mod-snapshot 
+#freeswitch-mod-sms freeswitch-mod-skypopen freeswitch-mod-skinny freeswitch-mod-skel-codec freeswitch-mod-skel freeswitch-mod-siren 
+#freeswitch-mod-silk freeswitch-mod-shout freeswitch-mod-shell-stream freeswitch-mod-say-zh freeswitch-mod-say-th freeswitch-mod-say-ru 
+#freeswitch-mod-say-pt freeswitch-mod-say-pl freeswitch-mod-say-nl freeswitch-mod-say-ja freeswitch-mod-say-it freeswitch-mod-say-hu 
+#freeswitch-mod-say-hr freeswitch-mod-say-he freeswitch-mod-say-fr freeswitch-mod-say-fa freeswitch-mod-say-es freeswitch-mod-say-en 
+#freeswitch-mod-say-de freeswitch-mod-sangoma-codec freeswitch-mod-rtmp freeswitch-mod-rss freeswitch-mod-reference freeswitch-mod-redis 
+#freeswitch-mod-rayo freeswitch-mod-random freeswitch-mod-radius-cdr freeswitch-mod-rad-auth freeswitch-mod-python freeswitch-mod-posix-timer 
+#freeswitch-mod-portaudio-stream freeswitch-mod-portaudio freeswitch-mod-pocketsphinx freeswitch-mod-perl freeswitch-mod-osp freeswitch-mod-oreka 
+#freeswitch-mod-opus freeswitch-mod-opal freeswitch-mod-nibblebill freeswitch-mod-native-file freeswitch-mod-mp4v freeswitch-mod-mp4 
+#freeswitch-mod-mongo freeswitch-mod-memcache freeswitch-mod-managed freeswitch-mod-lua freeswitch-mod-loopback freeswitch-mod-logfile 
+#freeswitch-mod-local-stream freeswitch-mod-limit freeswitch-mod-ldap freeswitch-mod-lcr freeswitch-mod-ladspa freeswitch-mod-khomp 
+#freeswitch-mod-json-cdr freeswitch-mod-java freeswitch-mod-isac freeswitch-mod-ilbc freeswitch-mod-http-cache freeswitch-mod-httapi 
+#freeswitch-mod-hash freeswitch-mod-h323 freeswitch-mod-h26x freeswitch-mod-gsmopen freeswitch-mod-g729 freeswitch-mod-g723-1 
+#freeswitch-mod-fsv freeswitch-mod-fsk freeswitch-mod-flite freeswitch-mod-fifo freeswitch-mod-expr freeswitch-mod-event-zmq 
+#freeswitch-mod-event-test freeswitch-mod-event-socket freeswitch-mod-event-multicast freeswitch-mod-esl freeswitch-mod-esf 
+#freeswitch-mod-erlang-event freeswitch-mod-enum freeswitch-mod-easyroute freeswitch-mod-dptools freeswitch-mod-distributor 
+#freeswitch-mod-directory freeswitch-mod-dingaling freeswitch-mod-dialplan-xml freeswitch-mod-dialplan-directory freeswitch-mod-dialplan-asterisk 
+#freeswitch-mod-db freeswitch-mod-dahdi-codec freeswitch-mod-curl freeswitch-mod-console freeswitch-mod-conference freeswitch-mod-commands 
+#freeswitch-mod-com-g729 freeswitch-mod-codec2 freeswitch-mod-cluechoo freeswitch-mod-cidlookup freeswitch-mod-cepstral freeswitch-mod-celt 
+#freeswitch-mod-cdr-sqlite freeswitch-mod-cdr-pg-csv freeswitch-mod-cdr-mongodb freeswitch-mod-cdr-csv freeswitch-mod-callcenter freeswitch-mod-bv 
+#freeswitch-mod-blacklist freeswitch-mod-b64 freeswitch-mod-avmd freeswitch-mod-amrwb freeswitch-mod-amr freeswitch-mod-alsa 
+#freeswitch-mod-abstraction freeswitch-mod-autotools freeswitch-meta-vanilla freeswitch-meta-sorbet freeswitch-meta-mod-say freeswitch-meta-lang 
+#freeswitch-meta-default freeswitch-meta-conf freeswitch-meta-codecs freeswitch-meta-bare freeswitch-meta-all freeswitch-lang-ru freeswitch-lang-pt 
+#freeswitch-lang-he freeswitch-lang-fr freeswitch-lang-es freeswitch-lang-en freeswitch-lang-de freeswitch-lang freeswitch-init freeswitch-doc 
+#freeswitch-conf-vanilla freeswitch-conf-softphone freeswitch-conf-sbc freeswitch-conf-rayo freeswitch-conf-insideout freeswitch-conf-curl freeswitch
+#
+#freeswitch_install="meta-all" # This is a metapackage which recommends or suggests all packaged FreeSWITCH modules.
 # freeswitch-meta-all
 # Installs: freeswitch freeswitch-mod-vlc freeswitch-init freeswitch-lang freeswitch-meta-codecs freeswitch-meta-conf freeswitch-meta-lang freeswitch-meta-mod-say 
 # freeswitch-music freeswitch-sounds freeswitch-mod-abstraction freeswitch-mod-avmd freeswitch-mod-blacklist freeswitch-mod-callcenter freeswitch-mod-cidlookup 
@@ -56,18 +90,18 @@ fi
 # freeswitch-mod-yaml freeswitch-mod-console freeswitch-mod-logfile freeswitch-mod-syslog freeswitch-mod-posix-timer freeswitch-mod-timerfd freeswitch-mod-xml-cdr 
 # freeswitch-mod-xml-curl freeswitch-mod-xml-rpc freeswitch-mod-xml-scgi
 
-#freeswitch_install="bare" # This is a metapackage which depends on the packages needed for a very bare FreeSWITCH install.
+#freeswitch_install="meta-bare" # This is a metapackage which depends on the packages needed for a very bare FreeSWITCH install.
 # freeswitch-meta-bare
 # Installs: freeswitch freeswitch-doc freeswitch-mod-commands freeswitch-init freeswitch-lang freeswitch-music freeswitch-sounds
 
-#freeswitch_install="codecs" # This is a metapackage which depends on the packages needed to install most FreeSWITCH codecs.
+#freeswitch_install="meta-codecs" # This is a metapackage which depends on the packages needed to install most FreeSWITCH codecs.
 # freeswitch-meta-codecs
 # Installs: freeswitch freeswitch-mod-amr freeswitch-mod-amrwb freeswitch-mod-b64 freeswitch-mod-bv freeswitch-mod-celt freeswitch-mod-codec2 freeswitch-mod-dahdi-codec  
 # freeswitch-mod-g723-1 freeswitch-mod-g729 freeswitch-mod-h26x freeswitch-mod-isac freeswitch-mod-mp4v freeswitch-mod-opus freeswitch-mod-silk freeswitch-mod-spandsp
 # freeswitch-mod-speex  freeswitch-mod-theora freeswitch-mod-vp8 
 # Suggests <freeswitch-mod-ilbc> <freeswitch-mod-siren>
 
-#freeswitch_install="default" # This is a metapackage which depends on the packages needed for a reasonably basic FreeSWITCH install.
+#freeswitch_install="meta-default" # This is a metapackage which depends on the packages needed for a reasonably basic FreeSWITCH install.
 # freeswitch-meta-default
 # freeswitch freeswitch-mod-commands freeswitch-mod-conference freeswitch-mod-db freeswitch-mod-dptools freeswitch-mod-fifo freeswitch-mod-hash freeswitch-mod-spandsp
 # freeswitch-mod-voicemail freeswitch-mod-dialplan-xml freeswitch-mod-loopback freeswitch-mod-sofia freeswitch-mod-local-stream freeswitch-mod-native-file
@@ -94,17 +128,17 @@ freeswitch_install="fusionpbx"
 # freeswitch-mod-xml-rpc freeswitch-mod-say-en freeswitch-lang-en freeswitch-init freeswitch-meta-codecs freeswitch-mod-fifo
 # Recommends freeswitch-conf-vanilla
 
-#freeswitch_install="lang"
+#freeswitch_install="meta-lang"
 # freeswitch-meta-lang
 # Installs: freeswitch-lang-de freeswitch-lang-en freeswitch-lang-es freeswitch-lang-fr freeswitch-lang-he freeswitch-lang-pt freeswitch-lang-ru
 
-#freeswitch_install="says"
+#freeswitch_install="meta-says"
 # freeswitch-meta-mod-say
 # Installs freeswitch-mod-say-de freeswitch-mod-say-en freeswitch-mod-say-de freeswitch-mod-say-fa freeswitch-mod-say-fr freeswitch-mod-say-he
 # freeswitch-mod-say-hr freeswitch-mod-say-hu freeswitch-mod-say-it freeswitch-mod-say-ja freeswitch-mod-say-nl freeswitch-mod-say-pl
 # freeswitch-mod-say-pt freeswitch-mod-say-ru freeswitch-mod-say-th freeswitch-mod-say-zh
 
-#freeswitch_install="sorbet" # This is a metapackage which recommends most packaged FreeSWITCH modules except a few which aren't recommended.
+#freeswitch_install="meta-sorbet" # This is a metapackage which recommends most packaged FreeSWITCH modules except a few which aren't recommended.
 # freeswitch-meta-sorbet
 # Installs: freeswitch freeswitch-init freeswitch-lang freeswitch-meta-codecs freeswitch-music freeswitch-sounds freeswitch-mod-abstraction freeswitch-mod-avmd 
 # freeswitch-mod-blacklist freeswitch-mod-callcenter freeswitch-mod-cidlookup freeswitch-mod-commands freeswitch-mod-conference freeswitch-mod-curl freeswitch-mod-db 
@@ -118,7 +152,7 @@ freeswitch_install="fusionpbx"
 # freeswitch-mod-tone-stream freeswitch-mod-lua freeswitch-mod-console freeswitch-mod-logfile freeswitch-mod-syslog freeswitch-mod-say-en freeswitch-mod-posix-timer 
 # freeswitch-mod-timerfd freeswitch-mod-xml-cdr freeswitch-mod-xml-curl
 
-# freeswitch_install="vanilla" # This is a metapackage which depends on the packages needed for running the FreeSWITCH vanilla example configuration.
+# freeswitch_install="meta-vanilla" # This is a metapackage which depends on the packages needed for running the FreeSWITCH vanilla example configuration.
 # freeswitch-meta-vanilla
 # freeswitch freeswitch-mod-console freeswitch-mod-logfile freeswitch-mod-enum freeswitch-mod-cdr-csv freeswitch-mod-event-socket freeswitch-mod-sofia
 # freeswitch-mod-loopback freeswitch-mod-commands freeswitch-mod-conference freeswitch-mod-db freeswitch-mod-dptools freeswitch-mod-expr freeswitch-mod-fifo 
@@ -347,12 +381,25 @@ if [[ $freeswitch_install == "all" ]]; then
 	apt-get -y install --force-yes freeswitch-meta-all
 fi
 
-if [[ $freeswitch_install == "bare" ]]; then
+# Freeswitch Install Options.
+if [[ $freeswitch_install == "meta-all" ]]; then
+	echo " Installing freeswitch all and freeswitch deps"
+	#install Freeswitch Deps
+	for i in curl screen unixodbc uuid memcached ;do apt-get -y install "${i}" ; done
+	#Pkgs needed for faxing (freeswitch-mod-spandsp)
+	for i in libtiff5 libtiff-tools ghostscript ;do apt-get -y install "${i}" ; done
+	#pkgs required for freeswitch-mod-ladspa
+	for i in autotalent ladspa-sdk tap-plugins swh-plugins libfftw3-3  ;do apt-get -y install "${i}" ; done
+	#install freeswitch-meta-all
+	apt-get -y install --force-yes freeswitch-meta-all
+fi
+
+if [[ $freeswitch_install == "meta-bare" ]]; then
 	echo " Installing freeswitch bare "
 	apt-get -y install --force-yes freeswitch-meta-bare
 fi
 
-if [[ $freeswitch_install == "codecs" ]]; then
+if [[ $freeswitch_install == "meta-codecs" ]]; then
 	echo " Installing freeswitch all codecs "
 	#Pkgs needed for faxing (freeswitch-mod-spandsp)
 	for i in libtiff5 libtiff-tools ghostscript ;do apt-get -y install "${i}" ; done
@@ -360,12 +407,12 @@ if [[ $freeswitch_install == "codecs" ]]; then
 	apt-get -y install --force-yes freeswitch-meta-codecs
 fi
 
-if [[ $freeswitch_install == "conf" ]]; then
+if [[ $freeswitch_install == "meta-conf" ]]; then
 	echo " Installing all freeswitch config files "
 	apt-get -y install --force-yes freeswitch-meta-conf
 fi
 
-if [[ $freeswitch_install == "default" ]]; then
+if [[ $freeswitch_install == "meta-default" ]]; then
 	echo " Installing freeswitch default "
 	#install Freeswitch Deps
 	for i in curl screen unixodbc uuid memcached ;do apt-get -y install "${i}" ; done
@@ -395,17 +442,17 @@ if [[ $freeswitch_install == "fusionpbx" ]]; then
 	freeswitch-mod-xml-rpc freeswitch-mod-say-en freeswitch-lang-en freeswitch-init freeswitch-meta-codecs freeswitch-mod-fifo ;do apt-get -y install --force-yes "${i}" ; done
 fi
 
-if [[ $freeswitch_install == "lang" ]]; then
+if [[ $freeswitch_install == "meta-lang" ]]; then
 	echo " Installing freeswitch languages "
 	apt-get -y install --force-yes freeswitch-meta-lang
 fi
 
-if [[ $freeswitch_install == "say" ]]; then
+if [[ $freeswitch_install == "meta-say" ]]; then
 	echo " Installing freeswitch say language files "
 	apt-get -y install --force-yes freeswitch-meta-say
 fi
 
-if [[ $freeswitch_install == "sorbet" ]]; then
+if [[ $freeswitch_install == "meta-sorbet" ]]; then
 	echo " Installing freeswitch sorbet "
 	#install Freeswitch Deps
 	for i in curl screen unixodbc uuid memcached ;do apt-get -y install "${i}" ; done
@@ -415,7 +462,7 @@ if [[ $freeswitch_install == "sorbet" ]]; then
 	apt-get -y install --force-yes freeswitch-meta-sorbet
 fi
 
-if [[ $freeswitch_install == "vanilla" ]]; then
+if [[ $freeswitch_install == "meta-vanilla" ]]; then
 	echo " Installing freeswitch vanilla "
 	for i in curl screen unixodbc uuid memcached ;do apt-get -y install "${i}" ; done
 	#Pkgs needed for faxing (freeswitch-mod-spandsp)
@@ -425,12 +472,12 @@ if [[ $freeswitch_install == "vanilla" ]]; then
 fi
 
 if [[ $freeswitch_sounds == "y" ]]; then
-	echo " Installing freeswitch sounds_en_us_calie "
+	echo " Installing freeswitch sounds_en_us_calie 8/16/32/48k sounds"
 	apt-get -y install --force-yes freeswitch-sounds
 fi
 
 if [[ $freeswitch_music == "y" ]]; then
-	echo " Installing freeswitch music "
+	echo " Installing freeswitch music 8/16/32/48k music"
 	apt-get -y install --force-yes freeswitch-music
 fi
 
