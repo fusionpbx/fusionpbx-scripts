@@ -111,22 +111,20 @@ install_freeswitch="y"
 # Recommends: freeswitch-lang freeswitch-meta-codecs freeswitch-music freeswitch-sounds
 
 freeswitch_install="fusionpbx"
-# installs the following pkgs used by fusionpbx-en (English US English BasedPBX)(Would like to see other sounds and lang pbx)
-# Installs: freeswitch   
-# freeswitch-mod-abstraction freeswitch-mod-avmd freeswitch-mod-blacklist freeswitch-mod-callcenter freeswitch-mod-cidlookup 
-# freeswitch-mod-commands freeswitch-mod-conference freeswitch-mod-curl freeswitch-mod-db freeswitch-mod-directory 
-# freeswitch-mod-distributor freeswitch-mod-dptools freeswitch-mod-easyroute freeswitch-mod-enum freeswitch-mod-esf 
-# freeswitch-mod-esl freeswitch-mod-expr freeswitch-mod-fifo freeswitch-mod-fsk freeswitch-mod-fsv freeswitch-mod-hash 
-# freeswitch-mod-httapi freeswitch-mod-http-cache freeswitch-mod-lcr freeswitch-mod-memcache freeswitch-mod-oreka 
-# freeswitch-mod-random freeswitch-mod-snom freeswitch-mod-soundtouch freeswitch-mod-spandsp freeswitch-mod-spy 
-# freeswitch-mod-translate freeswitch-mod-valet-parking freeswitch-mod-vmd freeswitch-mod-voicemail freeswitch-mod-voicemail-ivr 
-# freeswitch-mod-flite freeswitch-mod-pocketsphinx freeswitch-mod-tts-commandline freeswitch-mod-unimrcp freeswitch-mod-dialplan-xml 
-# freeswitch-mod-ldap freeswitch-mod-dingaling freeswitch-mod-loopback freeswitch-mod-portaudio freeswitch-mod-rtmp 
-# freeswitch-mod-sofia freeswitch-mod-cdr-sqlite freeswitch-mod-event-multicast freeswitch-mod-event-socket 
-# freeswitch-mod-event-test freeswitch-mod-local-stream freeswitch-mod-native-file # freeswitch-mod-portaudio-stream 
-# freeswitch-mod-shell-stream freeswitch-mod-sndfile freeswitch-mod-tone-stream freeswitch-mod-lua freeswitch-mod-console
-# freeswitch-mod-logfile freeswitch-mod-syslog freeswitch-mod-posix-timer freeswitch-mod-timerfd freeswitch-mod-xml-cdr 
-# freeswitch-mod-xml-rpc freeswitch-mod-say-en freeswitch-lang-en freeswitch-init freeswitch-meta-codecs freeswitch-mod-fifo
+# Installs: freeswitch freeswitch-init freeswitch-lang-en freeswitch-meta-codecs freeswitch-mod-abstraction freeswitch-mod-avmd freeswitch-mod-blacklist
+# freeswitch-mod-callcenter freeswitch-mod-cidlookup freeswitch-mod-commands freeswitch-mod-conference freeswitch-mod-curl freeswitch-mod-db 
+# freeswitch-mod-dingaling freeswitch-mod-directory freeswitch-mod-distributor freeswitch-mod-dptools freeswitch-mod-easyroute freeswitch-mod-enum 
+# freeswitch-mod-esf freeswitch-mod-esl freeswitch-mod-expr freeswitch-mod-fifo freeswitch-mod-fsk freeswitch-mod-fsv freeswitch-mod-hash 
+# freeswitch-mod-httapi freeswitch-mod-http-cache freeswitch-mod-lcr freeswitch-mod-ldap freeswitch-mod-memcache freeswitch-mod-nibblebill 
+# freeswitch-mod-oreka  freeswitch-mod-portaudio freeswitch-mod-portaudio-stream freeswitch-mod-random freeswitch-mod-redis freeswitch-mod-rss 
+# freeswitch-mod-sms freeswitch-mod-snapshot freeswitch-mod-snom freeswitch-mod-sonar freeswitch-mod-soundtouch freeswitch-mod-spandsp 
+# freeswitch-mod-spy freeswitch-mod-stress freeswitch-mod-translate freeswitch-mod-valet-parking freeswitch-mod-vmd freeswitch-mod-voicemail 
+# freeswitch-mod-voicemail-ivr freeswitch-mod-flite freeswitch-mod-pocketsphinx freeswitch-mod-tts-commandline freeswitch-mod-unimrcp 
+# freeswitch-mod-dialplan-xml freeswitch-mod-loopback freeswitch-mod-rtmp freeswitch-mod-skinny freeswitch-mod-sofia freeswitch-mod-cdr-csv 
+# freeswitch-mod-cdr-sqlite freeswitch-mod-event-multicast freeswitch-mod-event-socket freeswitch-mod-event-test freeswitch-mod-json-cdr 
+# freeswitch-mod-local-stream freeswitch-mod-native-file freeswitch-mod-shell-stream freeswitch-mod-sndfile freeswitch-mod-tone-stream 
+# freeswitch-mod-lua freeswitch-mod-console freeswitch-mod-logfile freeswitch-mod-syslog freeswitch-mod-say-en freeswitch-mod-posix-timer 
+# freeswitch-mod-timerfd freeswitch-mod-xml-cdr freeswitch-mod-xml-curl freeswitch-mod-xml-rpc
 # Recommends freeswitch-conf-vanilla
 
 #freeswitch_install="meta-lang"
@@ -440,17 +438,19 @@ if [[ $freeswitch_install == "fusionpbx" ]]; then
 	#Pkgs needed for faxing (freeswitch-mod-spandsp)
 	for i in libtiff5 libtiff-tools ghostscript ;do apt-get -y install "${i}" ; done
 	# install freeswitch fusionpbx install
-	for i in freeswitch freeswitch-mod-abstraction freeswitch-mod-avmd freeswitch-mod-blacklist freeswitch-mod-callcenter freeswitch-mod-cidlookup \
-	freeswitch-mod-commands freeswitch-mod-conference freeswitch-mod-curl freeswitch-mod-db freeswitch-mod-directory freeswitch-mod-distributor \
-	freeswitch-mod-dptools freeswitch-mod-easyroute freeswitch-mod-enum freeswitch-mod-esf freeswitch-mod-esl freeswitch-mod-expr freeswitch-mod-fifo \
-	freeswitch-mod-fsk freeswitch-mod-fsv freeswitch-mod-hash freeswitch-mod-httapi freeswitch-mod-http-cache freeswitch-mod-lcr freeswitch-mod-memcache \
-	freeswitch-mod-oreka freeswitch-mod-random freeswitch-mod-snom freeswitch-mod-soundtouch freeswitch-mod-spandsp freeswitch-mod-spy freeswitch-mod-translate \
-	freeswitch-mod-valet-parking freeswitch-mod-vmd freeswitch-mod-voicemail freeswitch-mod-voicemail-ivr freeswitch-mod-flite freeswitch-mod-pocketsphinx \
-	freeswitch-mod-tts-commandline freeswitch-mod-unimrcp freeswitch-mod-dialplan-xml freeswitch-mod-dingaling freeswitch-mod-loopback freeswitch-mod-portaudio \
-	freeswitch-mod-rtmp freeswitch-mod-sofia freeswitch-mod-cdr-sqlite freeswitch-mod-event-multicast freeswitch-mod-event-socket freeswitch-mod-event-test \
-	freeswitch-mod-local-stream freeswitch-mod-native-file freeswitch-mod-portaudio-stream freeswitch-mod-shell-stream freeswitch-mod-sndfile freeswitch-mod-tone-stream \
-	freeswitch-mod-lua freeswitch-mod-console freeswitch-mod-logfile freeswitch-mod-syslog freeswitch-mod-posix-timer freeswitch-mod-timerfd freeswitch-mod-xml-cdr \
-	freeswitch-mod-xml-rpc freeswitch-mod-say-en freeswitch-lang-en freeswitch-init freeswitch-meta-codecs freeswitch-mod-fifo ;do apt-get -y install --force-yes "${i}" ; done
+	for i in freeswitch freeswitch-init freeswitch-lang-en freeswitch-meta-codecs freeswitch-mod-abstraction freeswitch-mod-avmd freeswitch-mod-blacklist \
+		freeswitch-mod-callcenter freeswitch-mod-cidlookup freeswitch-mod-commands freeswitch-mod-conference freeswitch-mod-curl freeswitch-mod-db \
+		freeswitch-mod-dingaling freeswitch-mod-directory freeswitch-mod-distributor freeswitch-mod-dptools freeswitch-mod-easyroute freeswitch-mod-enum \
+		freeswitch-mod-esf freeswitch-mod-esl freeswitch-mod-expr freeswitch-mod-fifo freeswitch-mod-fsk freeswitch-mod-fsv freeswitch-mod-hash \
+		freeswitch-mod-httapi freeswitch-mod-http-cache freeswitch-mod-lcr freeswitch-mod-ldap freeswitch-mod-memcache freeswitch-mod-nibblebill \
+		freeswitch-mod-oreka freeswitch-mod-portaudio freeswitch-mod-portaudio-stream freeswitch-mod-random freeswitch-mod-redis freeswitch-mod-rss \
+		freeswitch-mod-sms freeswitch-mod-snapshot freeswitch-mod-snom freeswitch-mod-sonar freeswitch-mod-soundtouch freeswitch-mod-spandsp \
+		freeswitch-mod-spy freeswitch-mod-translate freeswitch-mod-valet-parking freeswitch-mod-vmd freeswitch-mod-voicemail freeswitch-mod-voicemail-ivr \
+		freeswitch-mod-flite freeswitch-mod-pocketsphinx freeswitch-mod-tts-commandline freeswitch-mod-unimrcp freeswitch-mod-dialplan-xml freeswitch-mod-loopback \
+		freeswitch-mod-rtmp freeswitch-mod-skinny freeswitch-mod-sofia freeswitch-mod-cdr-csv freeswitch-mod-cdr-sqlite freeswitch-mod-event-multicast \
+		freeswitch-mod-event-socket freeswitch-mod-event-test freeswitch-mod-json-cdr freeswitch-mod-local-stream freeswitch-mod-native-file freeswitch-mod-shell-stream \
+		freeswitch-mod-sndfile freeswitch-mod-tone-stream freeswitch-mod-lua freeswitch-mod-console freeswitch-mod-logfile freeswitch-mod-syslog freeswitch-mod-say-en \
+		freeswitch-mod-posix-timer freeswitch-mod-timerfd freeswitch-mod-xml-cdr freeswitch-mod-xml-curl freeswitch-mod-xml-rpc ;do apt-get -y install --force-yes "${i}" ; done
 fi
 
 if [[ $freeswitch_install == "meta-lang" ]]; then
@@ -1063,4 +1063,4 @@ fi
 #apt-get cleanup (clean and remove unused pkgs)
 apt-get clean && apt-get autoremove
 
-echo " THe install has finished...  "
+echo " The install has finished...  "
