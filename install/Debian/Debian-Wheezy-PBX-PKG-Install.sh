@@ -111,18 +111,17 @@ install_freeswitch="y"
 # Recommends: freeswitch-lang freeswitch-meta-codecs freeswitch-music freeswitch-sounds
 
 freeswitch_install="fusionpbx"
-# Installs: freeswitch freeswitch-init freeswitch-lang-en freeswitch-meta-codecs freeswitch-mod-avmd freeswitch-mod-blacklist freeswitch-mod-callcenter
-# freeswitch-mod-cidlookup freeswitch-mod-commands freeswitch-mod-conference freeswitch-mod-curl freeswitch-mod-db freeswitch-mod-dingaling
-# freeswitch-mod-directory freeswitch-mod-distributor freeswitch-mod-dptools freeswitch-mod-easyroute freeswitch-mod-enum freeswitch-mod-esf
-# freeswitch-mod-esl freeswitch-mod-expr freeswitch-mod-fifo freeswitch-mod-fsv freeswitch-mod-hash freeswitch-mod-memcache freeswitch-mod-oreka
-# freeswitch-mod-portaudio freeswitch-mod-portaudio-stream freeswitch-mod-random freeswitch-mod-redis freeswitch-mod-sms freeswitch-mod-sonar
-# freeswitch-mod-spandsp freeswitch-mod-spy freeswitch-mod-translate freeswitch-mod-valet-parking freeswitch-mod-vmd freeswitch-mod-flite
-# freeswitch-mod-pocketsphinx freeswitch-mod-tts-commandline freeswitch-mod-dialplan-xml freeswitch-mod-loopback freeswitch-mod-rtmp
-# freeswitch-mod-sofia freeswitch-mod-event-multicast freeswitch-mod-event-socket freeswitch-mod-event-test freeswitch-mod-local-stream
-# freeswitch-mod-native-file freeswitch-mod-sndfile freeswitch-mod-tone-stream freeswitch-mod-lua freeswitch-mod-console
-# freeswitch-mod-logfile freeswitch-mod-syslog freeswitch-mod-say-en freeswitch-mod-posix-timer freeswitch-mod-timerfd freeswitch-mod-xml-cdr
-# freeswitch-mod-xml-curl freeswitch-mod-xml-rpc
-# Recommends freeswitch-conf-vanilla freeswitch-sounds freeswitch-music
+# Installs: freeswitch freeswitch-init freeswitch-lang-en freeswitch-meta-codecs freeswitch-mod-avmd freeswitch-mod-blacklist freeswitch-mod-callcenter 
+# freeswitch-mod-cidlookup freeswitch-mod-commands freeswitch-mod-conference freeswitch-mod-curl freeswitch-mod-db freeswitch-mod-dingaling 
+# freeswitch-mod-distributor freeswitch-mod-dptools freeswitch-mod-easyroute freeswitch-mod-enum freeswitch-mod-esf freeswitch-mod-esl 
+# freeswitch-mod-expr freeswitch-mod-fifo freeswitch-mod-fsv freeswitch-mod-hash freeswitch-mod-memcache freeswitch-mod-oreka freeswitch-mod-portaudio 
+# freeswitch-mod-portaudio-stream freeswitch-mod-random freeswitch-mod-redis freeswitch-mod-sms freeswitch-mod-spandsp freeswitch-mod-spy 
+# freeswitch-mod-translate freeswitch-mod-valet-parking freeswitch-mod-vmd freeswitch-mod-flite freeswitch-mod-pocketsphinx freeswitch-mod-tts-commandline 
+# freeswitch-mod-dialplan-xml freeswitch-mod-loopback freeswitch-mod-rtmp freeswitch-mod-sofia freeswitch-mod-event-multicast freeswitch-mod-event-socket 
+# freeswitch-mod-event-test freeswitch-mod-local-stream freeswitch-mod-native-file freeswitch-mod-sndfile freeswitch-mod-tone-stream freeswitch-mod-lua 
+# freeswitch-mod-console freeswitch-mod-logfile freeswitch-mod-syslog freeswitch-mod-say-en freeswitch-mod-posix-timer freeswitch-mod-timerfd 
+# freeswitch-mod-xml-cdr freeswitch-mod-xml-curl freeswitch-mod-xml-rpc
+# Recommends freeswitch-conf-vanilla freeswitch-sounds freeswitch-music freeswitch-mod-vlc
 
 #freeswitch_install="meta-lang"
 # freeswitch-meta-lang
@@ -437,15 +436,14 @@ if [[ $freeswitch_install == "fusionpbx" ]]; then
 	# install freeswitch fusionpbx install
 	for i in freeswitch freeswitch-init freeswitch-lang-en freeswitch-meta-codecs freeswitch-mod-avmd freeswitch-mod-blacklist freeswitch-mod-callcenter \
 		freeswitch-mod-cidlookup freeswitch-mod-commands freeswitch-mod-conference freeswitch-mod-curl freeswitch-mod-db freeswitch-mod-dingaling \
-		freeswitch-mod-directory freeswitch-mod-distributor freeswitch-mod-dptools freeswitch-mod-easyroute freeswitch-mod-enum freeswitch-mod-esf \
-		freeswitch-mod-esl freeswitch-mod-expr freeswitch-mod-fifo freeswitch-mod-fsv freeswitch-mod-hash freeswitch-mod-memcache freeswitch-mod-oreka \
-		freeswitch-mod-portaudio freeswitch-mod-portaudio-stream freeswitch-mod-random freeswitch-mod-redis freeswitch-mod-sms freeswitch-mod-sonar \
-		freeswitch-mod-spandsp freeswitch-mod-spy freeswitch-mod-translate freeswitch-mod-valet-parking freeswitch-mod-vmd freeswitch-mod-flite \
-		freeswitch-mod-pocketsphinx freeswitch-mod-tts-commandline freeswitch-mod-dialplan-xml freeswitch-mod-loopback freeswitch-mod-rtmp \
-		freeswitch-mod-sofia freeswitch-mod-event-multicast freeswitch-mod-event-socket freeswitch-mod-event-test freeswitch-mod-local-stream \
-		freeswitch-mod-native-file freeswitch-mod-sndfile freeswitch-mod-tone-stream freeswitch-mod-lua freeswitch-mod-console \
-		freeswitch-mod-logfile freeswitch-mod-syslog freeswitch-mod-say-en freeswitch-mod-posix-timer freeswitch-mod-timerfd freeswitch-mod-xml-cdr \
-		freeswitch-mod-xml-curl freeswitch-mod-xml-rpc ;do apt-get -y install --force-yes "${i}" ; done
+		freeswitch-mod-distributor freeswitch-mod-dptools freeswitch-mod-easyroute freeswitch-mod-enum freeswitch-mod-esf freeswitch-mod-esl \
+		freeswitch-mod-expr freeswitch-mod-fifo freeswitch-mod-fsv freeswitch-mod-hash freeswitch-mod-memcache freeswitch-mod-oreka freeswitch-mod-portaudio \
+		freeswitch-mod-portaudio-stream freeswitch-mod-random freeswitch-mod-redis freeswitch-mod-sms freeswitch-mod-spandsp freeswitch-mod-spy \
+		freeswitch-mod-translate freeswitch-mod-valet-parking freeswitch-mod-vmd freeswitch-mod-flite freeswitch-mod-pocketsphinx freeswitch-mod-tts-commandline \
+		freeswitch-mod-dialplan-xml freeswitch-mod-loopback freeswitch-mod-rtmp freeswitch-mod-sofia freeswitch-mod-event-multicast freeswitch-mod-event-socket \
+		freeswitch-mod-event-test freeswitch-mod-local-stream freeswitch-mod-native-file freeswitch-mod-sndfile freeswitch-mod-tone-stream freeswitch-mod-lua \
+		freeswitch-mod-console freeswitch-mod-logfile freeswitch-mod-syslog freeswitch-mod-say-en freeswitch-mod-posix-timer freeswitch-mod-timerfd \
+		freeswitch-mod-xml-cdr freeswitch-mod-xml-curl freeswitch-mod-xml-rpc ;do apt-get -y install --force-yes "${i}" ;done
 fi
 
 if [[ $freeswitch_install == "meta-lang" ]]; then
