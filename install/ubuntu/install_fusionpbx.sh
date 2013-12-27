@@ -793,7 +793,7 @@ if [ $INSFREESWITCH -eq 1 ]; then
 	#added libgnutls-dev libgnutls26 for dingaling...
 	#gnutls no longer required for dingaling (git around oct 17 per mailing list..)
 	# removed libgnutls-dev libgnutls26
-if [ $DO_DAHDI == "y" ]; then
+	if [ $DO_DAHDI == "y" ]; then
 		#add stuff for free_tdm/dahdi
 		apt-get -y install linux-headers-`uname -r`
 		#add the headers so dahdi can build the modules...
@@ -823,7 +823,7 @@ if [ $DO_DAHDI == "y" ]; then
 		/bin/echo
 		read -p "Press Enter to continue (check for errors)"
 	fi
-	
+
 	#-----------------
 	# Databases
 	#-----------------
@@ -2004,7 +2004,7 @@ DELIM
 			#max_children set in /etc/php5/fpm/pool.d/www.conf
 			PHPCONFFILE="/etc/php5/fpm/pool.d/www.conf"
 		elif [ $DISTRO = "lucid" ]; then
-			#lucid ppa conf files changed 1/20/13
+			#lucid ppa conf files changed 1/20/2013
 			PHPINIFILE="/etc/php5/fpm/php.ini"
 			PHPCONFFILE="/etc/php5/fpm/pool.d/www.conf"
 		else
@@ -2029,7 +2029,6 @@ DELIM
 		if [ $? -ne 0 ]; then
 			sed -i $PHPCONFFILE -e s,listen\ \=\ 127\.0\.0\.\1\:9000,listen\ \=\ \/var\/run\/php5-fpm.sock,
 		fi
-		
 
 		##Applying fix for cgi.fix_pathinfo
 		/bin/grep 'cgi\.fix_pathinfo=0' $PHPINIFILE > /dev/null
@@ -2222,7 +2221,7 @@ DELIM
 		/bin/echo "New Option..."
 		/bin/echo "  SQlite is already installed (and required)"
 		/bin/echo
-		read -p "  Would you like to install PostgreSQL or stay with Sqlite (p/S)? " SQLITEMYSQL
+		read -p "  Would you like to install MySQL, PostgreSQL, or stay with Sqlite (m/p/S)? " SQLITEMYSQL
 		case "$SQLITEMYSQL" in
 		  [pP]*)
 			if [ $DISTRO = "precise" ]; then
@@ -2241,39 +2240,40 @@ DELIM
 	fi
 
 	case "$SQLITEMYSQL" in
-#	[Mm]*)
-#		/bin/echo "Installing MySQL"
-#		/usr/bin/apt-get -y install mysql-server php5-mysql mysql-client
-#		if [ -e /usr/sbin/nginx ]; then
-#			#nginx is installed.
-#			/etc/init.d/php5-fpm restart
-#			/etc/init.d/nginx restart
-#		elif [ -e /usr/sbin/apache2 ]; then
-#			#apache2 is installed.
-#			/etc/init.d/apache2 restart
-#		fi
-#		/bin/echo "Now you'll need to manually finish the install and come back"
-#		/bin/echo "  This way I can finish up the last bit of permissions issues"
-#		/bin/echo "  Just go to"
-#		/bin/echo '  http://'`/sbin/ifconfig eth0 | /bin/grep 'inet addr:' | /usr/bin/cut -d: -f2 | /usr/bin/awk '{ print $1}'`
-#		/bin/echo "       MAKE SURE YOU CHOOSE MYSQL as your Database on the first page!!!"
-#		/bin/echo "       ON the Second Page:"
-#		/bin/echo "          Create Database Username: root"
-#		/bin/echo "          Create Database Password: the_pw_you_set_during_install"
-#		/bin/echo "          other options: whatever you like"
-#		/bin/echo "  I will wait here until you get done with that."
-#		/bin/echo -ne "  When MySQL is configured come back and press enter. "
-#		read
-#	;;
+	[Mm]*)
+	#if [ $SQLITEMYSQL == "m" ]; then
+		/bin/echo "Installing MySQL"
+		/usr/bin/apt-get -y install mysql-server php5-mysql mysql-client
+		if [ -e /usr/sbin/nginx ]; then
+			#nginx is installed.
+			/etc/init.d/php5-fpm restart
+			/etc/init.d/nginx restart
+		elif [ -e /usr/sbin/apache2 ]; then
+			#apache2 is installed.
+			/etc/init.d/apache2 restart
+		fi
+		/bin/echo "Now you'll need to manually finish the install and come back"
+		/bin/echo "  This way I can finish up the last bit of permissions issues"
+		/bin/echo "  Just go to"
+		/bin/echo '  http://'`/sbin/ifconfig eth0 | /bin/grep 'inet addr:' | /usr/bin/cut -d: -f2 | /usr/bin/awk '{ print $1}'`
+		/bin/echo "       MAKE SURE YOU CHOOSE MYSQL as your Database on the first page!!!"
+		/bin/echo "       ON the Second Page:"
+		/bin/echo "          Create Database Username: root"
+		/bin/echo "          Create Database Password: the_pw_you_set_during_install"
+		/bin/echo "          other options: whatever you like"
+		/bin/echo "  I will wait here until you get done with that."
+		/bin/echo -ne "  When MySQL is configured come back and press enter. "
+		read
+	;;
 
 	[Pp]*)
 	#elif [ $SQLITEMYSQL == "p" ]; then	
 		#/bin/echo -ne "Installing PostgeSQL"
-#moving most of this to fs install
+		#moving most of this to fs install
 		/bin/echo "Time to add a $GUI_NAME user for the database."
 		/bin/echo -ne "    We will use $GUI_NAME as the username"
 		/bin/echo -ne "    please set the password."
-#add php postgres packages
+		#add php postgres packages
 		if [ $POSTGRES9 == "9" ]; then
 			/bin/echo " version 9.1"
 			if [ $DISTRO = "squeeze" ]; then
@@ -2358,6 +2358,7 @@ DELIM
 		read
 	;;
 	*)
+	#elif [ $SQLITEMYSQL == "s" || $SQLITEMYSQL == "S" || $SQLITEMYSQL == "" ]; then
 		/bin/echo "SQLITE is chosen. already done. nothing left to install..."
 		if [ -e /usr/sbin/nginx ]; then
 			#nginx is installed.
