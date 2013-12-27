@@ -436,7 +436,7 @@ if [[ $freeswitch_install == "fusionpbx" ]]; then
 	# install freeswitch fusionpbx install
 	for i in freeswitch freeswitch-init freeswitch-lang-en freeswitch-meta-codecs freeswitch-mod-avmd freeswitch-mod-callcenter \
 		freeswitch-mod-cidlookup freeswitch-mod-commands freeswitch-mod-conference freeswitch-mod-curl freeswitch-mod-db freeswitch-mod-dingaling \
-		freeswitch-mod-distributor freeswitch-mod-dptools freeswitch-mod-easyroute freeswitch-mod-enum freeswitch-mod-esf freeswitch-mod-esl \
+		freeswitch-mod-distributor freeswitch-mod-dptools freeswitch-mod-enum freeswitch-mod-esf freeswitch-mod-esl \
 		freeswitch-mod-expr freeswitch-mod-fifo freeswitch-mod-fsv freeswitch-mod-hash freeswitch-mod-memcache freeswitch-mod-portaudio \
 		freeswitch-mod-portaudio-stream freeswitch-mod-random freeswitch-mod-redis freeswitch-mod-sms freeswitch-mod-spandsp freeswitch-mod-spy \
 		freeswitch-mod-translate freeswitch-mod-valet-parking freeswitch-mod-vmd freeswitch-mod-flite freeswitch-mod-pocketsphinx freeswitch-mod-tts-commandline \
