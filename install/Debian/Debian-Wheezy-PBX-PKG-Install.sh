@@ -292,10 +292,15 @@ fi
 
 # OS ENVIRONMENT CHECKS
 #check to confirm running as root
-if [ $EUID -ne 0 ]; then
-   echo "Must Run As Root and NOT SUDO" 1>&2
-   exit 1
+#
+# First, we need to be root...
+#
+
+if [ "`id -u`" -ne "0" ]; then
+  sudo -p "`basename $0` must be run as root, please enter your sudo password : " $0 $@
+  exit 0
 fi
+
 echo "You're root.... continuing!"
 
 #removes the cd img from the /etc/apt/sources.list file (not needed after base install)
