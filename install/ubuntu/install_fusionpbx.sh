@@ -856,7 +856,7 @@ if [ $INSFREESWITCH -eq 1 ]; then
 		/bin/echo -ne "Installing PostgeSQL"
 
 		if [ $POSTGRES9 == "9" ]; then
-			/bin/echo " version 9.1"
+			/bin/echo " version 9.x"
 			if [ $DISTRO = "squeeze" ]; then
 				#add squeeze repo
 				/bin/echo "Adding debian backports for postgres9.1"
@@ -864,8 +864,12 @@ if [ $INSFREESWITCH -eq 1 ]; then
 				/usr/bin/apt-get update
 				/usr/bin/apt-get -y -t squeeze-backports install postgresql-9.1 libpq-dev 
 			elif [ $DISTRO = "precise" ]; then
-				#already there...
-				/usr/bin/apt-get -y install postgresql-9.1 libpq-dev 
+				POSTGRES9=9
+				#update repository for postgres 9.3 ...
+				/bin/echo "deb http://apt.postgresql.org/pub/repos/apt/ precise-pgdg main" > /etc/apt/sources.list.d/pgdg.list
+				wget --quiet -O - http://apt.postgresql.org/pub/repos/apt/ACCC4CF8.asc | sudo apt-key add -
+				/usr/bin/apt-get update
+				/usr/bin/apt-get -y install postgresql-9.3 libpq-dev
 			else
 				#add the ppa
 				/usr/bin/apt-add-repository ppa:pitti/postgresql
