@@ -1992,10 +1992,10 @@ DELIM
 			#installs libgd2-noxpm libxslt1.1 nginx nginx-full
 
 		if [ $DISTRO = "squeeze" ]; then
-			/usr/bin/apt-get -y install php5-fpm php5-common php5-gd php-pear php5-memcache php5-apc php5-sqlite
+			/usr/bin/apt-get -y install php5-fpm php5-common php5-gd php-pear php5-memcache php5-apc php5-sqlite php5-json
 		else
 			#should work for precise
-			/usr/bin/apt-get -y install php5-fpm php5-common php5-gd php-pear php5-memcache php-apc
+			/usr/bin/apt-get -y install php5-fpm php5-common php5-gd php-pear php5-memcache php-apc php5-json
 		fi
 
 		if [ $DISTRO = "squeeze" ]; then
