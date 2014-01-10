@@ -218,6 +218,9 @@ fusionpbx_stable=n
 #
 # Database options
 #
+#Use Postgress 9.3 (Default=n (9.1)  
+postgress_9.3="n"
+
 # Please Select Server or Client not both. 
 #
 # Used for connecting to remote postgresql database servers
@@ -983,15 +986,25 @@ fi
 
 # Database options (Currently only Postgresql)
 
+if [[ $postgresql_9.3 == y ]]; then
+/bin/cat > "/etc/apt/sources.list.d/pgsql-pgdg.list" <<DELIM
+deb http://apt.postgresql.org/pub/repos/apt/ wheezy-pgdg main
+DELIM
+#add pgsql repo key
+wget --quiet -O - https://www.postgresql.org/media/keys/ACCC4CF8.asc | apt-key add -
+fi
+
 #Install postgresql-client
 if [[ $postgresql_client == y ]]; then
 	db_name="$wui_name"
 	db_user_name="$wui_name"
 	db_passwd="Admin Please Select A Secure Password for your Postgresql Fusionpbx Database"
 	clear
-	for i in postgresql-client-9.1 php5-pgsql
-	do apt-get -y install "${i}"
-	done
+	if [[ $postgresql_9.3 == y ]]; then
+	for i in postgresql-client-9.3 php5-pgsql ;do apt-get -y install "${i}"; done
+	else
+	for i in postgresql-client-9.1 php5-pgsql ;do apt-get -y install "${i}"; done
+	fi
 	/etc/init.d/php5-fpm restart
 	echo
 	printf '	Please open a web-browser to http://'; ip -f inet addr show dev eth0 | sed -n 's/^ *inet *\([.0-9]*\).*/\1/p'
@@ -1017,9 +1030,11 @@ if [[ $postgresql_server == y ]]; then
     db_user_name="$database_user_name"
     db_passwd="$(openssl rand -base64 32;)"
 	clear
-	for i in postgresql-9.1 php5-pgsql
-	do apt-get -y install "${i}"
-	done
+	if [[ $postgresql_9.3 == y ]]; then
+	for i in postgresql-client-9.3 php5-pgsql ;do apt-get -y install "${i}"; done
+	else
+	for i in postgresql-client-9.1 php5-pgsql ;do apt-get -y install "${i}"; done
+	fi
 	/etc/init.d/php5-fpm restart
 	#Adding a SuperUser and Password for Postgresql database.
 	su -l postgres -c "/usr/bin/psql -c \"create role $postgresqluser with superuser login password '$postgresqlpass'\""
