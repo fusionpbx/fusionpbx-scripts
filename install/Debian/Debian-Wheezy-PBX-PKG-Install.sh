@@ -992,6 +992,8 @@ deb http://apt.postgresql.org/pub/repos/apt/ wheezy-pgdg main
 DELIM
 #add pgsql repo key
 wget --quiet -O - https://www.postgresql.org/media/keys/ACCC4CF8.asc | apt-key add -
+#update pkgs from repo
+apt-get update
 fi
 
 #Install postgresql-client
