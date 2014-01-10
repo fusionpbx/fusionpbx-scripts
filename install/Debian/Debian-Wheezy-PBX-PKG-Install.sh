@@ -218,8 +218,8 @@ fusionpbx_stable=n
 #
 # Database options
 #
-#Use Postgress 9.3 (Default=n (9.1)  
-postgress_9.3="n"
+#Use Postgress 9.3 (Default=y (9.1)  
+postgress_9.3="y"
 
 # Please Select Server or Client not both. 
 #
