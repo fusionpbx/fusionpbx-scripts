@@ -1,5 +1,5 @@
 #!/bin/bash
-#Date Dec, 15 2013 13:00 EST
+#Date Jan, 10 2014 08:25 EST
 ################################################################################
 # The MIT License (MIT)
 #
@@ -34,6 +34,10 @@ fi
 #
 ################################################################################
 #<------Start Edit HERE--------->
+#stable=1.2/beta=1.4/master=1.5 aka git head
+# Default is stable
+freeswitch-repo="stable"
+#
 install_freeswitch="y"
 #
 # Freeswitch Optional /Customized installs
@@ -296,8 +300,8 @@ fi
 # First, we need to be root...
 #
 
-if [ "`id -u`" -ne "0" ]; then
-  sudo -p "`basename $0` must be run as root, please enter your sudo password : " $0 $@
+if [ "$(id -u)" -ne "0" ]; then
+  sudo -p "$(basename "$0") must be run as root, please enter your sudo password : " "$0" "$@"
   exit 0
 fi
 
@@ -364,12 +368,23 @@ esac
 #freeswitch repo for x86 x86-64 bit pkgs 
 case $(uname -m) in x86_64|i[4-6]86)
 # install curl to fetch repo key
-apt-get -y install curl
+apt-get update && apt-get -y install curl
 #adding in freeswitch reop to /etc/apt/sources.list.d/freeswitch.lists
+if [[ $freeswitch-repo == "stable" ]]; then
 /bin/cat > "/etc/apt/sources.list.d/freeswitch.list" <<DELIM
 deb http://files.freeswitch.org/repo/deb/debian/ wheezy main
-deb-src http://files.freeswitch.org/repo/deb/debian/ wheezy main
 DELIM
+fi
+if [[ $freeswitch-repo == "beta" ]]; then
+/bin/cat > "/etc/apt/sources.list.d/freeswitch.list" <<DELIM
+deb http://files.freeswitch.org/repo/deb-beta/debian/ wheezy main
+DELIM
+fi
+if [[ $freeswitch-repo == "master" ]]; then
+/bin/cat > "/etc/apt/sources.list.d/freeswitch.list" <<DELIM
+deb http://files.freeswitch.org/repo/deb-master/debian/ wheezy main
+DELIM
+fi
 #adding key for freeswitch repo
 curl http://files.freeswitch.org/repo/deb/debian/freeswitch_archive_g0.pub | apt-key add -
 #running update and upgrade on existing pkgs
