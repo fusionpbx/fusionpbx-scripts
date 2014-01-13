@@ -91,7 +91,7 @@ else {
 							$sql = "update v_dialplan_details set ";
 							$sql .= "dialplan_detail_data = '".$bridge."' ";
 							$sql .= "where dialplan_detail_uuid = '$dialplan_detail_uuid'; ";
-							//$db->exec(check_sql($sql));
+							$db->exec(check_sql($sql));
 							echo $sql."<br />\n";
 							unset($sql);
 						//exit the loop
