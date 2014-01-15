@@ -254,7 +254,7 @@ database_user_name=
 enable_admin_menu="n"
 
 #Install Ajenti Admin Portal
-install_ajenti="n"
+install_ajenti="y"
 
 #<------Stop Edit Here-------->
 ################################################################################
