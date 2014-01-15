@@ -312,7 +312,7 @@ echo "You're root.... continuing!"
 
 #removes the cd img from the /etc/apt/sources.list file (not needed after base install)
 sed -i '/cdrom:/d' /etc/apt/sources.list
-sed -i '2,4d' /etc/apt/sources.list
+#sed -i '2,4d' /etc/apt/sources.list
 
 #if lsb_release is not installed it installs it
 if [ ! -s /usr/bin/lsb_release ]; then
