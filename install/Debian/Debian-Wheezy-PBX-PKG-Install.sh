@@ -368,9 +368,6 @@ DELIM
 for i in update upgrade ;do apt-get -y "${i}" ; done
 esac
 
-#!/bin/bash
-freeswitch_repo="beta"
-
 #freeswitch repo for x86 x86-64 bit pkgs
 case $(uname -m) in x86_64|i[4-6]86)
 # install curl to fetch repo key
