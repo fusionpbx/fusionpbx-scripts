@@ -360,9 +360,9 @@ fi
 
 #adding FusionPBX repo ( contains freeswitch armhf debs, fusionpbx debs ,and a few custom scripts debs)
 case $(uname -m) in armv[6-7]l)
-/bin/cat > "/etc/apt/sources.list.d/fusionpbx.list" <<DELIM
-deb http://repo.fusionpbx.com wheezy main
-deb-src http://repo.fusionpbx.com/ wheezy main
+/bin/cat > "/etc/apt/sources.list.d/voyagepbx.list" <<DELIM
+deb http://repo.voyagepbx.com wheezy main
+deb-src http://repo.voyagepbx.com/ wheezy main
 DELIM
 #running update and upgrade on existing pkgs
 for i in update upgrade ;do apt-get -y "${i}" ; done
@@ -882,13 +882,11 @@ adduser www-data freeswitch
 adduser freeswitch www-data
 
 #adding FusionPBX repo ( contains freeswitch armhf debs, fusionpbx bed,and a few custom scripts debs)
-case $(uname -m) in x86_64|i[4-6]86)
 /bin/cat > "/etc/apt/sources.list.d/fusionpbx.list" <<DELIM
 deb http://repo.fusionpbx.com wheezy main
 deb-src http://repo.fusionpbx.com/ wheezy main
 DELIM
 apt-get update
-esac
 
 # Install FusionPBX Web User Interface stable/devel
 echo "Installing FusionPBX Web User Interface Debian pkg"
