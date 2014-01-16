@@ -594,7 +594,7 @@ if [[ $freeswitch_exten == "y" ]]; then
 for i in /etc/freeswitch/directory/default/*.xml ;do rm "$i" ; done
 fi
 
-if [[ $install_fail2ban == "all" ]]; then
+if [[ $install_fail2ban == "y" ]]; then
 # SEE http://wiki.freeswitch.org/wiki/Fail2ban
 #Fail2ban
 for i in fail2ban monit ;do apt-get -y install "${i}" ; done
