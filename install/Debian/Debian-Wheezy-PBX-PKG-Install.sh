@@ -36,7 +36,7 @@ fi
 #<------Start Edit HERE--------->
 #stable=1.2/beta=1.4/master=1.5 aka git head
 # Default is stable
-freeswitch-repo="stable"
+freeswitch_repo="stable"
 #
 install_freeswitch="y"
 #
@@ -368,29 +368,40 @@ DELIM
 for i in update upgrade ;do apt-get -y "${i}" ; done
 esac
 
-#freeswitch repo for x86 x86-64 bit pkgs 
+#!/bin/bash
+freeswitch_repo="beta"
+
+#freeswitch repo for x86 x86-64 bit pkgs
 case $(uname -m) in x86_64|i[4-6]86)
 # install curl to fetch repo key
+echo 'installing curl'
 apt-get update && apt-get -y install curl
+
 #adding in freeswitch reop to /etc/apt/sources.list.d/freeswitch.lists
-if [[ $freeswitch-repo == "stable" ]]; then
+
+if [[ $freeswitch_repo == "stable" ]]; then
+echo 'installing stable repo'
 /bin/cat > "/etc/apt/sources.list.d/freeswitch.list" <<DELIM
 deb http://files.freeswitch.org/repo/deb/debian/ wheezy main
 DELIM
-fi
-if [[ $freeswitch-repo == "beta" ]]; then
+
+elif [[ $freeswitch_repo == "beta" ]]; then
+echo 'installing beta repo'
 /bin/cat > "/etc/apt/sources.list.d/freeswitch.list" <<DELIM
 deb http://files.freeswitch.org/repo/deb-beta/debian/ wheezy main
 DELIM
-fi
-if [[ $freeswitch-repo == "master" ]]; then
+
+elif [[ $freeswitch_repo == "master" ]]; then
+echo 'install master repo'
 /bin/cat > "/etc/apt/sources.list.d/freeswitch.list" <<DELIM
 deb http://files.freeswitch.org/repo/deb-master/debian/ wheezy main
 DELIM
 fi
+
 #adding key for freeswitch repo
+echo 'fetcing repo key'
 curl http://files.freeswitch.org/repo/deb/debian/freeswitch_archive_g0.pub | apt-key add -
-#running update and upgrade on existing pkgs
+
 for i in update upgrade ;do apt-get -y "${i}" ; done
 esac
 
