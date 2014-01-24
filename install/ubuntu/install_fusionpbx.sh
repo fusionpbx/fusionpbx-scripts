@@ -176,6 +176,19 @@ server{
 		rewrite ^(.*) https://\$host\$1 permanent;
 		break;
 	}
+
+	#grandstream
+	rewrite "^.*/provision/cfg([A-Fa-f0-9]{12})(\.(xml|cfg))?$" /app/provision/?mac=$1;
+
+	#aastra
+	#rewrite "^.*/provision/([A-Fa-f0-9]{12})(\.(cfg))?$" /app/provision/?mac=$1 last;
+
+	#yealink common
+	rewrite "^.*/provision/(y[0-9]{12})(\.cfg)?$" /app/provision/index.php?file=$1$2;
+
+	#yealink mac
+	rewrite "^.*/provision/([A-Fa-f0-9]{12})(\.(xml|cfg))?$" /app/provision/index.php?mac=$1 last;
+
 	access_log /var/log/nginx/access.log;
 	error_log /var/log/nginx/error.log;
 
@@ -215,6 +228,18 @@ server{
 	ssl_certificate_key     /etc/ssl/private/nginx.key;
 	ssl_protocols           SSLv3 TLSv1;
 	ssl_ciphers     HIGH:!ADH:!MD5;
+
+	#grandstream
+	rewrite "^.*/provision/cfg([A-Fa-f0-9]{12})(\.(xml|cfg))?$" /app/provision/?mac=$1;
+
+	#aastra
+	#rewrite "^.*/provision/([A-Fa-f0-9]{12})(\.(cfg))?$" /app/provision/?mac=$1 last;
+
+	#yealink common
+	rewrite "^.*/provision/(y[0-9]{12})(\.cfg)?$" /app/provision/index.php?file=$1$2;
+
+	#yealink mac
+	rewrite "^.*/provision/([A-Fa-f0-9]{12})(\.(xml|cfg))?$" /app/provision/index.php?mac=$1 last;
 
 	access_log /var/log/nginx/access.log;
 	error_log /var/log/nginx/error.log;
