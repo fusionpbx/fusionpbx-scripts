@@ -225,14 +225,14 @@ postgress_9.3="y"
 #
 # Used for connecting to remote postgresql database servers
 # Install postgresql Client 9.x for connection to remote postgresql servers (y/n)
-postgresql_client=n
+postgresql_client="n"
 
 # Install postgresql server 9.x (y/n) (client included)(Local Machine)
 # Notice:
 # You should not use postgresql server on a nand/emmc/sd. It cuts the performance 
 # life in half due to all the needed reads and writes. This cuts the life of 
 # your pbx emmc/sd in half. 
-postgresql_server=n
+postgresql_server="n"
 
 # Set Postgresql Server Admin username
 # Lower case only
