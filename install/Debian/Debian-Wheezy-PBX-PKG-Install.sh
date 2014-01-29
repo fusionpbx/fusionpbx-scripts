@@ -992,7 +992,7 @@ fi
 
 # Database options (Currently only Postgresql)
 
-if [[ $postgresql_9.3 == y ]]; then
+if [[ $postgresql_9.3 == "y" ]]; then
 /bin/cat > "/etc/apt/sources.list.d/pgsql-pgdg.list" <<DELIM
 deb http://apt.postgresql.org/pub/repos/apt/ wheezy-pgdg main
 DELIM
@@ -1039,9 +1039,9 @@ if [[ $postgresql_server == "y" ]]; then
     db_passwd="$(openssl rand -base64 32;)"
 	clear
 	if [[ $postgresql_9.3 == "y" ]]; then
-	for i in postgresql-client-9.3 php5-pgsql ;do apt-get -y install "${i}"; done
+	for i in postgresql-9.3 php5-pgsql ;do apt-get -y install "${i}"; done
 	else
-	for i in postgresql-client-9.1 php5-pgsql ;do apt-get -y install "${i}"; done
+	for i in postgresql-server-9.1 php5-pgsql ;do apt-get -y install "${i}"; done
 	fi
 	/etc/init.d/php5-fpm restart
 	#Adding a SuperUser and Password for Postgresql database.
