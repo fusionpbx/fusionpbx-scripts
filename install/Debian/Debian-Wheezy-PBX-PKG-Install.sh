@@ -1003,12 +1003,12 @@ apt-get update
 fi
 
 #Install postgresql-client
-if [[ $postgresql_client == y ]]; then
+if [[ $postgresql_client == "y" ]]; then
 	db_name="$wui_name"
 	db_user_name="$wui_name"
 	db_passwd="Admin Please Select A Secure Password for your Postgresql Fusionpbx Database"
 	clear
-	if [[ $postgresql_9.3 == y ]]; then
+	if [[ $postgresql_9.3 == "y" ]]; then
 	for i in postgresql-client-9.3 php5-pgsql ;do apt-get -y install "${i}"; done
 	else
 	for i in postgresql-client-9.1 php5-pgsql ;do apt-get -y install "${i}"; done
@@ -1033,12 +1033,12 @@ DELIM
 fi
 
 #install & configure basic postgresql-server
-if [[ $postgresql_server == y ]]; then
+if [[ $postgresql_server == "y" ]]; then
     db_name="$database_name"
     db_user_name="$database_user_name"
     db_passwd="$(openssl rand -base64 32;)"
 	clear
-	if [[ $postgresql_9.3 == y ]]; then
+	if [[ $postgresql_9.3 == "y" ]]; then
 	for i in postgresql-client-9.3 php5-pgsql ;do apt-get -y install "${i}"; done
 	else
 	for i in postgresql-client-9.1 php5-pgsql ;do apt-get -y install "${i}"; done
