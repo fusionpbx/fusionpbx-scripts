@@ -990,18 +990,6 @@ DELIM
 fi
 #end of fusionpbx install
 
-# Database options (Currently only Postgresql)
-
-if [[ $postgresql_9.3 == "y" ]]; then
-/bin/cat > "/etc/apt/sources.list.d/pgsql-pgdg.list" <<DELIM
-deb http://apt.postgresql.org/pub/repos/apt/ wheezy-pgdg main
-DELIM
-#add pgsql repo key
-wget --quiet -O - https://www.postgresql.org/media/keys/ACCC4CF8.asc | apt-key add -
-#update pkgs from repo
-apt-get update
-fi
-
 #Install postgresql-client
 if [[ $postgresql_client == "y" ]]; then
 	db_name="$wui_name"
@@ -1009,6 +997,13 @@ if [[ $postgresql_client == "y" ]]; then
 	db_passwd="Admin Please Select A Secure Password for your Postgresql Fusionpbx Database"
 	clear
 	if [[ $postgresql_9.3 == "y" ]]; then
+/bin/cat > "/etc/apt/sources.list.d/pgsql-pgdg.list" << DELIM
+deb http://apt.postgresql.org/pub/repos/apt/ wheezy-pgdg main
+DELIM
+	#add pgsql repo key
+	wget --quiet -O - https://www.postgresql.org/media/keys/ACCC4CF8.asc | apt-key add -
+	#update pkgs from repo
+	apt-get update
 	for i in postgresql-client-9.3 php5-pgsql ;do apt-get -y install "${i}"; done
 	else
 	for i in postgresql-client-9.1 php5-pgsql ;do apt-get -y install "${i}"; done
@@ -1039,9 +1034,16 @@ if [[ $postgresql_server == "y" ]]; then
     db_passwd="$(openssl rand -base64 32;)"
 	clear
 	if [[ $postgresql_9.3 == "y" ]]; then
+/bin/cat > "/etc/apt/sources.list.d/pgsql-pgdg.list" << DELIM
+deb http://apt.postgresql.org/pub/repos/apt/ wheezy-pgdg main
+DELIM
+	#add pgsql repo key
+	wget --quiet -O - https://www.postgresql.org/media/keys/ACCC4CF8.asc | apt-key add -
+	#update pkgs from repo
+	apt-get update
 	for i in postgresql-9.3 php5-pgsql ;do apt-get -y install "${i}"; done
 	else
-	for i in postgresql-server-9.1 php5-pgsql ;do apt-get -y install "${i}"; done
+	for i in postgresql-9.1 php5-pgsql ;do apt-get -y install "${i}"; done
 	fi
 	/etc/init.d/php5-fpm restart
 	#Adding a SuperUser and Password for Postgresql database.
