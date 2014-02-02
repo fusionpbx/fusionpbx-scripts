@@ -218,7 +218,8 @@ fusionpbx_stable=n
 #
 # Database options
 #
-#Use Postgress 9.3 
+# Uses Postgress 9.3 by default now.
+# 
 # Please Select Server or Client not both. 
 #
 # Used for connecting to remote postgresql database servers
@@ -252,7 +253,7 @@ database_user_name=
 enable_admin_menu="n"
 
 #Install Ajenti Admin Portal
-install_ajenti="y"
+install_ajenti="n"
 
 #<------Stop Edit Here-------->
 ################################################################################
