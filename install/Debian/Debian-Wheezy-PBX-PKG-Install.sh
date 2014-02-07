@@ -584,8 +584,8 @@ if [ -f "$freeswitch_act_conf"/autoload_configs/local_stream.conf.xml ]
 then
 /bin/sed "$freeswitch_act_conf"/autoload_configs/local_stream.conf.xml -i -e s,'<directory name="default" path="$${sounds_dir}/music/8000">','<directory name="default" path="$${sounds_dir}/music/default/8000">',g
 /bin/sed "$freeswitch_act_conf"/autoload_configs/local_stream.conf.xml -i -e s,'<directory name="moh/8000" path="$${sounds_dir}/music/8000">','<directory name="default" path="$${sounds_dir}/music/default/8000">',g
-/bin/sed "$freeswitch_act_conf"/autoload_configs/local_stream.conf.xml -i -e s,'<directory name="moh/16000" path="$${sounds_dir}/music/8000">','<directory name="default" path="$${sounds_dir}/music/default/16000">',g
-/bin/sed "$freeswitch_act_conf"/autoload_configs/local_stream.conf.xml -i -e s,'<directory name="moh/32000" path="$${sounds_dir}/music/8000">','<directory name="default" path="$${sounds_dir}/music/default/32000">',g
+/bin/sed "$freeswitch_act_conf"/autoload_configs/local_stream.conf.xml -i -e s,'<directory name="moh/16000" path="$${sounds_dir}/music/16000">','<directory name="default" path="$${sounds_dir}/music/default/16000">',g
+/bin/sed "$freeswitch_act_conf"/autoload_configs/local_stream.conf.xml -i -e s,'<directory name="moh/32000" path="$${sounds_dir}/music/32000">','<directory name="default" path="$${sounds_dir}/music/default/32000">',g
 fi
 
 # Proper file to change init strings in. (/etc/defalut/freeswitch)
