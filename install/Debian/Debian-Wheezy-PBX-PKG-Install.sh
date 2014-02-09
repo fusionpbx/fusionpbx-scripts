@@ -359,10 +359,25 @@ fi
 
 #adding FusionPBX repo ( contains freeswitch armhf debs, fusionpbx debs ,and a few custom scripts debs)
 case $(uname -m) in armv[6-7]l)
+if [[ $freeswitch_repo == "stable" ]]; then
+echo 'installing armhf stable repo'
 /bin/cat > "/etc/apt/sources.list.d/voyagepbx.list" <<DELIM
-deb http://repo.voyagepbx.com wheezy main
-deb-src http://repo.voyagepbx.com/ wheezy main
+deb http://repo.voyagepbx.com/repo/deb-stable/debian/ wheezy main
 DELIM
+
+elif [[ $freeswitch_repo == "beta" ]]; then
+echo 'installing armhf beta repo'
+/bin/cat > "/etc/apt/sources.list.d/voyagepbx.list" <<DELIM
+deb http://repo.voyagepbx.com/repo/deb-beta/debian/ wheezy main
+DELIM
+
+elif [[ $freeswitch_repo == "head" ]]; then
+echo 'installing armhf head repo'
+/bin/cat > "/etc/apt/sources.list.d/voyagepbx.list" <<DELIM
+deb http://repo.voyagepbx.com/repo/deb-head/debian/ wheezy main
+DELIM
+fi
+
 #running update and upgrade on existing pkgs
 for i in update upgrade ;do apt-get -y "${i}" ; done
 esac
