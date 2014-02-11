@@ -212,7 +212,7 @@ install_gui="y"
 # Use fusionpbx debian pkgs.
 #
 #Fusionpbx repo (stable/devel)
-fusionpbx_repo="stable"
+fusionpbx_repo="devel"
 
 # fusionpbx_install="full" installs the following pkgs
 # fusionpbx-core fusionpbx-theme-accessible fusionpbx-theme-classic fusionpbx-theme-default fusionpbx-theme-enhanced fusionpbx-theme-nature \
