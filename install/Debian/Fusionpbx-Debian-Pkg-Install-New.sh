@@ -28,8 +28,8 @@
 if [[ -f /proc/vz ]]; then 
 echo "Note: "
 echo "Those of you running this script on openvz. You must run it as root and "
-echo "bash Debian-wheezy-PBX-PKG-Install-new.sh or it fails the networking check."
-break
+echo "bash  Fusionpbx-Debian-Pkg-Install-New.sh or it fails the networking check."
+exit
 fi
 #
 ################################################################################
@@ -217,7 +217,8 @@ fusionpbx_repo="stable"
 # fusionpbx_install="full" installs the following pkgs
 # fusionpbx-core fusionpbx-theme-accessible fusionpbx-theme-classic fusionpbx-theme-default fusionpbx-theme-enhanced fusionpbx-theme-nature \
 onpbx-app-settings fusionpbx-app-sip-profiles fusionpbx-app-sip-status fusionpbx-app-sql-query fusionpbx-app-system fusionpbx-app-time-conditions \
-# fusionpbx-app-traffic-graph fusionpbx-app-vars fusionpbx-app-voicemail-greetings fusionpbx-app-voicemails fusionpbx-app-xml-cdr fusionpbx-app-xmpp# fusionpbx-app-adminer fusionpbx-app-call-block fusionpbx-app-call-broadcast fusionpbx-app-call-center fusionpbx-app-call-center-active \
+# fusionpbx-app-traffic-graph fusionpbx-app-vars fusionpbx-app-voicemail-greetings fusionpbx-app-voicemails fusionpbx-app-xml-cdr fusionpbx-app-xmpp
+# fusionpbx-app-adminer fusionpbx-app-call-block fusionpbx-app-call-broadcast fusionpbx-app-call-center fusionpbx-app-call-center-active \
 # fusionpbx-app-call-flows calls fusionpbx-app-calls-active fusionpbx-app-click-to-call fusionpbx-app-conference-centers fusionpbx-app-conferences \
 # fusionpbx-app-conferences-active fusionpbx-app-contacts fusionpbx-app-content fusionpbx-app-destinations fusionpbx-app-devices fusionpbx-app-dialplan \
 # fusionpbx-app-dialplan-inbound fusionpbx-app-dialplan-outbound fusionpbx-app-edit fusionpbx-app-exec fusionpbx-app-extensions fusionpbx-app-fax \
@@ -241,10 +242,6 @@ onpbx-app-settings fusionpbx-app-sip-profiles fusionpbx-app-sip-status fusionpbx
 # fusionpbx-app-dialplan fusionpbx-app-dialplan-inbound fusionpbx-app-dialplan-outbound fusionpbx-app-extensions fusionpbx-app-gateways \
 # fusionpbx-app-login fusionpbx-app-log-viewer fusionpbx-app-modules fusionpbx-app-registrations  fusionpbx-app-settings \
 # fusionpbx-app-sip-profiles fusionpbx-app-sip-status fusionpbx-app-system fusionpbx-app-vars fusionpbx-app-xml-cdr 
-
-# You should use the fusionpbx-dev pkg for now
-# y=stable branch n=dev branch
-fusionpbx_stable=n
 
 #
 # Database options
@@ -968,14 +965,14 @@ for i in fusionpbx-core fusionpbx-theme-enhanced fusionpbx-app-calls fusionpbx-a
 		fusionpbx-app-ivr-menu fusionpbx-app-login fusionpbx-app-log-viewer fusionpbx-app-modules fusionpbx-app-music-on-hold fusionpbx-app-provision \
 		fusionpbx-app-recordings fusionpbx-app-registrations fusionpbx-app-services fusionpbx-app-settings fusionpbx-app-sip-profiles fusionpbx-app-sip-status \
 		fusionpbx-app-sql-query fusionpbx-app-system fusionpbx-app-vars fusionpbx-app-voicemails fusionpbx-app-xml-cdr 
-do 	apt-get -y --force-yes install "${i}
+do 	apt-get -y --force-yes install "${i}"
 done
 fi
 
 if [[ $fusionpbx_install == "core" ]]; then
 echo " Installing fusipnpbx core system"
 for i in fusionpbx-core fusionpbx-theme-enhanced
-do 	apt-get -y --force-yes install "${i}
+do 	apt-get -y --force-yes install "${i}"
 done
 fi
 
@@ -991,7 +988,7 @@ for i in fusionpbx-core fusionpbx-theme-accessible fusionpbx-theme-classic fusio
 		fusionpbx-app-provision fusionpbx-app-recordings fusionpbx-app-registrations fusionpbx-app-ring-groups fusionpbx-app-schemas fusionpbx-app-services \
 		fusionpbx-app-settings fusionpbx-app-sip-profiles fusionpbx-app-sip-status fusionpbx-app-sql-query fusionpbx-app-system fusionpbx-app-time-conditions \
 		fusionpbx-app-traffic-graph fusionpbx-app-vars fusionpbx-app-voicemail-greetings fusionpbx-app-voicemails fusionpbx-app-xml-cdr fusionpbx-app-xmpp
-do 	apt-get -y --force-yes install "${i}
+do 	apt-get -y --force-yes install "${i}"
 done
 fi
 
@@ -1001,7 +998,7 @@ for i in fusionpbx-core fusionpbx-theme-enhanced fusionpbx-app-calls fusionpbx-a
 		fusionpbx-app-dialplan fusionpbx-app-dialplan-inbound fusionpbx-app-dialplan-outbound fusionpbx-app-extensions fusionpbx-app-gateways \
 		fusionpbx-app-login fusionpbx-app-log-viewer fusionpbx-app-modules fusionpbx-app-registrations  fusionpbx-app-settings \
 		fusionpbx-app-sip-profiles fusionpbx-app-sip-status fusionpbx-app-system fusionpbx-app-vars fusionpbx-app-xml-cdr
-do 	apt-get -y --force-yes install "${i}
+do 	apt-get -y --force-yes install "${i}"
 done
 fi
 
