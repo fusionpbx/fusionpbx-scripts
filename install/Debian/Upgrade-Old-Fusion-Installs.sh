@@ -22,6 +22,6 @@ done
 
 cd /usr/share/nginx/www/fusionpbx/core
 
-php /usr/share/nginx/www/fusionpbx/core/upgrade/upgrade_schema.php
+php /usr/share/nginx/www/fusionpbx/core/upgrade/upgrade.php
 
 cd /root
