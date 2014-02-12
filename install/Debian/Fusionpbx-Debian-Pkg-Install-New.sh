@@ -296,13 +296,15 @@ curl http://files.freeswitch.org/repo/deb/debian/freeswitch_archive_g0.pub | apt
 for i in update upgrade ;do apt-get -y "${i}" ; done
 esac
 
+#freeswitch repo for x86 x86-64 bit pkgs
+case $(uname -m) in x86_64|i[4-6]86)
 #add in pgsql 9.3
 cat > "/etc/apt/sources.list.d/pgsql-pgdg.list" << DELIM
 deb http://apt.postgresql.org/pub/repos/apt/ wheezy-pgdg main
 DELIM
 #add pgsql repo key
 wget --quiet -O - https://www.postgresql.org/media/keys/ACCC4CF8.asc | apt-key add -
-
+esac
 
 if [[ $install_freeswitch == "y" ]]; then
 
