@@ -1,5 +1,5 @@
 #!/bin/bash
-#Date Feb, 11 2014 17:30 EST
+#Date Feb, 12 2014 06:00 EST
 ################################################################################
 # The MIT License (MIT)
 #
@@ -42,164 +42,41 @@ install_freeswitch="y"
 #
 # Freeswitch Optional /Customized installs
 #
-#freeswitch_install="all"
-#freeswitch-all 
-#libfreeswitch1 libfreeswitch-dev freeswitch-sysvinit freeswitch-systemd freeswitch-sounds-en-us freeswitch-sounds-en freeswitch-sounds freeswitch-music 
-#freeswitch-mod-yaml freeswitch-mod-xml-scgi freeswitch-mod-xml-rpc freeswitch-mod-xml-radius freeswitch-mod-xml-ldap freeswitch-mod-xml-curl 
-#freeswitch-mod-xml-cdr freeswitch-mod-vp8 freeswitch-mod-voipcodecs freeswitch-mod-voicemail-ivr freeswitch-mod-voicemail freeswitch-mod-vmd 
-#freeswitch-mod-vlc freeswitch-mod-valet-parking freeswitch-mod-unimrcp freeswitch-mod-unicall freeswitch-mod-tts-commandline freeswitch-mod-translate 
-#freeswitch-mod-tone-stream freeswitch-mod-timerfd freeswitch-mod-theora freeswitch-mod-syslog freeswitch-mod-stress freeswitch-mod-ssml 
-#freeswitch-mod-spy freeswitch-mod-spidermonkey freeswitch-mod-speex freeswitch-mod-spandsp freeswitch-mod-soundtouch freeswitch-mod-sonar 
-#freeswitch-mod-sofia freeswitch-mod-snom freeswitch-mod-snmp freeswitch-mod-snipe-hunt freeswitch-mod-sndfile freeswitch-mod-snapshot 
-#freeswitch-mod-sms freeswitch-mod-skypopen freeswitch-mod-skinny freeswitch-mod-skel-codec freeswitch-mod-skel freeswitch-mod-siren 
-#freeswitch-mod-silk freeswitch-mod-shout freeswitch-mod-shell-stream freeswitch-mod-say-zh freeswitch-mod-say-th freeswitch-mod-say-ru 
-#freeswitch-mod-say-pt freeswitch-mod-say-pl freeswitch-mod-say-nl freeswitch-mod-say-ja freeswitch-mod-say-it freeswitch-mod-say-hu 
-#freeswitch-mod-say-hr freeswitch-mod-say-he freeswitch-mod-say-fr freeswitch-mod-say-fa freeswitch-mod-say-es freeswitch-mod-say-en 
-#freeswitch-mod-say-de freeswitch-mod-sangoma-codec freeswitch-mod-rtmp freeswitch-mod-rss freeswitch-mod-reference freeswitch-mod-redis 
-#freeswitch-mod-rayo freeswitch-mod-random freeswitch-mod-radius-cdr freeswitch-mod-rad-auth freeswitch-mod-python freeswitch-mod-posix-timer 
-#freeswitch-mod-portaudio-stream freeswitch-mod-portaudio freeswitch-mod-pocketsphinx freeswitch-mod-perl freeswitch-mod-osp freeswitch-mod-oreka 
-#freeswitch-mod-opus freeswitch-mod-opal freeswitch-mod-nibblebill freeswitch-mod-native-file freeswitch-mod-mp4v freeswitch-mod-mp4 
-#freeswitch-mod-mongo freeswitch-mod-memcache freeswitch-mod-managed freeswitch-mod-lua freeswitch-mod-loopback freeswitch-mod-logfile 
-#freeswitch-mod-local-stream freeswitch-mod-limit freeswitch-mod-ldap freeswitch-mod-lcr freeswitch-mod-ladspa freeswitch-mod-khomp 
-#freeswitch-mod-json-cdr freeswitch-mod-java freeswitch-mod-isac freeswitch-mod-ilbc freeswitch-mod-http-cache freeswitch-mod-httapi 
-#freeswitch-mod-hash freeswitch-mod-h323 freeswitch-mod-h26x freeswitch-mod-gsmopen freeswitch-mod-g729 freeswitch-mod-g723-1 
-#freeswitch-mod-fsv freeswitch-mod-fsk freeswitch-mod-flite freeswitch-mod-fifo freeswitch-mod-expr freeswitch-mod-event-zmq 
-#freeswitch-mod-event-test freeswitch-mod-event-socket freeswitch-mod-event-multicast freeswitch-mod-esl freeswitch-mod-esf 
-#freeswitch-mod-erlang-event freeswitch-mod-enum freeswitch-mod-easyroute freeswitch-mod-dptools freeswitch-mod-distributor 
-#freeswitch-mod-directory freeswitch-mod-dingaling freeswitch-mod-dialplan-xml freeswitch-mod-dialplan-directory freeswitch-mod-dialplan-asterisk 
-#freeswitch-mod-db freeswitch-mod-dahdi-codec freeswitch-mod-curl freeswitch-mod-console freeswitch-mod-conference freeswitch-mod-commands 
-#freeswitch-mod-com-g729 freeswitch-mod-codec2 freeswitch-mod-cluechoo freeswitch-mod-cidlookup freeswitch-mod-cepstral freeswitch-mod-celt 
-#freeswitch-mod-cdr-sqlite freeswitch-mod-cdr-pg-csv freeswitch-mod-cdr-mongodb freeswitch-mod-cdr-csv freeswitch-mod-callcenter freeswitch-mod-bv 
-#freeswitch-mod-blacklist freeswitch-mod-b64 freeswitch-mod-avmd freeswitch-mod-amrwb freeswitch-mod-amr freeswitch-mod-alsa 
-#freeswitch-mod-abstraction freeswitch-mod-autotools freeswitch-meta-vanilla freeswitch-meta-sorbet freeswitch-meta-mod-say freeswitch-meta-lang 
-#freeswitch-meta-default freeswitch-meta-conf freeswitch-meta-codecs freeswitch-meta-bare freeswitch-meta-all freeswitch-lang-ru freeswitch-lang-pt 
-#freeswitch-lang-he freeswitch-lang-fr freeswitch-lang-es freeswitch-lang-en freeswitch-lang-de freeswitch-lang freeswitch-init freeswitch-doc 
-#freeswitch-conf-vanilla freeswitch-conf-softphone freeswitch-conf-sbc freeswitch-conf-rayo freeswitch-conf-insideout freeswitch-conf-curl freeswitch
-#
-#freeswitch_install="meta-all" # This is a metapackage which recommends or suggests all packaged FreeSWITCH modules.
-# freeswitch-meta-all
-# Installs: freeswitch freeswitch-mod-vlc freeswitch-init freeswitch-lang freeswitch-meta-codecs freeswitch-meta-conf freeswitch-meta-lang freeswitch-meta-mod-say 
-# freeswitch-music freeswitch-sounds freeswitch-mod-abstraction freeswitch-mod-avmd freeswitch-mod-blacklist freeswitch-mod-callcenter freeswitch-mod-cidlookup 
-# freeswitch-mod-cluechoo freeswitch-mod-commands freeswitch-mod-conference freeswitch-mod-curl freeswitch-mod-db freeswitch-mod-directory freeswitch-mod-distributor
-# freeswitch-mod-dptools freeswitch-mod-easyroute freeswitch-mod-enum freeswitch-mod-esf freeswitch-mod-esl freeswitch-mod-expr freeswitch-mod-fifo freeswitch-mod-fsk
-# freeswitch-mod-fsv freeswitch-mod-hash freeswitch-mod-httapi freeswitch-mod-http-cache freeswitch-mod-ladspa freeswitch-mod-lcr freeswitch-mod-memcache 
-# freeswitch-mod-nibblebill freeswitch-mod-oreka freeswitch-mod-random freeswitch-mod-redis freeswitch-mod-rss freeswitch-mod-sms freeswitch-mod-snapshot 
-# freeswitch-mod-snipe-hunt freeswitch-mod-snom freeswitch-mod-sonar freeswitch-mod-soundtouch freeswitch-mod-spandsp freeswitch-mod-spy freeswitch-mod-stress 
-# freeswitch-mod-translate freeswitch-mod-valet-parking freeswitch-mod-vmd freeswitch-mod-voicemail freeswitch-mod-voicemail-ivr freeswitch-mod-flite 
-# freeswitch-mod-pocketsphinx freeswitch-mod-tts-commandline freeswitch-mod-unimrcp freeswitch-mod-dialplan-asterisk freeswitch-mod-dialplan-directory
-# freeswitch-mod-dialplan-xml freeswitch-mod-ldap freeswitch-mod-alsa freeswitch-mod-dingaling <freeswitch-mod-html5>  freeswitch-mod-loopback freeswitch-mod-portaudio 
-# freeswitch-mod-rtmp freeswitch-mod-skinny freeswitch-mod-skypopen freeswitch-mod-sofia freeswitch-mod-cdr-csv freeswitch-mod-cdr-mongodb freeswitch-mod-cdr-pg-csv 
-# freeswitch-mod-cdr-sqlite freeswitch-mod-erlang-event freeswitch-mod-event-multicast freeswitch-mod-event-socket freeswitch-mod-event-test  freeswitch-mod-event-zmq 
-# freeswitch-mod-json-cdr freeswitch-mod-radius-cdr freeswitch-mod-snmp freeswitch-mod-local-stream  freeswitch-mod-native-file freeswitch-mod-portaudio-stream 
-# freeswitch-mod-shell-stream freeswitch-mod-sndfile freeswitch-mod-tone-stream freeswitch-mod-java freeswitch-mod-lua freeswitch-mod-perl freeswitch-mod-python 
-# freeswitch-mod-yaml freeswitch-mod-console freeswitch-mod-logfile freeswitch-mod-syslog freeswitch-mod-posix-timer freeswitch-mod-timerfd freeswitch-mod-xml-cdr 
-# freeswitch-mod-xml-curl freeswitch-mod-xml-rpc freeswitch-mod-xml-scgi
-
-#freeswitch_install="meta-bare" # This is a metapackage which depends on the packages needed for a very bare FreeSWITCH install.
-# freeswitch-meta-bare
-# Installs: freeswitch freeswitch-doc freeswitch-mod-commands freeswitch-init freeswitch-lang freeswitch-music freeswitch-sounds
-
-#freeswitch_install="meta-codecs" # This is a metapackage which depends on the packages needed to install most FreeSWITCH codecs.
-# freeswitch-meta-codecs
-# Installs: freeswitch freeswitch-mod-amr freeswitch-mod-amrwb freeswitch-mod-b64 freeswitch-mod-bv freeswitch-mod-celt freeswitch-mod-codec2 freeswitch-mod-dahdi-codec  
-# freeswitch-mod-g723-1 freeswitch-mod-g729 freeswitch-mod-h26x freeswitch-mod-isac freeswitch-mod-mp4v freeswitch-mod-opus freeswitch-mod-silk freeswitch-mod-spandsp
-# freeswitch-mod-speex  freeswitch-mod-theora freeswitch-mod-vp8 
-# Suggests <freeswitch-mod-ilbc> <freeswitch-mod-siren>
-
-#freeswitch_install="meta-default" # This is a metapackage which depends on the packages needed for a reasonably basic FreeSWITCH install.
-# freeswitch-meta-default
-# freeswitch freeswitch-mod-commands freeswitch-mod-conference freeswitch-mod-db freeswitch-mod-dptools freeswitch-mod-fifo freeswitch-mod-hash freeswitch-mod-spandsp
-# freeswitch-mod-voicemail freeswitch-mod-dialplan-xml freeswitch-mod-loopback freeswitch-mod-sofia freeswitch-mod-local-stream freeswitch-mod-native-file
-# freeswitch-mod-sndfile freeswitch-mod-tone-stream freeswitch-mod-lua freeswitch-mod-console freeswitch-mod-say-en
-# Suggests: freeswitch-mod-cidlookup freeswitch-mod-curl freeswitch-mod-directory freeswitch-mod-enum freeswitch-mod-spy freeswitch-mod-valet-parking freeswitch-init
-# Recommends: freeswitch-lang freeswitch-meta-codecs freeswitch-music freeswitch-sounds
-
-freeswitch_install="fusionpbx"
-# Installs: freeswitch freeswitch-init freeswitch-lang-en freeswitch-meta-codecs freeswitch-mod-avmd freeswitch-mod-blacklist freeswitch-mod-callcenter 
-# freeswitch-mod-cidlookup freeswitch-mod-commands freeswitch-mod-conference freeswitch-mod-curl freeswitch-mod-db freeswitch-mod-dingaling 
-# freeswitch-mod-distributor freeswitch-mod-dptools freeswitch-mod-easyroute freeswitch-mod-enum freeswitch-mod-esf freeswitch-mod-esl 
-# freeswitch-mod-expr freeswitch-mod-fifo freeswitch-mod-fsv freeswitch-mod-hash freeswitch-mod-memcache freeswitch-mod-oreka freeswitch-mod-portaudio 
-# freeswitch-mod-portaudio-stream freeswitch-mod-random freeswitch-mod-redis freeswitch-mod-sms freeswitch-mod-spandsp freeswitch-mod-spy 
-# freeswitch-mod-translate freeswitch-mod-valet-parking freeswitch-mod-vmd freeswitch-mod-flite freeswitch-mod-pocketsphinx freeswitch-mod-tts-commandline 
-# freeswitch-mod-dialplan-xml freeswitch-mod-loopback freeswitch-mod-rtmp freeswitch-mod-sofia freeswitch-mod-event-multicast freeswitch-mod-event-socket 
-# freeswitch-mod-event-test freeswitch-mod-local-stream freeswitch-mod-native-file freeswitch-mod-sndfile freeswitch-mod-tone-stream freeswitch-mod-lua 
-# freeswitch-mod-console freeswitch-mod-logfile freeswitch-mod-syslog freeswitch-mod-say-en freeswitch-mod-posix-timer freeswitch-mod-timerfd 
-# freeswitch-mod-xml-cdr freeswitch-mod-xml-curl freeswitch-mod-xml-rpc
-# Recommends freeswitch-conf-vanilla freeswitch-sounds freeswitch-music freeswitch-mod-vlc
-
-#freeswitch_install="meta-lang"
-# freeswitch-meta-lang
-# Installs: freeswitch-lang-de freeswitch-lang-en freeswitch-lang-es freeswitch-lang-fr freeswitch-lang-he freeswitch-lang-pt freeswitch-lang-ru
-
-#freeswitch_install="meta-says"
-# freeswitch-meta-mod-say
-# Installs freeswitch-mod-say-de freeswitch-mod-say-en freeswitch-mod-say-de freeswitch-mod-say-fa freeswitch-mod-say-fr freeswitch-mod-say-he
-# freeswitch-mod-say-hr freeswitch-mod-say-hu freeswitch-mod-say-it freeswitch-mod-say-ja freeswitch-mod-say-nl freeswitch-mod-say-pl
-# freeswitch-mod-say-pt freeswitch-mod-say-ru freeswitch-mod-say-th freeswitch-mod-say-zh
-
-#freeswitch_install="meta-sorbet" # This is a metapackage which recommends most packaged FreeSWITCH modules except a few which aren't recommended.
-# freeswitch-meta-sorbet
-# Installs: freeswitch freeswitch-init freeswitch-lang freeswitch-meta-codecs freeswitch-music freeswitch-sounds freeswitch-mod-abstraction freeswitch-mod-avmd 
-# freeswitch-mod-blacklist freeswitch-mod-callcenter freeswitch-mod-cidlookup freeswitch-mod-commands freeswitch-mod-conference freeswitch-mod-curl freeswitch-mod-db 
-# freeswitch-mod-directory freeswitch-mod-distributor freeswitch-mod-dptools freeswitch-mod-easyroute freeswitch-mod-enum freeswitch-mod-esf freeswitch-mod-esl 
-# freeswitch-mod-expr freeswitch-mod-fifo freeswitch-mod-fsk freeswitch-mod-fsv freeswitch-mod-hash freeswitch-mod-httapi freeswitch-mod-http-cache freeswitch-mod-lcr 
-# freeswitch-mod-nibblebill freeswitch-mod-oreka freeswitch-mod-random freeswitch-mod-redis freeswitch-mod-rss freeswitch-mod-sms freeswitch-mod-snapshot freeswitch-mod-snom 
-# freeswitch-mod-sonar freeswitch-mod-soundtouch freeswitch-mod-spandsp freeswitch-mod-spy freeswitch-mod-stress freeswitch-mod-valet-parking freeswitch-mod-vmd 
-# freeswitch-mod-voicemail freeswitch-mod-voicemail-ivr freeswitch-mod-flite freeswitch-mod-pocketsphinx freeswitch-mod-tts-commandline freeswitch-mod-dialplan-xml 
-# <freeswitch-mod-html5> freeswitch-mod-loopback freeswitch-mod-rtmp freeswitch-mod-skinny freeswitch-mod-sofia freeswitch-mod-cdr-csv freeswitch-mod-cdr-sqlite 
-# freeswitch-mod-event-socket freeswitch-mod-json-cdr freeswitch-mod-local-stream freeswitch-mod-native-file freeswitch-mod-shell-stream freeswitch-mod-sndfile 
-# freeswitch-mod-tone-stream freeswitch-mod-lua freeswitch-mod-console freeswitch-mod-logfile freeswitch-mod-syslog freeswitch-mod-say-en freeswitch-mod-posix-timer 
-# freeswitch-mod-timerfd freeswitch-mod-xml-cdr freeswitch-mod-xml-curl
-
-# freeswitch_install="meta-vanilla" # This is a metapackage which depends on the packages needed for running the FreeSWITCH vanilla example configuration.
-# freeswitch-meta-vanilla
-# freeswitch freeswitch-mod-console freeswitch-mod-logfile freeswitch-mod-enum freeswitch-mod-cdr-csv freeswitch-mod-event-socket freeswitch-mod-sofia
-# freeswitch-mod-loopback freeswitch-mod-commands freeswitch-mod-conference freeswitch-mod-db freeswitch-mod-dptools freeswitch-mod-expr freeswitch-mod-fifo 
-# freeswitch-mod-hash freeswitch-mod-voicemail freeswitch-mod-esf freeswitch-mod-fsv freeswitch-mod-cluechoo freeswitch-mod-valet-parking freeswitch-mod-httapi
-# freeswitch-mod-dialplan-xml freeswitch-mod-dialplan-asterisk freeswitch-mod-spandsp freeswitch-mod-g723-1 freeswitch-mod-g729 freeswitch-mod-amr freeswitch-mod-speex
-# freeswitch-mod-h26x freeswitch-mod-sndfile freeswitch-mod-native-file freeswitch-mod-local-stream freeswitch-mod-tone-stream freeswitch-mod-lua freeswitch-mod-say-en
-# Suggests: <freeswitch-mod-spidermonkey>
-# Recommends: freeswitch-init freeswitch-lang freeswitch-music freeswitch-sounds freeswitch-conf-vanilla
-
-freeswitch_sounds="n"
-# Installs the freeswitch sounds en-us-callie
-
-freeswitch_music="y"
-# Installs freeswitch music files.
-
-#Due to licensing issues this is a optional module and is not included in the freeswitch-mete-* files.
-#It must me added on its own.
-freeswitch_vlc="y"
-
-#Notice:
 # "freeswitch_install=all" (freeswitch-meta-all) installs all the differant configs
 # in the "/usr/share/freeswith/conf" dir so you do not need to select any below.
+#
+# Freeswitch Install Options (all/meta-all/meta-bare/meta-codecs/meta-defaut/fusionpbx/meta-lang/meta-say/meta-sorbet/meta-vanilla)
+freeswitch_install="fusionpbx" 
+#
+#Due to build issues on squeeze mod_vls is not included in the meta installs and there for must be installes seprately
+freeswitch_vlc="y"
+#
+# Installs the freeswitch sounds en-us-callie
+freeswitch_sounds="n"
+#
+# Installs freeswitch music files.
+freeswitch_music="y"
 #
 #FreeSwitch Configs Options installed in /usr/share/freeswitch/conf/(configname)
 #This also copies the default configs into the default active config dir /etc/freeswitch
 #
-#freeswitch_conf="curl" # FreeSWITCH curl configuration
-#freeswitch_conf="indiseout" # FreeSWITCH insideout configuration
-#freeswitch_conf="rayo" # FreeSWITCH rayo configuration
-#freeswitch_conf="sbc" # FreeSWITCH session border controller (sbc) configuration
-#freeswitch_conf="softphone" # FreeSWITCH softphone configuration
+#Freeswitch Config Options (curl/insideout/rayo/sbc/softphone/vanills
 freeswitch_conf="vanilla" # FreeSWITCH vanilla configuration
-
+#
 #Remove the default extensions for security .
 freeswitch_exten="y"
-
-#install fail2ban for port security and monit service
-install_fail2ban="y"
-
+#
 # TO Disable freeswitch nat auto detection
 #
 # To start FreeSWITCH with -nonat option set freeswitch_NAT to y
 # Set to y if on public static IP
 freeswitch_nat=n
-
+#
+#install fail2ban/monit for port security and monit service
+install_fail2ban="y"
+#
 #Set how long to keep freeswitch/fusionpbx log files 1 to 30 dasy (Default:5)
 keep_logs=5
-
 #
 #Install and use FusionPBX GUI
 #
@@ -207,42 +84,14 @@ keep_logs=5
 #If this option is not selected it will only install freeswitch/fail2ban/monit 
 #setup for freeswitch only.
 install_gui="y"
-
 #
 # Use fusionpbx debian pkgs.
 #
 #Fusionpbx repo (stable/devel)
 fusionpbx_repo="devel"
-
-fusionpbx_install="full" installs the following pkgs
-# fusionpbx-core fusionpbx-theme-accessible fusionpbx-theme-classic fusionpbx-theme-default fusionpbx-theme-enhanced fusionpbx-theme-nature \
-# fusionpbx-app-settings fusionpbx-app-sip-profiles fusionpbx-app-sip-status fusionpbx-app-sql-query fusionpbx-app-system fusionpbx-app-time-conditions \
-# fusionpbx-app-traffic-graph fusionpbx-app-vars fusionpbx-app-voicemail-greetings fusionpbx-app-voicemails fusionpbx-app-xml-cdr fusionpbx-app-xmpp
-# fusionpbx-app-adminer fusionpbx-app-call-block fusionpbx-app-call-broadcast fusionpbx-app-call-center fusionpbx-app-call-center-active \
-# fusionpbx-app-call-flows calls fusionpbx-app-calls-active fusionpbx-app-click-to-call fusionpbx-app-conference-centers fusionpbx-app-conferences \
-# fusionpbx-app-conferences-active fusionpbx-app-contacts fusionpbx-app-content fusionpbx-app-destinations fusionpbx-app-devices fusionpbx-app-dialplan \
-# fusionpbx-app-dialplan-inbound fusionpbx-app-dialplan-outbound fusionpbx-app-edit fusionpbx-app-exec fusionpbx-app-extensions fusionpbx-app-fax \
-# fusionpbx-app-fifo fusionpbx-app-fifo-list fusionpbx-app-follow-me fusionpbx-app-gateways fusionpbx-app-hot-desking fusionpbx-app-ivr-menu \
-# fusionpbx-app-login fusionpbx-app-log-viewer fusionpbx-app-meetings fusionpbx-app-modules fusionpbx-app-music-on-hold fusionpbx-app-park \
-# fusionpbx-app-provision fusionpbx-app-recordings fusionpbx-app-registrations fusionpbx-app-ring-groups fusionpbx-app-schemas fusionpbx-app-services \
-# fusionpbx-app-traffic-graph fusionpbx-app-vars fusionpbx-app-voicemail-greetings fusionpbx-app-voicemails fusionpbx-app-xml-cdr fusionpbx-app-xmpp
-
-# fusionpbx_install="basepbx" 
-# fusionpbx-core fusionpbx-theme-enhanced fusionpbx-app-calls fusionpbx-app-calls-active fusionpbx-app-destinations fusionpbx-app-devices \
-# fusionpbx-app-dialplan fusionpbx-app-dialplan-inbound fusionpbx-app-dialplan-outbound fusionpbx-app-extensions fusionpbx-app-gateways \
-# fusionpbx-app-ivr-menu fusionpbx-app-login fusionpbx-app-log-viewer fusionpbx-app-modules fusionpbx-app-music-on-hold fusionpbx-app-provision \
-# fusionpbx-app-recordings fusionpbx-app-registrations fusionpbx-app-settings fusionpbx-app-sip-profiles fusionpbx-app-sip-status \
-# fusionpbx-app-sql-query fusionpbx-app-system fusionpbx-app-vars fusionpbx-app-voicemails fusionpbx-app-xml-cdr 
-
-# fusionpbx_install="core" 
-# fusionpbx-core fusionpbx-theme-enhanced
-
-# fusionpbx_install="switch" 
-# fusionpbx-core fusionpbx-theme-enhanced fusionpbx-app-calls fusionpbx-app-calls-active fusionpbx-app-destinations \
-# fusionpbx-app-dialplan fusionpbx-app-dialplan-inbound fusionpbx-app-dialplan-outbound fusionpbx-app-extensions fusionpbx-app-gateways \
-# fusionpbx-app-login fusionpbx-app-log-viewer fusionpbx-app-modules fusionpbx-app-registrations  fusionpbx-app-settings \
-# fusionpbx-app-sip-profiles fusionpbx-app-sip-status fusionpbx-app-system fusionpbx-app-vars fusionpbx-app-xml-cdr 
-
+#
+#FusionPBX install options (Full/basepbx/core/switch)
+fusionpbx_install="full" 
 #
 # Database options
 #
@@ -253,33 +102,36 @@ fusionpbx_install="full" installs the following pkgs
 # Used for connecting to remote postgresql database servers
 # Install postgresql Client 9.x for connection to remote postgresql servers (y/n)
 postgresql_client="n"
-
+#
 # Install postgresql server 9.x (y/n) (client included)(Local Machine)
 # Notice:
 # You should not use postgresql server on a nand/emmc/sd. It cuts the performance 
 # life in half due to all the needed reads and writes. This cuts the life of 
 # your pbx emmc/sd in half. 
 postgresql_server="n"
-
+#
 # Set Postgresql Server Admin username
 # Lower case only
 postgresqluser=
-
+#
 # Set Postgresql Server Admin password
 postgresqlpass=
-
+#
 # Set Database Name used for fusionpbx in the postgresql server 
 # (Default: fusionpbx)
 database_name=
-
+#
 # Set FusionPBX database admin name.(used by fusionpbx to access 
 # the database table in the postgresql server.
 # (Default: fusionpbx)
 database_user_name=
-
+#
 #Install & Enable pbx admin shell menu
 enable_admin_menu="n"
-
+#
+#Install openvpn scripts
+install_openvpn="n"
+#
 #Install Ajenti Admin Portal
 install_ajenti="n"
 
@@ -1160,8 +1012,10 @@ DELIM
 fi
 
 #Install openvpn openvpn-scripts 
+if [[ $install_openvpn == "y" ]]; then
 for i in  openvpn openvpn-scripts ;do apt-get -y install --force-yes "${i}"; done
-
+fi
+#
 #Ajenti admin portal. Makes maintaining the system easier.
 #ADD Ajenti repo & ajenti
 if [[ $install_ajenti == "y" ]]; then
