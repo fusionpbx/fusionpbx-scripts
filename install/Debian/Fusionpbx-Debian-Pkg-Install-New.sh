@@ -825,7 +825,7 @@ fi
 
 if [[ $fusionpbx_install == "core" ]]; then
 echo " Installing fusipnpbx core system"
-for i in fusionpbx-core fusionpbx-theme-enhanced
+for i in fusionpbx-core fusionpbx-app-dialplan fusionpbx-theme-enhanced 
 do 	apt-get -y --force-yes install "${i}"
 done
 fi

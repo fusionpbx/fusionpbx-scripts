@@ -19,3 +19,9 @@ for i in fusionpbx-core fusionpbx-theme-accessible fusionpbx-theme-classic fusio
 		fusionpbx-app-traffic-graph fusionpbx-app-vars fusionpbx-app-voicemail-greetings fusionpbx-app-voicemails fusionpbx-app-xml-cdr fusionpbx-app-xmpp
 do 	apt-get -y --force-yes install "${i}"
 done
+
+cd /usr/share/nginx/www/fusionpbx/core
+
+php /usr/share/nginx/www/fusionpbx/core/upgrade/upgrade_schema.php
+
+cd /root
