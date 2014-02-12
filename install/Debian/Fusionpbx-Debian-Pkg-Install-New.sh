@@ -214,7 +214,7 @@ install_gui="y"
 #Fusionpbx repo (stable/devel)
 fusionpbx_repo="devel"
 
-# fusionpbx_install="full" installs the following pkgs
+fusionpbx_install="full" installs the following pkgs
 # fusionpbx-core fusionpbx-theme-accessible fusionpbx-theme-classic fusionpbx-theme-default fusionpbx-theme-enhanced fusionpbx-theme-nature \
 # fusionpbx-app-settings fusionpbx-app-sip-profiles fusionpbx-app-sip-status fusionpbx-app-sql-query fusionpbx-app-system fusionpbx-app-time-conditions \
 # fusionpbx-app-traffic-graph fusionpbx-app-vars fusionpbx-app-voicemail-greetings fusionpbx-app-voicemails fusionpbx-app-xml-cdr fusionpbx-app-xmpp
