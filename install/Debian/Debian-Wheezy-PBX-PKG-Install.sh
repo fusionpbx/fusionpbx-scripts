@@ -208,6 +208,10 @@ keep_logs=5
 #setup for freeswitch only.
 install_gui="y"
 
+
+#Fusionpbx repo (stable/devel)
+fusionpbx_repo="devel"
+
 #
 # Use fusionpbx debian pkgs.
 #
@@ -912,10 +916,18 @@ adduser www-data freeswitch
 adduser freeswitch www-data
 
 #adding FusionPBX repo ( contains freeswitch armhf debs, fusionpbx bed,and a few custom scripts debs)
+if [[ $fusionpbx_repo == "stable" ]]; then
+echo 'installing fusionpbx stable repo'
 /bin/cat > "/etc/apt/sources.list.d/fusionpbx.list" <<DELIM
-deb http://repo.fusionpbx.com wheezy main
-deb-src http://repo.fusionpbx.com/ wheezy main
+deb http://repo.fusionpbx.com/deb/debian/ wheezy main
 DELIM
+elif [[ $fusionpbx_repo == "devel" ]]; then
+echo 'installing fusionpbx devel repo'
+/bin/cat > "/etc/apt/sources.list.d/fusionpbx.list" <<DELIM
+deb http://repo.fusionpbx.com/deb-dev/debian/ wheezy main
+DELIM
+fi
+
 apt-get update
 
 # Install FusionPBX Web User Interface stable/devel
