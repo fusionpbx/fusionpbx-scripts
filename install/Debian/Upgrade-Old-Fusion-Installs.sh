@@ -14,6 +14,7 @@ echo 'installing fusionpbx stable repo'
 /bin/cat > "/etc/apt/sources.list.d/fusionpbx.list" <<DELIM
 deb http://repo.fusionpbx.com/deb/debian/ wheezy main
 DELIM
+
 elif [[ $fusionpbx_repo == "devel" ]]; then
 echo 'installing fusionpbx devel repo'
 /bin/cat > "/etc/apt/sources.list.d/fusionpbx.list" <<DELIM
