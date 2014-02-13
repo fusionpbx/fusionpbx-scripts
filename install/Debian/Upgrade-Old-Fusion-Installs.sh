@@ -19,7 +19,7 @@ for i in fusionpbx-core fusionpbx-theme-accessible fusionpbx-theme-classic fusio
 do apt-get -y --force-yes install "${i}"
 done
 
-cd /usr/share/nginx/www/fusionpbx/core
+cd /usr/share/nginx/www/fusionpbx
 
 php /usr/share/nginx/www/fusionpbx/core/upgrade/upgrade.php
 
