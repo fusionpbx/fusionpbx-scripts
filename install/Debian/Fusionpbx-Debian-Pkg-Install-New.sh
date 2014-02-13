@@ -238,7 +238,7 @@ else
 fi
 
 #adding FusionPBX repo ( contains freeswitch armhf debs, fusionpbx debs ,and a few custom scripts debs)
-case $(uname -m) in armv[6-7]l)
+case $(uname -m) in armv7l)
 if [[ $freeswitch_repo == "stable" ]]; then
 echo 'installing armhf stable repo'
 /bin/cat > "/etc/apt/sources.list.d/voyagepbx.list" <<DELIM
