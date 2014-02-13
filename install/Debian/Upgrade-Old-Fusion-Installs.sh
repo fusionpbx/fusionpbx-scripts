@@ -1,8 +1,7 @@
 #!/bin/bash
 echo ' THis script wiill upgrade you to the new fusionpbx pkgs'
 echo
-echo
-echo 'Removing Old FusionPBX Pkg
+echo 'Removing Old FusionPBX Pkg'
 apt-get remove fusionpbx fusionpbx-dev
 #
 echo ' Installing New Fusionpbx pkgs'
@@ -17,7 +16,7 @@ for i in fusionpbx-core fusionpbx-theme-accessible fusionpbx-theme-classic fusio
 		fusionpbx-app-provision fusionpbx-app-recordings fusionpbx-app-registrations fusionpbx-app-ring-groups fusionpbx-app-schemas fusionpbx-app-services \
 		fusionpbx-app-settings fusionpbx-app-sip-profiles fusionpbx-app-sip-status fusionpbx-app-sql-query fusionpbx-app-system fusionpbx-app-time-conditions \
 		fusionpbx-app-traffic-graph fusionpbx-app-vars fusionpbx-app-voicemail-greetings fusionpbx-app-voicemails fusionpbx-app-xml-cdr fusionpbx-app-xmpp
-do 	apt-get -y --force-yes install "${i}"
+do apt-get -y --force-yes install "${i}"
 done
 
 cd /usr/share/nginx/www/fusionpbx/core
