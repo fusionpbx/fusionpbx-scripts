@@ -91,7 +91,9 @@ install_gui="y"
 fusionpbx_repo="devel"
 #
 #Note where you see spaces in the name there is a underscore.
-#FusionPBX install options (pbx_base/pbx_core/pbx_confrences/pbx_confrence_centers/pbx_call_center/pbx_fifo/pbx_hot_desking/pbx_switch)
+#FusionPBX install options 
+# pbx_base / pbx_core / pbx_confrences / pbx_confrence_centers 
+# pbx_call_center / pbx_fifo/ pbx_full /pbx_hot_desking / pbx_switch
 fusionpbx_install="pbx_base" 
 #
 # Database options
