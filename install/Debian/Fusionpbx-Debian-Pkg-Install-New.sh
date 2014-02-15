@@ -90,8 +90,9 @@ install_gui="y"
 #Fusionpbx repo (stable/devel)
 fusionpbx_repo="devel"
 #
-#FusionPBX install options (Full/basepbx/core/switch)
-fusionpbx_install="full" 
+#Note where you see spaces in the name there is a underscore.
+#FusionPBX install options (pbx_base/pbx_core/pbx_confrences/pbx_confrence_centers/pbx_call_center/pbx_fifo/pbx_hot_desking/pbx_switch)
+fusionpbx_install="pbx_base" 
 #
 # Database options
 #
@@ -812,7 +813,7 @@ apt-get update
 # Install FusionPBX Web User Interface stable/devel
 echo "Installing FusionPBX Web User Interface Debian pkg"
 
-if [[ $fusionpbx_install == "basepbx" ]]; then
+if [[ $fusionpbx_install == "pbx_base" ]]; then
 echo " Installing fusipnpbx basepbx"
 for i in fusionpbx-core fusionpbx-theme-enhanced fusionpbx-app-calls fusionpbx-app-calls-active fusionpbx-app-destinations fusionpbx-app-devices \
 		fusionpbx-app-dialplan fusionpbx-app-dialplan-inbound fusionpbx-app-dialplan-outbound fusionpbx-app-extensions fusionpbx-app-gateways \
@@ -823,14 +824,70 @@ do 	apt-get -y --force-yes install "${i}"
 done
 fi
 
-if [[ $fusionpbx_install == "core" ]]; then
+if [[ $fusionpbx_install == "pbx_core" ]]; then
 echo " Installing fusipnpbx core system"
 for i in fusionpbx-core fusionpbx-app-dialplan fusionpbx-theme-enhanced 
 do 	apt-get -y --force-yes install "${i}"
 done
 fi
 
-if [[ $fusionpbx_install == "full" ]]; then
+if [[ $fusionpbx_install == "pbx_confrences" ]]; then
+echo " Installing fusipnpbx full install"
+for i in fusionpbx-core fusionpbx-theme-enhanced fusionpbx-app-call-block fusionpbx-app-call-center fusionpbx-app-call-center-active \
+		fusionpbx-app-calls fusionpbx-app-calls-active fusionpbx-app-conferences fusionpbx-app-conferences-active fusionpbx-app-contacts \
+		fusionpbx-app-destinations fusionpbx-app-devices fusionpbx-app-dialplan fusionpbx-app-dialplan-inbound fusionpbx-app-dialplan-outbound \
+		fusionpbx-app-extensions fusionpbx-app-fax fusionpbx-app-follow-me fusionpbx-app-gateways fusionpbx-app-hot-desking fusionpbx-app-ivr-menu \
+		fusionpbx-app-login fusionpbx-app-log-viewer fusionpbx-app-modules fusionpbx-app-music-on-hold fusionpbx-app-park fusionpbx-app-provision \
+		fusionpbx-app-recordings fusionpbx-app-registrations fusionpbx-app-ring-groups fusionpbx-app-settings fusionpbx-app-sip-profiles \
+		fusionpbx-app-sip-status fusionpbx-app-sql-query fusionpbx-app-system fusionpbx-app-time-conditions fusionpbx-app-vars \
+		fusionpbx-app-voicemail-greetings fusionpbx-app-voicemails fusionpbx-app-xml-cdr
+do 	apt-get -y --force-yes install "${i}"
+done
+fi
+
+if [[ $fusionpbx_install == "pbx_confrence_centers" ]]; then
+echo " Installing fusipnpbx full install"
+for i in fusionpbx-core fusionpbx-theme-enhanced fusionpbx-app-call-block fusionpbx-app-call-center fusionpbx-app-call-center-active \
+		fusionpbx-app-calls fusionpbx-app-calls-active fusionpbx-app-conference-centers fusionpbx-app-conferences-active fusionpbx-app-contacts \
+		fusionpbx-app-destinations fusionpbx-app-devices fusionpbx-app-dialplan fusionpbx-app-dialplan-inbound fusionpbx-app-dialplan-outbound \
+		fusionpbx-app-extensions fusionpbx-app-fax fusionpbx-app-follow-me fusionpbx-app-gateways fusionpbx-app-hot-desking fusionpbx-app-ivr-menu \
+		fusionpbx-app-login fusionpbx-app-log-viewer fusionpbx-app-modules fusionpbx-app-music-on-hold fusionpbx-app-park fusionpbx-app-provision \
+		fusionpbx-app-recordings fusionpbx-app-registrations fusionpbx-app-ring-groups fusionpbx-app-settings fusionpbx-app-sip-profiles \
+		fusionpbx-app-sip-status fusionpbx-app-sql-query fusionpbx-app-system fusionpbx-app-time-conditions fusionpbx-app-vars \
+		fusionpbx-app-voicemail-greetings fusionpbx-app-voicemails fusionpbx-app-xml-cdr
+do 	apt-get -y --force-yes install "${i}"
+done
+fi
+
+if [[ $fusionpbx_install == "pbx_call_center" ]]; then
+echo " Installing fusipnpbx full install"
+for i in fusionpbx-core fusionpbx-theme-enhanced fusionpbx-app-call-block fusionpbx-app-call-center fusionpbx-app-call-center-active \
+		fusionpbx-app-calls fusionpbx-app-calls-active fusionpbx-app-conference-centers fusionpbx-app-conferences-active fusionpbx-app-contacts \
+		fusionpbx-app-destinations fusionpbx-app-devices fusionpbx-app-dialplan fusionpbx-app-dialplan-inbound fusionpbx-app-dialplan-outbound \
+		fusionpbx-app-extensions fusionpbx-app-fax fusionpbx-app-follow-me fusionpbx-app-gateways fusionpbx-app-hot-desking fusionpbx-app-ivr-menu \
+		fusionpbx-app-login fusionpbx-app-log-viewer fusionpbx-app-modules fusionpbx-app-music-on-hold fusionpbx-app-park fusionpbx-app-provision \
+		fusionpbx-app-recordings fusionpbx-app-registrations fusionpbx-app-ring-groups fusionpbx-app-settings fusionpbx-app-sip-profiles \
+		fusionpbx-app-sip-status fusionpbx-app-sql-query fusionpbx-app-system fusionpbx-app-time-conditions fusionpbx-app-vars \
+		fusionpbx-app-voicemail-greetings fusionpbx-app-voicemails fusionpbx-app-xml-cdr
+do 	apt-get -y --force-yes install "${i}"
+done
+fi
+
+if [[ $fusionpbx_install == "pbx_fifo" ]]; then
+echo " Installing fusipnpbx full install"
+for i in fusionpbx-core fusionpbx-theme-enhanced fusionpbx-app-call-block fusionpbx-app-fifo fusionpbx-app-fifo-list \
+		fusionpbx-app-calls fusionpbx-app-calls-active fusionpbx-app-conference-centers fusionpbx-app-conferences-active fusionpbx-app-contacts \
+		fusionpbx-app-destinations fusionpbx-app-devices fusionpbx-app-dialplan fusionpbx-app-dialplan-inbound fusionpbx-app-dialplan-outbound \
+		fusionpbx-app-extensions fusionpbx-app-fax fusionpbx-app-follow-me fusionpbx-app-gateways fusionpbx-app-hot-desking fusionpbx-app-ivr-menu \
+		fusionpbx-app-login fusionpbx-app-log-viewer fusionpbx-app-modules fusionpbx-app-music-on-hold fusionpbx-app-park fusionpbx-app-provision \
+		fusionpbx-app-recordings fusionpbx-app-registrations fusionpbx-app-ring-groups fusionpbx-app-settings fusionpbx-app-sip-profiles \
+		fusionpbx-app-sip-status fusionpbx-app-sql-query fusionpbx-app-system fusionpbx-app-time-conditions fusionpbx-app-vars \
+		fusionpbx-app-voicemail-greetings fusionpbx-app-voicemails fusionpbx-app-xml-cdr
+do 	apt-get -y --force-yes install "${i}"
+done
+fi
+
+if [[ $fusionpbx_install == "pbx_full" ]]; then
 echo " Installing fusipnpbx full install"
 for i in fusionpbx-core fusionpbx-theme-accessible fusionpbx-theme-classic fusionpbx-theme-default fusionpbx-theme-enhanced fusionpbx-theme-nature \
 		fusionpbx-app-adminer fusionpbx-app-call-block fusionpbx-app-call-broadcast fusionpbx-app-call-center fusionpbx-app-call-center-active \
@@ -842,6 +899,20 @@ for i in fusionpbx-core fusionpbx-theme-accessible fusionpbx-theme-classic fusio
 		fusionpbx-app-provision fusionpbx-app-recordings fusionpbx-app-registrations fusionpbx-app-ring-groups fusionpbx-app-schemas fusionpbx-app-services \
 		fusionpbx-app-settings fusionpbx-app-sip-profiles fusionpbx-app-sip-status fusionpbx-app-sql-query fusionpbx-app-system fusionpbx-app-time-conditions \
 		fusionpbx-app-traffic-graph fusionpbx-app-vars fusionpbx-app-voicemail-greetings fusionpbx-app-voicemails fusionpbx-app-xml-cdr fusionpbx-app-xmpp
+do 	apt-get -y --force-yes install "${i}"
+done
+fi
+
+if [[ $fusionpbx_install == "pbx_hot_desking" ]]; then
+echo " Installing fusipnpbx full install"
+for i in fusionpbx-core fusionpbx-theme-enhanced fusionpbx-app-call-block fusionpbx-app-call-center fusionpbx-app-call-center-active \
+		fusionpbx-app-calls fusionpbx-app-calls-active fusionpbx-app-conference-centers fusionpbx-app-conferences-active fusionpbx-app-contacts \
+		fusionpbx-app-destinations fusionpbx-app-devices fusionpbx-app-dialplan fusionpbx-app-dialplan-inbound fusionpbx-app-dialplan-outbound \
+		fusionpbx-app-extensions fusionpbx-app-fax fusionpbx-app-follow-me fusionpbx-app-gateways fusionpbx-app-hot-desking fusionpbx-app-ivr-menu \
+		fusionpbx-app-login fusionpbx-app-log-viewer fusionpbx-app-modules fusionpbx-app-music-on-hold fusionpbx-app-park fusionpbx-app-provision \
+		fusionpbx-app-recordings fusionpbx-app-registrations fusionpbx-app-ring-groups fusionpbx-app-settings fusionpbx-app-sip-profiles \
+		fusionpbx-app-sip-status fusionpbx-app-sql-query fusionpbx-app-system fusionpbx-app-time-conditions fusionpbx-app-vars \
+		fusionpbx-app-voicemail-greetings fusionpbx-app-voicemails fusionpbx-app-xml-cdr
 do 	apt-get -y --force-yes install "${i}"
 done
 fi
