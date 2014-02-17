@@ -9,25 +9,21 @@ apt-get remove fusionpbx fusionpbx-dev
 
 #updating repo 
 echo 'installing updated repo info into apt'
-if [[ $fusionpbx_repo == "stable" ]]; then
-echo 'installing fusionpbx stable repo'
-/bin/cat > "/etc/apt/sources.list.d/fusionpbx.list" <<DELIM
-deb http://repo.fusionpbx.com/deb/debian/ wheezy main
-DELIM
-
-elif [[ $fusionpbx_repo == "devel" ]]; then
-echo 'installing fusionpbx devel repo'
+echo 'installing fusionpbx  repo'
 /bin/cat > "/etc/apt/sources.list.d/fusionpbx.list" <<DELIM
 deb http://repo.fusionpbx.com/deb-dev/debian/ wheezy main
 DELIM
-fi
 
 apt-get update
 
 echo ' Installing New Fusionpbx pkgs'
 echo " Installing fusipnpbx full install"
 
-for i in fusionpbx-core fusionpbx-theme-accessible fusionpbx-theme-classic fusionpbx-theme-default fusionpbx-theme-enhanced fusionpbx-theme-nature \
+for i in fusionpbx-core \
+		fusionpbx-provisioning-template-aastra fusionpbx-provisioning-template-cisco fusionpbx-provisioning-template-grandstream \
+		fusionpbx-provisioning-template-linksys fusionpbx-provisioning-template-panasonic fusionpbx-provisioning-template-polycom \
+		fusionpbx-provisioning-template-snom fusionpbx-provisioning-template-yealink \
+		fusionpbx-theme-accessible fusionpbx-theme-classic fusionpbx-theme-default fusionpbx-theme-enhanced fusionpbx-theme-nature \
 		fusionpbx-app-adminer fusionpbx-app-call-block fusionpbx-app-call-broadcast fusionpbx-app-call-center fusionpbx-app-call-center-active \
 		fusionpbx-app-call-flows fusionpbx-app-calls fusionpbx-app-calls-active fusionpbx-app-click-to-call fusionpbx-app-conference-centers fusionpbx-app-conferences \
 		fusionpbx-app-conferences-active fusionpbx-app-contacts fusionpbx-app-content fusionpbx-app-destinations fusionpbx-app-devices fusionpbx-app-dialplan \
