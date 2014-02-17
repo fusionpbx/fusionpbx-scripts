@@ -8,7 +8,7 @@ apt-get remove fusionpbx fusionpbx-dev
 #updating repo 
 echo 'installing updated repo info into apt'
 echo 'installing fusionpbx  repo'
-/bin/cat > "/etc/apt/sources.list.d/fusionpbx.list" <<DELIM
+/bin/cat > "/etc/apt/sources.list.d/fusionpbx.list" << DELIM
 deb http://repo.fusionpbx.com/deb-dev/debian/ wheezy main
 DELIM
 
