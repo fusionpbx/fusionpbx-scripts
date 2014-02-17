@@ -1,8 +1,6 @@
 #!/bin/bash
 #
 #Fusionpbx repo (stable/devel)
-fusionpbx_repo="devel"
-
 echo ' This script will upgrade you to the new fusionpbx pkgs '
 echo ' Removing Old FusionPBX Pkg '
 apt-get remove fusionpbx fusionpbx-dev
@@ -19,8 +17,7 @@ apt-get update
 echo ' Installing New Fusionpbx pkgs'
 echo " Installing fusipnpbx full install"
 
-for i in fusionpbx-core \
-		fusionpbx-provisioning-template-aastra fusionpbx-provisioning-template-cisco fusionpbx-provisioning-template-grandstream \
+for i in fusionpbx-core fusionpbx-provisioning-template-aastra fusionpbx-provisioning-template-cisco fusionpbx-provisioning-template-grandstream \
 		fusionpbx-provisioning-template-linksys fusionpbx-provisioning-template-panasonic fusionpbx-provisioning-template-polycom \
 		fusionpbx-provisioning-template-snom fusionpbx-provisioning-template-yealink \
 		fusionpbx-theme-accessible fusionpbx-theme-classic fusionpbx-theme-default fusionpbx-theme-enhanced fusionpbx-theme-nature \
