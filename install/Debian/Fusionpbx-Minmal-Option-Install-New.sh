@@ -52,6 +52,8 @@ keep_logs=5
 #Install and use FusionPBX GUI
 #Note where you see spaces in the name there is a underscore.
 #FusionPBX install options 
+app_call_block="n"			#inbound/outbound call blocking
+app_contacts="n"			#contacts phonebook
 app_call_center="n"			#Call Center Queues
 app_conference_centers="n"	#Confrences based singe diel in multi room
 app_conference="n"			#Orignal conference interface
@@ -59,7 +61,8 @@ app_edit="n"				#tools for editing files
 app_exec="n"				#tools for execuing commands at shell level
 app_fifo="n"				#First in first out queues
 app_follow_me="n"			#Find me/ Follow me  
-app_hot_desk="n"			#Hot Desking used for un assigned seating fice
+app_hot_desk="n"			#Hot Desking used for unassigned seating
+app_ring_groups="y"			#ring group interface
 app_services="n"			#tools for running services 
 app_sipml5="n"				#HTML5 sip phone
 app_sql_query="n"			#tool to query the sql/sqlite db
@@ -491,6 +494,16 @@ if [[ $theme_nature == "y" ]]; then
 apt-get install fusionpbx-theme-nature
 fi
 
+#install fusionpbx_call blocking
+if [[ $app_call_blocking == "y" ]]; then
+apt-get -y --force-yes install fusionpbx-app-call-blocking
+fi
+
+# install fusionpbx contacts phone book
+if [[ $app_contacts == "y" ]]; then
+apt-get -y --force-yes install fusionpbx-app-contacts
+fi
+
 #intstal fusionpbx_call-center
 if [[ $app_call_center == "y" ]]; then
 for i in freeswitch-mod-callcenter fusionpbx-app-call-center fusionpbx-app-call-center-active
@@ -546,6 +559,10 @@ do apt-get -y --force-yes install "${i}"
 done
 fi
 
+#install fusionpbx_app ring_group
+if [[ $app_ring_groups == "y" ]]; then
+apt-get -y --force-yes install fusionpbx-app-ring-groups
+fi
 #install fusionpbx_app services
 if [[ $app_services == "y" ]]; then
 apt-get -y --force-yes install fusionpbx-app-services
@@ -636,8 +653,18 @@ fi
 #Put Fusionpbx Freeswitch configs into place
 cp -r /usr/share/fusionpbx/resources/templates/conf/ "$freeswitch_act_conf"
 
+#chown freeswitch  conf files
+chown -R freeswitch:freeswitch "$freeswitch_act_conf"
+
+#fix permissions for "$freeswitch_act_conf" so www-data can write to it
+find "$freeswitch_act_conf" -type f -exec chmod 660 {} +
+find "$freeswitch_act_conf" -type d -exec chmod 770 {} +
+
 #Put Fusionpbx dialplan scripts into place
-cp -rp /usr/share/fusionpbx/resources/install/scripts/* /var/lib/fusionpbx/scripts/
+mkdir -p /var/lib/fusionpbx/scripts
+cp -r /usr/share/fusionpbx/resources/install/scripts/* /var/lib/fusionpbx/scripts/
+#chown freeswitch  conf files
+chown -R freeswitch:freeswitch /var/lib/fusionpbx/scripts/
 
 #Settinf /etc/default freeswitch stratup options with proper scripts dir and to run behind nat.
 #DAEMON_Optional ARGS
@@ -646,23 +673,16 @@ then
 /bin/sed -i /etc/default/freeswitch -e s,'^DAEMON_OPTS=.*','DAEMON_OPTS="-scripts /var/lib/fusionpbx/scripts -rp"',
 fi
 
-#chown freeswitch  conf files
-chown -R freeswitch:freeswitch "$freeswitch_act_conf"
-
-#fix permissions for "$freeswitch_act_conf" so www-data can write to it
-find "$freeswitch_act_conf" -type f -exec chmod 660 {} +
-find "$freeswitch_act_conf" -type d -exec chmod 770 {} +
-
+#Copy fusionpbx sounds into place
+cp -r /usr/share/fusionpbx/resources/install/sounds/* /usr/share/freeswitch/sounds/en/us/callie/
 
 #create xml_cdr dir and chown it properly if the module is installed
-if [ -f "$freeswitch_mod"/mod_xml_cdr.so ]
-then
-mkdir "$freeswitch_log"/xml_cdr
+mkdir -p "$freeswitch_log"/xml_cdr
 #chown the xml_cdr dir
 chown freeswitch:freeswitch "$freeswitch_log"/xml_cdr
+
 #fix permissions on the freeswitch xml_cdr dir so fusionpbx can read from it
 find "$freeswitch_log"/xml_cdr -type d -exec chmod 770 {} +
-fi
 
 for i in freeswitch nginx php5-fpm ;do /etc/init.d/"${i}" restart >/dev/null 2>&1 ; done
 
