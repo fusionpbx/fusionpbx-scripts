@@ -674,7 +674,14 @@ then
 fi
 
 #Copy fusionpbx sounds into place
-cp -r /usr/share/fusionpbx/resources/install/sounds/* /usr/share/freeswitch/sounds/en/us/callie/
+cp -r /usr/share/fusionpbx/resources/install/sounds/* /usr/share/freeswitch/sounds/
+
+#chown freeswitch  conf files
+chown -R freeswitch:freeswitch /usr/share/freswitch/sounds
+
+#fix permissions for "$freeswitch_act_conf" so www-data can write to it
+find /usr/share/freswitch/sounds -type f -exec chmod 660 {} +
+find /usr/share/freswitch/sounds -type d -exec chmod 770 {} +
 
 #create xml_cdr dir and chown it properly if the module is installed
 mkdir -p "$freeswitch_log"/xml_cdr
