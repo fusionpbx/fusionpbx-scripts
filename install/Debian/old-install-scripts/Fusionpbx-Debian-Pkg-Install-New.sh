@@ -891,7 +891,8 @@ fi
 
 if [[ $fusionpbx_install == "pbx_full" ]]; then
 echo " Installing fusipnpbx full install"
-for i in fusionpbx-core fusionpbx-theme-accessible fusionpbx-theme-classic fusionpbx-theme-default fusionpbx-theme-enhanced fusionpbx-theme-nature \
+for i in fusionpbx-core fusionpbx-conf fusionpbx-scripts fusionpbx-sounds \
+		fusionpbx-theme-accessible fusionpbx-theme-classic fusionpbx-theme-default fusionpbx-theme-enhanced fusionpbx-theme-nature \
 		fusionpbx-provisioning-template-aastra fusionpbx-provisioning-template-cisco fusionpbx-provisioning-template-grandstream \
 		fusionpbx-provisioning-template-linksys fusionpbx-provisioning-template-panasonic fusionpbx-provisioning-template-polycom \
 		fusionpbx-provisioning-template-snom fusionpbx-provisioning-template-yealink \

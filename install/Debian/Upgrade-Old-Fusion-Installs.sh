@@ -17,10 +17,12 @@ apt-get update
 echo ' Installing New Fusionpbx pkgs '
 echo ' Installing fusipnpbx full install '
 
-for i in fusionpbx-core fusionpbx-provisioning-template-aastra fusionpbx-provisioning-template-cisco fusionpbx-provisioning-template-grandstream \
+for i in fusionpbx-core fusionpbx-comf fusionpbx-sounds \
+		fusionpbx-provisioning-template-aastra fusionpbx-provisioning-template-cisco fusionpbx-provisioning-template-grandstream \
 		fusionpbx-provisioning-template-linksys fusionpbx-provisioning-template-panasonic fusionpbx-provisioning-template-polycom \
-		fusionpbx-provisioning-template-snom fusionpbx-provisioning-template-yealink fusionpbx-theme-accessible fusionpbx-theme-classic \
-		fusionpbx-theme-default fusionpbx-theme-enhanced fusionpbx-theme-nature fusionpbx-app-adminer fusionpbx-app-call-block fusionpbx-app-call-broadcast \
+		fusionpbx-provisioning-template-snom fusionpbx-provisioning-template-yealink \
+		fusionpbx-theme-accessible fusionpbx-theme-classic fusionpbx-theme-default fusionpbx-theme-enhanced fusionpbx-theme-nature \
+		fusionpbx-app-adminer fusionpbx-app-call-block fusionpbx-app-call-broadcast \
 		fusionpbx-app-call-center fusionpbx-app-call-center-active fusionpbx-app-call-flows fusionpbx-app-calls fusionpbx-app-calls-active \
 		fusionpbx-app-click-to-call fusionpbx-app-conference-centers fusionpbx-app-conferences fusionpbx-app-conferences-active fusionpbx-app-contacts \
 		fusionpbx-app-content fusionpbx-app-destinations fusionpbx-app-devices fusionpbx-app-dialplan fusionpbx-app-dialplan-inbound fusionpbx-app-dialplan-outbound \
