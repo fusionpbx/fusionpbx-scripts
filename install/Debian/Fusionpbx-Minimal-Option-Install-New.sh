@@ -51,21 +51,32 @@ keep_logs=5
 
 #Install and use FusionPBX GUI
 #Note where you see spaces in the name there is a underscore.
-#FusionPBX install options 
+#Optional App's 
+app_adminer="n"
 app_call_block="n"			#inbound/outbound call blocking
-app_contacts="n"			#contacts phonebook
+app_call_broadcast="n"
 app_call_center="n"			#Call Center Queues
+app_call_flows="n"
+app_click_to_call="n"
 app_conference_centers="n"	#Confrences based singe diel in multi room
 app_conference="n"			#Orignal conference interface
+app_contacts="y"			#contacts phonebook
+app_content="n"
 app_edit="n"				#tools for editing files
 app_exec="n"				#tools for execuing commands at shell level
+app_fax="n"
 app_fifo="n"				#First in first out queues
-app_follow_me="n"			#Find me/ Follow me  
-app_hot_desk="n"			#Hot Desking used for unassigned seating
+app_follow_me="y"			#Find me/ Follow me  
+app_hot_desking="n"			#Hot Desking used for unassigned seating
+app_ivr_menu="n"
+app_park="n"
 app_ring_groups="y"			#ring group interface
+app_schema="n"
 app_services="n"			#tools for running services 
 app_sipml5="n"				#HTML5 sip phone
 app_sql_query="n"			#tool to query the sql/sqlite db
+app_time_conditions="n"
+app_traffic_graph="n"
 app_voicemail="y"			#Fusionpbx voicemain
 app_xmpp="n"				#xmpp/gtalk/googlevoice interface
 #System themes
@@ -465,9 +476,9 @@ apt-get update
 echo "Installing FusionPBX Web User Interface Debian pkg"
 
 echo " Installing fusipnpbx basepbx"
-for i in fusionpbx-core fusionpbx-theme-enhanced fusionpbx-conf fusionpbx-scripts fusionpbx-sounds fusionpbx-app-dialplan fusionpbx-app-calls \
+for i in fusionpbx-core fusionpbx-conf fusionpbx-scripts fusionpbx-sounds fusionpbx-app-dialplan fusionpbx-app-calls \
 		fusionpbx-app-calls-active fusionpbx-app-destinations fusionpbx-app-dialplan-inbound fusionpbx-app-dialplan-outbound \
-		fusionpbx-app-extensions fusionpbx-app-gateways fusionpbx-app-login fusionpbx-app-log-viewer fusionpbx-app-modules \
+		fusionpbx-app-extensions fusionpbx-app-gateways fusionpbx-app-fax fusionpbx-app-login fusionpbx-app-log-viewer fusionpbx-app-modules \
 		fusionpbx-app-music-on-hold fusionpbx-app-registrations fusionpbx-app-settings fusionpbx-app-sip-profiles \
 		fusionpbx-app-sip-status fusionpbx-app-system fusionpbx-app-xml-cdr fusionpbx-app-vars   
 do 	apt-get -y --force-yes install "${i}"
@@ -494,21 +505,29 @@ if [[ $theme_nature == "y" ]]; then
 apt-get install fusionpbx-theme-nature
 fi
 
+#install fusionpbx_adminer
+if [[ $app_adminer == "y" ]]; then
+apt-get -y --force-yes install fusionpbx-app-adminer
+fi
+
 #install fusionpbx_call blocking
 if [[ $app_call_blocking == "y" ]]; then
 apt-get -y --force-yes install fusionpbx-app-call-blocking
 fi
 
-# install fusionpbx contacts phone book
-if [[ $app_contacts == "y" ]]; then
-apt-get -y --force-yes install fusionpbx-app-contacts
+#install fusionpbx_call broadcast
+if [[ $app_call_broadcast == "y" ]]; then
+apt-get -y --force-yes install fusionpbx-app-call-broadcast
 fi
 
-#intstal fusionpbx_call-center
+# install fusionpbx call center
 if [[ $app_call_center == "y" ]]; then
-for i in freeswitch-mod-callcenter fusionpbx-app-call-center fusionpbx-app-call-center-active
-do apt-get -y --force-yes install "${i}"
-done
+apt-get -y --force-yes install fusionpbx-app-callcenter fusionpbx-app-call-center-active
+fi
+
+# install fusionpbx call flows
+if [[ $app_call_flows == "y" ]]; then
+apt-get -y --force-yes install fusionpbx-app-call-flows
 fi
 
 #install fusionpbx_conference-centers
@@ -523,6 +542,16 @@ if [[ $app_conference == "y" ]]; then
 for i in freeswitch-mod-conference fusionpbx-app-conferences fusionpbx-app-conferences-active
 do apt-get -y --force-yes install "${i}"
 done
+fi
+
+# install fusionpbx contacts phone book
+if [[ $app_click_to_call == "y" ]]; then
+apt-get -y --force-yes install fusionpbx-app-contacts
+fi
+
+# install fusionpbx contet html 
+if [[ $app_content == "y" ]]; then
+apt-get -y --force-yes install fusionpbx-app-content
 fi
 
 #install fusionpbx_edit
@@ -542,9 +571,9 @@ do apt-get -y --force-yes install "${i}"
 done
 fi
 
-#install fusionpbx_xmpp
+#install fusionpbx_follow me
 if [[ $app_follow_me == "y" ]]; then
-apt-get -y --force-yes install fusionpbx-app-follow-me
+apt-get -y --force-yes install fusionpbx-app-follow-me 
 fi
 
 #install fusionpbx_hot-desking
@@ -554,15 +583,37 @@ fi
 
 #install fusionpbx ivr
 if [[ $app_ivr_menu == "y" ]]; then
-for i in fusionpbx-app-ivr-menu fusionpbx-app-recordings
+for i in fusionpbx-app-ivr-menu fusionpbx-app-recordings fusionpbx-app-time-conditions
 do apt-get -y --force-yes install "${i}"
 done
 fi
 
-#install fusionpbx_app ring_group
-if [[ $app_ring_groups == "y" ]]; then
-apt-get -y --force-yes install fusionpbx-app-ring-groups
+#install fusionpbx_music on hold
+if [[ $app_music_on_hold == "y" ]]; then
+apt-get -y install --force-yes fusionpbx-app-music-on-hold
 fi
+
+#install fusionpbx_park
+if [[ $app_park == "y" ]]; then
+apt-get -y install --force-yes fusionpbx-app-park
+fi
+
+#install fusionpbx_hot-desking
+if [[ $app_hot_desk == "y" ]]; then
+apt-get -y install --force-yes fusionpbx-app-hot-desking
+fi
+
+
+#install fusionpbx_app recordings
+if [[ $app_recordings == "y" ]]; then
+apt-get -y --force-yes install fusionpbx-app-recordings
+fi
+
+#install fusionpbx_app schemas
+if [[ $app_ring_schemas == "y" ]]; then
+apt-get -y --force-yes install fusionpbx-app-schemas
+fi
+
 #install fusionpbx_app services
 if [[ $app_services == "y" ]]; then
 apt-get -y --force-yes install fusionpbx-app-services
@@ -574,6 +625,17 @@ do apt-get -y --force-yes install "${i}"
 done
 fi
 
+#install fusionpbx_app time conditions
+if [[ $app_time_conditions == "y" ]]; then
+apt-get -y --force-yes install fusionpbx-app-time-conditions
+fi
+
+#install fusionpbx_app traffice graph
+if [[ $app_traffic_graph == "y" ]]; then
+apt-get -y --force-yes install fusionpbx-app-traffic-graphoc
+fi
+
+
 #install fusionpbx_voicemail
 if [[ $app_sql_query == "y" ]]; then
 apt-get -y --force-yes install fusionpbx-app-sql-query
@@ -581,7 +643,7 @@ fi
 
 #install fusionpbx_voicemail
 if [[ $app_voicemail == "y" ]]; then
-for i in fusionpbx-app-voicemails fusionpbx-app-voicemail-greatings
+for i in fusionpbx-app-voicemails fusionpbx-app-voicemail-greatings fusionpbx-sounds
 do apt-get -y --force-yes install "${i}"
 done
 fi
