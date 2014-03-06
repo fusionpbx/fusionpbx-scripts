@@ -60,7 +60,6 @@ app_call_flows="n"			#use to set special modes/custom dial plan
 app_click_to_call="n"
 app_conference_centers="n"	#Confrences based singe diel in multi room
 app_conference="n"			#Orignal conference interface
-app_contacts="y"			#contacts phonebook
 app_content="n"
 app_edit="n"				#tools for editing files
 app_exec="n"				#tools for execuing commands at shell level
@@ -479,7 +478,7 @@ echo "Installing FusionPBX Web User Interface Debian pkg"
 
 echo " Installing fusipnpbx basepbx"
 for i in fusionpbx-core fusionpbx-conf fusionpbx-scripts fusionpbx-sounds fusionpbx-app-dialplan \
-		fusionpbx-app-calls fusionpbx-app-calls-active fusionpbx-app-destinations \
+		fusionpbx-app-calls fusionpbx-app-calls-active fusionpbx-app-contacts fusionpbx-app-destinations \
 		fusionpbx-app-dialplan-inbound fusionpbx-app-dialplan-outbound fusionpbx-app-extensions \
 		fusionpbx-app-gateways fusionpbx-app-fax fusionpbx-app-login fusionpbx-app-log-viewer \
 		fusionpbx-app-modules fusionpbx-app-registrations fusionpbx-app-settings fusionpbx-app-sip-profiles \
