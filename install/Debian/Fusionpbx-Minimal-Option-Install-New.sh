@@ -53,10 +53,10 @@ keep_logs=5
 #Note where you see spaces in the name there is a underscore.
 #Optional App's 
 app_adminer="n"
-app_call_block="n"			#inbound/outbound call blocking
+app_call_block="y"			#inbound/outbound call blocking
 app_call_broadcast="n"
 app_call_center="n"			#Call Center Queues
-app_call_flows="n"
+app_call_flows="n"			#use to set special modes/custom dial plan
 app_click_to_call="n"
 app_conference_centers="n"	#Confrences based singe diel in multi room
 app_conference="n"			#Orignal conference interface
@@ -64,18 +64,20 @@ app_contacts="y"			#contacts phonebook
 app_content="n"
 app_edit="n"				#tools for editing files
 app_exec="n"				#tools for execuing commands at shell level
-app_fax="n"
+app_fax="y"
 app_fifo="n"				#First in first out queues
 app_follow_me="y"			#Find me/ Follow me  
 app_hot_desking="n"			#Hot Desking used for unassigned seating
-app_ivr_menu="n"
-app_park="n"
+app_hunt_group="n"			#THis Module is beign reworked.
+app_ivr_menu="y"			#Company IVR for routign calls
+app_music_on_hold="n"
+app_park="y"				#Call Parkign
 app_ring_groups="y"			#ring group interface
 app_schema="n"
 app_services="n"			#tools for running services 
 app_sipml5="n"				#HTML5 sip phone
 app_sql_query="n"			#tool to query the sql/sqlite db
-app_time_conditions="n"
+app_time_conditions="y"		#used by ivr 
 app_traffic_graph="n"
 app_voicemail="y"			#Fusionpbx voicemain
 app_xmpp="n"				#xmpp/gtalk/googlevoice interface
@@ -476,10 +478,11 @@ apt-get update
 echo "Installing FusionPBX Web User Interface Debian pkg"
 
 echo " Installing fusipnpbx basepbx"
-for i in fusionpbx-core fusionpbx-conf fusionpbx-scripts fusionpbx-sounds fusionpbx-app-dialplan fusionpbx-app-calls \
-		fusionpbx-app-calls-active fusionpbx-app-destinations fusionpbx-app-dialplan-inbound fusionpbx-app-dialplan-outbound \
-		fusionpbx-app-extensions fusionpbx-app-gateways fusionpbx-app-fax fusionpbx-app-login fusionpbx-app-log-viewer fusionpbx-app-modules \
-		fusionpbx-app-music-on-hold fusionpbx-app-registrations fusionpbx-app-settings fusionpbx-app-sip-profiles \
+for i in fusionpbx-core fusionpbx-conf fusionpbx-scripts fusionpbx-sounds fusionpbx-app-dialplan \
+		fusionpbx-app-calls fusionpbx-app-calls-active fusionpbx-app-destinations \
+		fusionpbx-app-dialplan-inbound fusionpbx-app-dialplan-outbound fusionpbx-app-extensions \
+		fusionpbx-app-gateways fusionpbx-app-fax fusionpbx-app-login fusionpbx-app-log-viewer \
+		fusionpbx-app-modules fusionpbx-app-registrations fusionpbx-app-settings fusionpbx-app-sip-profiles \
 		fusionpbx-app-sip-status fusionpbx-app-system fusionpbx-app-xml-cdr fusionpbx-app-vars   
 do 	apt-get -y --force-yes install "${i}"
 done
@@ -579,6 +582,11 @@ fi
 #install fusionpbx_hot-desking
 if [[ $app_hot_desk == "y" ]]; then
 apt-get -y install --force-yes fusionpbx-app-hot-desking
+fi
+
+#install fusionpbx_huntgroup
+if [[ $app_hot_desk == "y" ]]; then
+apt-get -y install --force-yes fusionpbx-app-hunt-group
 fi
 
 #install fusionpbx ivr
