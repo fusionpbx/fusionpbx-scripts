@@ -69,7 +69,7 @@ app_follow_me="y"			#Find me/ Follow me
 app_hot_desking="n"			#Hot Desking used for unassigned seating
 app_hunt_group="n"			#THis Module is beign reworked.
 app_ivr_menu="y"			#Company IVR for routign calls
-app_music_on_hold="n"
+app_music_on_hold="y"
 app_park="y"				#Call Parkign
 app_ring_groups="y"			#ring group interface
 app_schema="n"
@@ -746,11 +746,11 @@ fi
 cp -r /usr/share/fusionpbx/resources/install/sounds/* /usr/share/freeswitch/sounds/
 
 #chown freeswitch  conf files
-chown -R freeswitch:freeswitch /usr/share/freswitch/sounds
+chown -R freeswitch:freeswitch /usr/share/freeswitch/sounds
 
 #fix permissions for "$freeswitch_act_conf" so www-data can write to it
-find /usr/share/freswitch/sounds -type f -exec chmod 660 {} +
-find /usr/share/freswitch/sounds -type d -exec chmod 770 {} +
+find /usr/share/freeswitch/sounds -type f -exec chmod 660 {} +
+find /usr/share/freeswitch/sounds -type d -exec chmod 770 {} +
 
 #create xml_cdr dir and chown it properly if the module is installed
 mkdir -p "$freeswitch_log"/xml_cdr
