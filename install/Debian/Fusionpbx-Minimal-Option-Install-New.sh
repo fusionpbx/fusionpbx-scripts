@@ -650,7 +650,7 @@ fi
 
 #install fusionpbx_voicemail
 if [[ $app_voicemail == "y" ]]; then
-for i in fusionpbx-app-voicemails fusionpbx-app-voicemail-greatings fusionpbx-sounds
+for i in fusionpbx-app-voicemails fusionpbx-app-voicemail-greetings fusionpbx-sounds
 do apt-get -y --force-yes install "${i}"
 done
 fi
