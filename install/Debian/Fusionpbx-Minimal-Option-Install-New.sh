@@ -336,7 +336,7 @@ for i in ssl-cert sqlite3 nginx php5-cli php5-sqlite php5-odbc php-db php5-fpm p
 /bin/sed -i $php_ini -e s,"upload_max_filesize = 2M","upload_max_filesize = 15M",
 
 #Nginx config Copied from Debian nginx pkg (nginx on debian wheezy uses sockets by default not ports)
-ech0 ' Install NGINX config file '
+echo ' Install NGINX config file '
 cat > "/etc/nginx/sites-available/fusionpbx"  << DELIM
 server{
         listen 127.0.0.1:80;
