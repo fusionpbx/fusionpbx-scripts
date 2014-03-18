@@ -315,7 +315,7 @@ echo ' installing freeswitch deps '
 for i in curl unixodbc uuid memcached libtiff5 libtiff-tools ghostscript ;do apt-get -y install "${i}" ; done
 # install freeswitch fusionpbx install
 echo ' installing freeswitch pkgs '
-for i in freeswitch freeswitch-init freeswitch-lang-enfreeswitch-meta-codecs freeswitch-mod-avmd freeswitch-mod-commands freeswitch-mod-curl \
+for i in freeswitch freeswitch-init freeswitch-lang-en freeswitch-meta-codecs freeswitch-mod-avmd freeswitch-mod-commands freeswitch-mod-curl \
 		freeswitch-mod-db freeswitch-mod-distributor freeswitch-mod-dptools freeswitch-mod-enum freeswitch-mod-esf freeswitch-mod-esl freeswitch-mod-expr \
 		freeswitch-mod-fsv freeswitch-mod-hash freeswitch-mod-memcache freeswitch-mod-portaudio freeswitch-mod-portaudio-stream freeswitch-mod-random \
 		freeswitch-mod-spandsp freeswitch-mod-spy freeswitch-mod-translate freeswitch-mod-valet-parking freeswitch-mod-vmd freeswitch-mod-flite \
