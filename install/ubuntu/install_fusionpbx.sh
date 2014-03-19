@@ -724,6 +724,17 @@ else
 		/bin/echo 
 		CONTINUE=YES
 	fi
+	lsb_release -c |grep -i wheezy > /dev/null
+	if [ $? -eq 0 ]; then
+		DISTRO=wheezy
+		/bin/echo "OK you're running Debian Wheezy.  This script is known to work"
+		/bin/echo "   with apache/nginx and sqlite|postgres9.3 options"
+		/bin/echo "   Please consider providing feedback on whether or not this works."
+		
+		/bin/echo 
+		CONTINUE=YES
+	fi
+	
 	lsb_release -c |grep -i precise > /dev/null
 	if [ $? -eq 0 ]; then
 		DISTRO=precise
@@ -892,9 +903,16 @@ if [ $INSFREESWITCH -eq 1 ]; then
 				POSTGRES9=9
 				#update repository for postgres 9.3 ...
 				/bin/echo "deb http://apt.postgresql.org/pub/repos/apt/ precise-pgdg main" > /etc/apt/sources.list.d/pgdg.list
-				wget --quiet -O - http://apt.postgresql.org/pub/repos/apt/ACCC4CF8.asc | sudo apt-key add -
+				wget --quiet -O - http://apt.postgresql.org/pub/repos/apt/ACCC4CF8.asc | apt-key add -
 				/usr/bin/apt-get update
 				/usr/bin/apt-get -y install postgresql-9.3 libpq-dev
+			elif [ $DISTRO = "wheezy" ]; then
+				POSTGRES9=9
+				#update repository for postgres 9.3 ...
+				/bin/echo "deb http://apt.postgresql.org/pub/repos/apt/ wheezy-pgdg main" > /etc/apt/sources.list.d/pgdg.list
+				wget --quiet -O - http://apt.postgresql.org/pub/repos/apt/ACCC4CF8.asc | apt-key add -
+				/usr/bin/apt-get update
+				/usr/bin/apt-get -y install postgresql-9.3 libpq-dev php5-pgsql			
 			else
 				#add the ppa
 				/usr/bin/apt-add-repository ppa:pitti/postgresql
@@ -1765,7 +1783,9 @@ if [ $INSFUSION -eq 1 ]; then
 	if [ $DISTRO = "precise" ]; then
 		/usr/bin/apt-get -y install php-db
 	fi
-
+	if [ $DISTRO = "wheezy" ]; then
+		/usr/bin/apt-get -y install install php5-sqlite php-db
+	fi
 	#-----------------
 	# Apache
 	#-----------------
