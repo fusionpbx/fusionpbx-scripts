@@ -995,4 +995,12 @@ fi
 #apt-get cleanup (clean and remove unused pkgs)
 apt-get clean && apt-get autoremove
 
+echo "blocking scanners"
+iptables -I INPUT -j DROP -p udp --dport 5060 -m string --string "friendly-scanner" --algo bm
+iptables -I INPUT -j DROP -p udp --dport 5061 -m string --string "friendly-scanner" --algo bm
+iptables -I INPUT -j DROP -p udp --dport 5062 -m string --string "friendly-scanner" --algo bm
+iptables -I INPUT -j DROP -p udp --dport 5080 -m string --string "friendly-scanner" --algo bm
+iptables -I INPUT -j DROP -p udp --dport 5081 -m string --string "friendly-scanner" --algo bm
+iptables -I INPUT -j DROP -p udp --dport 5082 -m string --string "friendly-scanner" --algo bm
+
 echo " The install has finished...  "
