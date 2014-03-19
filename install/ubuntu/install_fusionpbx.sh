@@ -815,7 +815,7 @@ if [ $INSFREESWITCH -eq 1 ]; then
 	if [ $DISTRO = "precise" ]; then
 		/usr/bin/apt-get -y install ssh vim git-core subversion build-essential \
 		autoconf automake libtool libncurses5 libncurses5-dev libjpeg-dev ssh \
-		screen htop pkg-config bzip2 curl libtiff4-dev ntp \
+		screen htop pkg-config bzip2 curl libtiff4-dev ntp time\
 		time bison libssl-dev \
 		unixodbc libmyodbc unixodbc-dev libtiff-tools
 	else
@@ -823,7 +823,7 @@ if [ $INSFREESWITCH -eq 1 ]; then
 			autoconf automake libtool libncurses5 libncurses5-dev libjpeg62-dev ssh \
 			screen htop pkg-config bzip2 curl libtiff4-dev ntp \
 			time bison libssl-dev \
-			unixodbc libmyodbc unixodbc-dev libtiff-tools
+			unixodbc libmyodbc unixodbc-dev libtiff-tools time
 	fi
 
 	#added libgnutls-dev libgnutls26 for dingaling...
@@ -978,7 +978,8 @@ if [ $INSFREESWITCH -eq 1 ]; then
 		cd /usr/src
 		if [ "$FSSTABLE" == true ]; then
 			echo "installing stable $FSStableVer of FreeSWITCH"
-			/usr/bin/time /usr/bin/git clone $FSGIT
+			#/usr/bin/time /usr/bin/git clone $FSGIT
+			time /usr/bin/git clone $FSGIT
 			cd /usr/src/freeswitch
 			/usr/bin/git checkout $FSStableVer
 			if [ $? -ne 0 ]; then
@@ -988,7 +989,8 @@ if [ $INSFREESWITCH -eq 1 ]; then
 			fi
 		else
 			echo "going dev branch.  Hope this works for you."
-			/usr/bin/time /usr/bin/git clone $FSGIT
+			#/usr/bin/time /usr/bin/git clone $FSGIT
+			time /usr/bin/git clone $FSGIT
 			if [ $? -ne 0 ]; then
 				#git had an error
 				/bin/echo "GIT ERROR"
@@ -1044,14 +1046,16 @@ if [ $INSFREESWITCH -eq 1 ]; then
 				/bin/echo
 				read -p "Press Enter to continue (check for errors)"
 			fi
-			/usr/bin/time /usr/src/freeswitch/bootstrap.sh -j
+			#/usr/bin/time /usr/src/freeswitch/bootstrap.sh -j
+			time /usr/src/freeswitch/bootstrap.sh -j
 		else 
 			/bin/echo "  singlecore processor detected. Starting Bootstrap sans -j"
 			if [ $DEBUG -eq 1 ]; then
 				/bin/echo
 				read -p "Press Enter to continue (check for errors)"
 			fi
-			/usr/bin/time /usr/src/freeswitch/bootstrap.sh
+			#/usr/bin/time /usr/src/freeswitch/bootstrap.sh
+			time /usr/src/freeswitch/bootstrap.sh
 		fi
 
 		if [ $? -ne 0 ]; then
@@ -1109,10 +1113,12 @@ if [ $INSFREESWITCH -eq 1 ]; then
 		/bin/echo -ne " ."
 		case "$SQLITEMYSQL" in
 		[Pp]*)
-			/usr/bin/time /usr/src/freeswitch/configure --enable-core-pgsql-support --enable-zrtp
+			#/usr/bin/time /usr/src/freeswitch/configure --enable-core-pgsql-support --enable-zrtp
+			time /usr/src/freeswitch/configure --enable-core-pgsql-support --enable-zrtp
 		;;
 		*)
-			/usr/bin/time /usr/src/freeswitch/configure --enable-zrtp
+			#/usr/bin/time /usr/src/freeswitch/configure --enable-zrtp
+			time /usr/src/freeswitch/configure --enable-zrtp
 		;;
 		esac
 
@@ -1159,11 +1165,14 @@ if [ $INSFREESWITCH -eq 1 ]; then
 		if [ $CORES -gt 1 ]; then 
 			/bin/echo "  multicore processor detected. Compiling with -j $CORES"
 			#per anthm compile the freeswitch core first, then the modules.
-			/usr/bin/time /usr/bin/make -j $CORES core
-			/usr/bin/time /usr/bin/make -j $CORES
+			#/usr/bin/time /usr/bin/make -j $CORES core
+			time /usr/bin/make -j $CORES core
+			#/usr/bin/time /usr/bin/make -j $CORES
+			time /usr/bin/make -j $CORES
 		else 
 			/bin/echo "  singlecore processor detected. Starting compile sans -j"
-			/usr/bin/time /usr/bin/make 
+			#/usr/bin/time /usr/bin/make 
+			time /usr/bin/make 
 		fi
 
 		if [ $? -ne 0 ]; then
@@ -1200,10 +1209,12 @@ if [ $INSFREESWITCH -eq 1 ]; then
 		cd /usr/src/freeswitch
 		if [ $CORES -gt 1 ]; then 
 			/bin/echo "  multicore processor detected. Installing with -j $CORES"
-			/usr/bin/time /usr/bin/make -j $CORES install
+			#/usr/bin/time /usr/bin/make -j $CORES install
+			time /usr/bin/make -j $CORES install
 		else 
 			/bin/echo "  singlecore processor detected. Starting install sans -j"
-			/usr/bin/time /usr/bin/make install
+			#/usr/bin/time /usr/bin/make install
+			time /usr/bin/make install
 		fi
 		#/usr/bin/time /usr/bin/make install
 
@@ -1234,10 +1245,12 @@ if [ $INSFREESWITCH -eq 1 ]; then
 		cd /usr/src/freeswitch
 		if [ $CORES -gt 1 ]; then 
 			/bin/echo "  multicore processor detected. Installing with -j $CORES"
-			/usr/bin/time /usr/bin/make -j $CORES hd-sounds-install
+			#/usr/bin/time /usr/bin/make -j $CORES hd-sounds-install
+			time /usr/bin/make -j $CORES hd-sounds-install
 		else 
 			/bin/echo "  singlecore processor detected. Starting install sans -j"
-			/usr/bin/time /usr/bin/make hd-sounds-install
+			#/usr/bin/time /usr/bin/make hd-sounds-install
+			time /usr/bin/make hd-sounds-install
 		fi
 		#/usr/bin/time /usr/bin/make hd-sounds-install
 
@@ -1275,10 +1288,12 @@ if [ $INSFREESWITCH -eq 1 ]; then
 		cd /usr/src/freeswitch
 		if [ $CORES -gt 1 ]; then 
 			/bin/echo "  multicore processor detected. Installing with -j $CORES"
-			/usr/bin/time /usr/bin/make -j $CORES hd-moh-install
+			#/usr/bin/time /usr/bin/make -j $CORES hd-moh-install
+			time /usr/bin/make -j $CORES hd-moh-install
 		else 
 			/bin/echo "  singlecore processor detected. Starting install sans -j"
-			/usr/bin/time /usr/bin/make hd-moh-install
+			#/usr/bin/time /usr/bin/make hd-moh-install
+			time /usr/bin/make hd-moh-install
 		fi
 		#/usr/bin/make hd-moh-install
 
@@ -2602,10 +2617,12 @@ if [ $UPGFREESWITCH -eq 1 ]; then
 
 		if [ $CORES > "1" ]; then 
 			/bin/echo "  multicore processor detected. Upgrading with -j $CORES"
-			/usr/bin/time /usr/bin/make -j $CORES current
+			#/usr/bin/time /usr/bin/make -j $CORES current
+			time /usr/bin/make -j $CORES current
 		else 
 			/bin/echo "  singlecore processor detected. Starting upgrade sans -j"
-			/usr/bin/time /usr/bin/make current
+			#/usr/bin/time /usr/bin/make current
+			time /usr/bin/make current
 		fi
 		#/usr/bin/make current
 		if [ $? -ne 0 ]; then
