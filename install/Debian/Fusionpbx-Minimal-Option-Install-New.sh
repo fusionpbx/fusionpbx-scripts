@@ -465,7 +465,7 @@ ln -s /etc/nginx/sites-available/"$wui_name" /etc/nginx/sites-enabled/"$wui_name
 rm -rf /etc/nginx/sites-enabled/default
 
 #Restarting Nginx and PHP FPM
-for i in nginx php5-fpm ;do /etc/init.d/"${i}" restart > /dev/null 2>&1 ; done
+for i in nginx php5-fpm ;do service "${i}" restart > /dev/null 2>&1 ; done
 
 #Adding users to needed groups
 adduser www-data freeswitch
@@ -760,7 +760,7 @@ chown freeswitch:freeswitch "$freeswitch_log"/xml_cdr
 #fix permissions on the freeswitch xml_cdr dir so fusionpbx can read from it
 find "$freeswitch_log"/xml_cdr -type d -exec chmod 770 {} +
 
-for i in freeswitch nginx php5-fpm ;do /etc/init.d/"${i}" restart >/dev/null 2>&1 ; done
+for i in freeswitch nginx php5-fpm ;do service "${i}" restart >/dev/null 2>&1 ; done
 
 # SEE http://wiki.freeswitch.org/wiki/Fail2ban
 #Fail2ban
@@ -773,8 +773,8 @@ set daemon 60
 set logfile syslog facility log_daemon
 
 check process freeswitch with pidfile /var/run/freeswitch/freeswitch.pid
-start program = "/etc/init.d/freeswitch start"
-stop program = "/etc/init.d/freeswitch stop"
+start program = "service freeswitch start"
+stop program = "service freeswitch stop"
 DELIM
 
 #Setting up Fail2ban freeswitch config files.
@@ -866,17 +866,17 @@ bantime  = 600
 DELIM
 
 #restarting fail2ban
-/etc/init.d/fail2ban restart
+service fail2ban restart
 
 #Turning off RepeatedMsgReduction in /etc/rsyslog.conf"
 sed -i 's/RepeatedMsgReduction\ on/RepeatedMsgReduction\ off/' /etc/rsyslog.conf
-/etc/init.d/rsyslog restart
+service rsyslog restart
 
 sed -i /usr/bin/fail2ban-client -e s,^\.setInputCmd\(c\),'time.sleep\(0\.1\)\n\t\t\tbeautifier.setInputCmd\(c\)',
 
 #Restarting Nginx and PHP FPM
 for i in freeswitch fail2ban
-do /etc/init.d/"${i}" restart  > /dev/null 2>&1
+do service "${i}" restart  > /dev/null 2>&1
 done
 
 # see http://wiki.fusionpbx.com/index.php?title=RotateFSLogs
@@ -914,7 +914,7 @@ if [[ $freeswitch_nat == y ]]; then
 fi
 
 # restarting services
-for i in php5-fpm niginx monit fail2ban freeswitch ;do /etc/init.d/"${i}" restart  >/dev/null 2>&1 ; done
+for i in php5-fpm niginx monit fail2ban freeswitch ;do service "${i}" restart  >/dev/null 2>&1 ; done
 
 #end of fusionpbx install
 
@@ -935,7 +935,7 @@ if [[ $postgresql_client == "y" ]]; then
 	db_passwd="Admin Please Select A Secure Password for your Postgresql Fusionpbx Database"
 	clear
 	for i in postgresql-client-9.3 php5-pgsql ;do apt-get -y install "${i}"; done
-	/etc/init.d/php5-fpm restart
+	service php5-fpm restart
 	echo
 	printf '	Please open a web-browser to http://'; ip -f inet addr show dev eth0 | sed -n 's/^ *inet *\([.0-9]*\).*/\1/p'
 cat << DELIM
@@ -961,7 +961,7 @@ if [[ $postgresql_server == "y" ]]; then
     db_passwd="$(openssl rand -base64 32;)"
 	clear
 	for i in postgresql-9.3 php5-pgsql ;do apt-get -y install "${i}"; done
-	/etc/init.d/php5-fpm restart
+	service php5-fpm restart
 	#Adding a SuperUser and Password for Postgresql database.
 	su -l postgres -c "/usr/bin/psql -c \"create role $postgresqluser with superuser login password '$postgresqlpass'\""
 	clear
