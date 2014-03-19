@@ -664,7 +664,7 @@ fi
 
 #Phone Provision templates
 if [[ $templates_aastra == "y" ]]; then
-for i in fusionpbx-core fusionpbx-app-devices fusionpbx-app-provision fusionpbx-provisioning-template-aastra 
+for i in fusionpbx-app-devices fusionpbx-app-provision fusionpbx-provisioning-template-aastra 
 do apt-get -y --force-yes install "${i}"
 done 
 cp -rp /usr/share/fusionpbx/templates/provision/aastra /etc/fusionpbx/templates/provision/
@@ -699,7 +699,7 @@ cp -rp /usr/share/fusionpbx/templates/provision/panasonic /etc/fusionpbx/templat
 fi
 
 if [[ $templates_polycom == "y" ]]; then
-for i in fusionpbx-core fusionpbx-app-devices fusionpbx-app-provision fusionpbx-provisioning-template-polycom
+for i in fusionpbx-app-devices fusionpbx-app-provision fusionpbx-provisioning-template-polycom
 do apt-get -y --force-yes install "${i}"
 done
 cp -rp /usr/share/fusionpbx/templates/provision/polycom /etc/fusionpbx/templates/provision/
