@@ -46,7 +46,7 @@ fusionpbx_repo="devel"
 # Set to y if on public static IP
 freeswitch_nat=n
 
-#Set how long to keep freeswitch/fusionpbx log files 1 to 30 dasy (Default:5)
+#Set how long to keep freeswitch/fusionpbx log files 1 to 30 days (Default:5)
 keep_logs=5
 
 #Install and use FusionPBX GUI
