@@ -818,6 +818,12 @@ if [ $INSFREESWITCH -eq 1 ]; then
 		screen htop pkg-config bzip2 curl libtiff4-dev ntp time\
 		time bison libssl-dev \
 		unixodbc libmyodbc unixodbc-dev libtiff-tools
+	elif [ $DISTRO = "wheezy" ]; then
+		/usr/bin/apt-get -y install ssh vim git-core subversion build-essential \
+		autoconf automake libtool libncurses5 libncurses5-dev libjpeg-dev ssh \
+		screen htop pkg-config bzip2 curl libtiff4-dev ntp time\
+		time bison libssl-dev \
+		unixodbc libmyodbc unixodbc-dev libtiff-tools
 	else
 		/usr/bin/apt-get -y install ssh vim git-core subversion build-essential \
 			autoconf automake libtool libncurses5 libncurses5-dev libjpeg62-dev ssh \
