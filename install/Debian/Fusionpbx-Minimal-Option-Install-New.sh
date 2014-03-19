@@ -81,7 +81,7 @@ app_traffic_graph="n"
 app_voicemail="y"			#Fusionpbx voicemain
 app_xmpp="n"				#xmpp/gtalk/googlevoice interface
 #System themes
-theme_accessable="n"
+theme_accessible="n"
 theme_classic="n"
 theme_default="n"
 theme_enhanced="y"
@@ -487,7 +487,7 @@ do 	apt-get -y --force-yes install "${i}"
 done
 
 # Pbx Themes
-if [[ $theme_accessable == "y" ]]; then
+if [[ $theme_accessible == "y" ]]; then
 apt-get -y --force-yes install fusionpbx-theme-accessible
 fi
 
