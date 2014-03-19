@@ -50,26 +50,25 @@ freeswitch_nat=n
 keep_logs=5
 
 #Install and use FusionPBX GUI
-#Note where you see spaces in the name there is a underscore.
 #Optional App's 
-app_adminer="n"
+app_adminer="n"				#Database admin tool
 app_call_block="y"			#inbound/outbound call blocking
 app_call_broadcast="n"
 app_call_center="n"			#Call Center Queues
 app_call_flows="n"			#use to set special modes/custom dial plan
-app_click_to_call="n"
+app_click_to_call="n"		#tool to click to call off the xl_cdr page and from the directory
 app_conference_centers="n"	#Confrences based singe diel in multi room
 app_conference="n"			#Orignal conference interface
-app_content="n"
+app_content="n"				#tool for adding contest to pages.
 app_edit="n"				#tools for editing files
 app_exec="n"				#tools for execuing commands at shell level
-app_fax="y"
+app_fax="y"					# enable fax send/recieve
 app_fifo="n"				#First in first out queues
 app_follow_me="y"			#Find me/ Follow me  
 app_hot_desking="n"			#Hot Desking used for unassigned seating
 app_hunt_group="n"			#THis Module is beign reworked.
 app_ivr_menu="y"			#Company IVR for routign calls
-app_music_on_hold="y"
+app_music_on_hold="y"		#tool for adding in and rm moh sound files
 app_park="y"				#Call Parkign
 app_ring_groups="y"			#ring group interface
 app_schema="n"
@@ -77,16 +76,19 @@ app_services="n"			#tools for running services
 app_sipml5="n"				#HTML5 sip phone
 app_sql_query="n"			#tool to query the sql/sqlite db
 app_time_conditions="y"		#used by ivr 
-app_traffic_graph="n"
+app_traffic_graph="n"		#graph for monitoring network traffic
 app_voicemail="y"			#Fusionpbx voicemain
 app_xmpp="n"				#xmpp/gtalk/googlevoice interface
+
 #System themes
 theme_accessible="n"
 theme_classic="n"
 theme_default="n"
 theme_enhanced="y"
 theme_nature="n"
+
 #Phone Provisioning templates
+#To enable provisioning please select from templates below.
 templates_aastra="n"
 templates_cisco="n"
 templates_grandstream="n"
@@ -111,10 +113,10 @@ postgresql_server="n"
 
 # Set Postgresql Server Admin username
 # Lower case only
-postgresqluser=
+postgresql_admin=
 
 # Set Postgresql Server Admin password
-postgresqlpass=
+postgresql_admin_passwd=
 
 # Set Database Name used for fusionpbx in the postgresql server 
 # (Default: fusionpbx)
@@ -125,8 +127,10 @@ database_name=
 # (Default: fusionpbx)
 database_user_name=
 
+#Extra Option's
+
 #Add Ajenti Admin Portal
-install_ajenti="y"
+install_ajenti="n"
 
 #<------Stop Edit Here-------->
 ################################################################################
@@ -989,8 +993,8 @@ cat << DELIM
 	Database Name: "$db_name"
 	Database Username: "$db_user_name"
 	Database Password: "$db_passwd"
-	Create Database Username: "$postgresqluser"
-	Create Database Password: "$postgresqlpass"
+	Create Database Username: "$postgresql_admin"
+	Create Database Password: "$postgresql_admin_passwd"
 DELIM
 else
 clear
