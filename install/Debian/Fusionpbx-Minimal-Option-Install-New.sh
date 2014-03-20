@@ -1,5 +1,5 @@
 #!/bin/bash
-#Date Feb, 25 2014 11:40 EST
+#Date Mar, 19 2014 19:42 CST
 ################################################################################
 # The MIT License (MIT)
 #
@@ -922,6 +922,7 @@ for i in php5-fpm niginx monit fail2ban freeswitch ;do service "${i}" restart  >
 
 #end of fusionpbx install
 
+#scanner blocking
 echo "blocking scanners"
 iptables -I INPUT -j DROP -p udp --dport 5060 -m string --string "friendly-scanner" --algo bm
 iptables -I INPUT -j DROP -p udp --dport 5061 -m string --string "friendly-scanner" --algo bm
@@ -934,6 +935,19 @@ iptables -I INPUT -j DROP -p udp --dport 5067 -m string --string "friendly-scann
 iptables -I INPUT -j DROP -p udp --dport 5068 -m string --string "friendly-scanner" --algo bm
 iptables -I INPUT -j DROP -p udp --dport 5069 -m string --string "friendly-scanner" --algo bm
 iptables -I INPUT -j DROP -p udp --dport 5080 -m string --string "friendly-scanner" --algo bm
+
+#adding in ram cache clearing script. run's once an hour
+echo installing ram cache cleaner script
+cat > "/usr/local/bin/clean-ram-cache.sh" << DELIM
+#!/bin/sh
+sync; echo 3 > /proc/sys/vm/drop_caches
+DELIM
+
+chmod +x /usr/local/bin/clean-ram-cache.sh
+
+cat >> "/etc/crontab" << DELIM
+0 *		* * *	root		/usr/local/bin/clean-ram-cache.sh && run-parts --report /etc/cron.hourly
+DELIM
 
 #Ajenti admin portal. Makes maintaining the system easier.
 #ADD Ajenti repo & ajenti
