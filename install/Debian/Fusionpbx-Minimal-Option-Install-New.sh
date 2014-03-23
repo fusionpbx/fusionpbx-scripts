@@ -319,10 +319,10 @@ echo ' installing freeswitch deps '
 for i in curl unixodbc uuid memcached libtiff5 libtiff-tools ghostscript ;do apt-get -y install "${i}" ; done
 # install freeswitch fusionpbx install
 echo ' installing freeswitch pkgs '
-for i in freeswitch freeswitch-init freeswitch-lang-en freeswitch-meta-codecs freeswitch-mod-avmd freeswitch-mod-commands freeswitch-mod-curl \
+for i in freeswitch freeswitch-init freeswitch-lang-en freeswitch-meta-codecs freeswitch-mod-commands freeswitch-mod-curl \
 		freeswitch-mod-db freeswitch-mod-distributor freeswitch-mod-dptools freeswitch-mod-enum freeswitch-mod-esf freeswitch-mod-esl freeswitch-mod-expr \
 		freeswitch-mod-fsv freeswitch-mod-hash freeswitch-mod-memcache freeswitch-mod-portaudio freeswitch-mod-portaudio-stream freeswitch-mod-random \
-		freeswitch-mod-spandsp freeswitch-mod-spy freeswitch-mod-translate freeswitch-mod-valet-parking freeswitch-mod-vmd freeswitch-mod-flite \
+		freeswitch-mod-spandsp freeswitch-mod-spy freeswitch-mod-translate freeswitch-mod-valet-parking freeswitch-mod-flite \
 		freeswitch-mod-pocketsphinx freeswitch-mod-tts-commandline freeswitch-mod-dialplan-xml freeswitch-mod-loopback freeswitch-mod-sofia \
 		freeswitch-mod-event-multicast freeswitch-mod-event-socket freeswitch-mod-event-test freeswitch-mod-local-stream freeswitch-mod-native-file \
 		freeswitch-mod-sndfile freeswitch-mod-tone-stream freeswitch-mod-lua freeswitch-mod-console freeswitch-mod-logfile freeswitch-mod-syslog \
@@ -752,7 +752,7 @@ cp -r /usr/share/fusionpbx/resources/install/sounds/* /usr/share/freeswitch/soun
 #chown freeswitch  conf files
 chown -R freeswitch:freeswitch /usr/share/freeswitch/sounds
 
-#fix permissions for "$freeswitch_act_conf" so www-data can write to it
+#fix permissions for "freeswitch sounds dir " so www-data can write to it
 find /usr/share/freeswitch/sounds -type f -exec chmod 660 {} +
 find /usr/share/freeswitch/sounds -type d -exec chmod 770 {} +
 
