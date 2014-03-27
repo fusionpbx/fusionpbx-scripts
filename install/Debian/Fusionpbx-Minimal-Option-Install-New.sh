@@ -140,7 +140,8 @@ freeswitch_mod="/usr/lib/freeswitch/mod"
 # Freeswitch logs dir
 freeswitch_log="/var/log/freeswitch"
 #Fusionpbx Freeswitch active config directory
-fpbx_fs_act_conf="/etc/fusionpbx/conf"
+#fpbx_fs_act_conf="/etc/fusionpbx/conf"
+fpbx_fs_act_conf="/etc/freeswitch"
 #Nginx default www dir
 WWW_PATH="/usr/share/nginx/www" #debian nginx default dir
 #set Web User Interface Dir Name
@@ -732,18 +733,19 @@ chown -R freeswitch:freeswitch "$fpbx_fs_act_conf"
 find "$fpbx_fs_act_conf" -type f -exec chmod 660 {} +
 find "$fpbx_fs_act_conf" -type d -exec chmod 770 {} +
 
+#Setting /etc/default freeswitch startup options with proper scripts dir and to run behind nat.
+#DAEMON_Optional ARGS
+if [ -f /etc/fusionpbx/conf ]
+then
+#/bin/sed -i /etc/default/freeswitch -e s,'^DAEMON_OPTS=.*','DAEMON_OPTS="-conf /etc/fusionpbx/conf -scripts /var/lib/fusionpbx/scripts -rp"',
+/bin/sed -i /etc/default/freeswitch -e s,'^DAEMON_OPTS=.*','DAEMON OPTS="-reincarnate -scripts /var/lib/fusionpbx/scripts -rp"',
+fi
+
 #Put Fusionpbx dialplan scripts into place
 mkdir -p /var/lib/fusionpbx/scripts
 cp -r /usr/share/fusionpbx/resources/install/scripts/* /var/lib/fusionpbx/scripts/
 #chown freeswitch  conf files
 chown -R freeswitch:freeswitch /var/lib/fusionpbx/scripts/
-
-#Setting /etc/default freeswitch startup options with proper scripts dir and to run behind nat.
-#DAEMON_Optional ARGS
-if [ -f /etc/fusionpbx/conf ]
-then
-/bin/sed -i /etc/default/freeswitch -e s,'^DAEMON_OPTS=.*','DAEMON_OPTS="-conf /etc/fusionpbx/conf -scripts /var/lib/fusionpbx/scripts -rp"',
-fi
 
 #Copy fusionpbx sounds into place
 cp -r /usr/share/fusionpbx/resources/install/sounds/* /usr/share/freeswitch/sounds/
@@ -913,7 +915,8 @@ chmod 755 /etc/cron.daily/freeswitch_log_rotation
 #Settinf /etc/default freeswitch stratup options with proper scripts dir and to run without nat.
 #DISABLE NAT
 if [[ $freeswitch_nat == y ]]; then
-	/bin/sed -i /etc/default/freeswitch -e s,'^DAEMON_OPTS=.*','DAEMON_OPTS="-confdir /etc/fusionpbx/conf -scripts /var/lib/fusionpbx/scripts -rp -nonat"',
+	#/bin/sed -i /etc/default/freeswitch -e s,'^DAEMON_OPTS=.*','DAEMON_OPTS="-reincarnate -conf /etc/fusionpbx.conf -scripts /var/lib/fusionpbx/scripts -rp -nonat"',
+	/bin/sed -i /etc/default/freeswitch -e s,'^DAEMON_OPTS=.*','DAEMON_OPTS="-reincarnate -scripts /var/lib/fusionpbx/scripts -rp -nonat"',
 fi
 
 # restarting services
