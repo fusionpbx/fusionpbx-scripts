@@ -75,7 +75,7 @@ app_schema="n"
 app_services="n"			#tools for running services 
 app_sipml5="n"				#HTML5 sip phone
 app_sql_query="n"			#tool to query the sql/sqlite db
-app_time_conditions="y"		#used by ivr 
+app_time_conditions="y"		#used by ivr or other parts for special conditions 
 app_traffic_graph="n"		#graph for monitoring network traffic
 app_voicemail="y"			#Fusionpbx voicemain
 app_xmpp="n"				#xmpp/gtalk/googlevoice interface
@@ -139,8 +139,8 @@ install_ajenti="n"
 freeswitch_mod="/usr/lib/freeswitch/mod"
 # Freeswitch logs dir
 freeswitch_log="/var/log/freeswitch"
-#Freeswitch active config directory
-freeswitch_act_conf="/etc/freeswitch"
+#Fusionpbx Freeswitch active config directory
+fpbx_fs_act_conf="/etc/fusionpbx/conf"
 #Nginx default www dir
 WWW_PATH="/usr/share/nginx/www" #debian nginx default dir
 #set Web User Interface Dir Name
@@ -614,7 +614,6 @@ if [[ $app_hot_desk == "y" ]]; then
 apt-get -y install --force-yes fusionpbx-app-hot-desking
 fi
 
-
 #install fusionpbx_app recordings
 if [[ $app_recordings == "y" ]]; then
 apt-get -y --force-yes install fusionpbx-app-recordings
@@ -724,14 +723,14 @@ cp -rp /usr/share/fusionpbx/templates/provision/yealink /etc/fusionpbx/templates
 fi
 
 #Put Fusionpbx Freeswitch configs into place
-cp -r /usr/share/fusionpbx/resources/templates/conf/ "$freeswitch_act_conf"
+cp -r /usr/share/fusionpbx/resources/templates/conf/ "$fpbx_fs_act_conf"
 
 #chown freeswitch  conf files
-chown -R freeswitch:freeswitch "$freeswitch_act_conf"
+chown -R freeswitch:freeswitch "$fpbx_fs_act_conf"
 
 #fix permissions for "$freeswitch_act_conf" so www-data can write to it
-find "$freeswitch_act_conf" -type f -exec chmod 660 {} +
-find "$freeswitch_act_conf" -type d -exec chmod 770 {} +
+find "$fpbx_fs_act_conf" -type f -exec chmod 660 {} +
+find "$fpbx_fs_act_conf" -type d -exec chmod 770 {} +
 
 #Put Fusionpbx dialplan scripts into place
 mkdir -p /var/lib/fusionpbx/scripts
@@ -739,11 +738,11 @@ cp -r /usr/share/fusionpbx/resources/install/scripts/* /var/lib/fusionpbx/script
 #chown freeswitch  conf files
 chown -R freeswitch:freeswitch /var/lib/fusionpbx/scripts/
 
-#Settinf /etc/default freeswitch stratup options with proper scripts dir and to run behind nat.
+#Setting /etc/default freeswitch startup options with proper scripts dir and to run behind nat.
 #DAEMON_Optional ARGS
-if [ -f /etc/default/freeswitch ]
+if [ -f /etc/fusionpbx/conf ]
 then
-/bin/sed -i /etc/default/freeswitch -e s,'^DAEMON_OPTS=.*','DAEMON_OPTS="-scripts /var/lib/fusionpbx/scripts -rp"',
+/bin/sed -i /etc/default/freeswitch -e s,'^DAEMON_OPTS=.*','DAEMON_OPTS="-conf /etc/fusionpbx/conf -scripts /var/lib/fusionpbx/scripts -rp"',
 fi
 
 #Copy fusionpbx sounds into place
@@ -914,7 +913,7 @@ chmod 755 /etc/cron.daily/freeswitch_log_rotation
 #Settinf /etc/default freeswitch stratup options with proper scripts dir and to run without nat.
 #DISABLE NAT
 if [[ $freeswitch_nat == y ]]; then
-	/bin/sed -i /etc/default/freeswitch -e s,'^DAEMON_OPTS=.*','DAEMON_OPTS="-scripts /var/lib/fusionpbx/scripts -rp -nonat"',
+	/bin/sed -i /etc/default/freeswitch -e s,'^DAEMON_OPTS=.*','DAEMON_OPTS="-confdir /etc/fusionpbx/conf -scripts /var/lib/fusionpbx/scripts -rp -nonat"',
 fi
 
 # restarting services
