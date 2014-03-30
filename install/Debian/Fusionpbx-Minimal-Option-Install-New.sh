@@ -132,16 +132,20 @@ database_user_name=
 #Add Ajenti Admin Portal
 install_ajenti="n"
 
+#Custom Dir Layout
+fs_conf_dir="/etc/fusionpbx/conf"
+fs_db_dir="/var/lib/freeswitch/db"
+fs_log_dir="/var/log/freeswitch"
+fs_mod_dir="/usr/lib/freeswitch/mod"
+fs_recordings_dir="/var/lib/freeswitch/storage/recordings"
+fs_run_dir="/var/run/freeswitch"
+fs_storage_dir="/var/lib/freeswitch/storage"
+fs_temp_dir="/tmp"
 #<------Stop Edit Here-------->
 ################################################################################
 # Hard Set Varitables (Do Not EDIT)
-#Freeswitch module dir
-freeswitch_mod="/usr/lib/freeswitch/mod"
-# Freeswitch logs dir
-freeswitch_log="/var/log/freeswitch"
-#Fusionpbx Freeswitch active config directory
 #fpbx_fs_act_conf="/etc/fusionpbx/conf"
-fpbx_fs_act_conf="/etc/freeswitch"
+fpbx_fs_act_conf="$fs_conf_dir"
 #Nginx default www dir
 WWW_PATH="/usr/share/nginx/www" #debian nginx default dir
 #set Web User Interface Dir Name
@@ -737,8 +741,10 @@ find "$fpbx_fs_act_conf" -type d -exec chmod 770 {} +
 #DAEMON_Optional ARGS
 if [ -f /etc/fusionpbx/conf ]
 then
-#/bin/sed -i /etc/default/freeswitch -e s,'^DAEMON_OPTS=.*','DAEMON_OPTS="-conf /etc/fusionpbx/conf -scripts /var/lib/fusionpbx/scripts -rp"',
-/bin/sed -i /etc/default/freeswitch -e s,'^DAEMON_OPTS=.*','DAEMON OPTS="-reincarnate -scripts /var/lib/fusionpbx/scripts -rp"',
+cat > /etc/default/freeswitch << DELIM
+CONFDIR=$CONFIGDIR
+DAEMON_OPTS="-reincarnate -conf $fs_conf_dir -db $fs_db_dir -log $fs_log_dir -scripts $fs_scripts_dir -recordings $fs_recordings.dir -run $fs_run_dir -storage $fs_storage_dir -temp $fs_temp_dir -rp"
+DELIM
 fi
 
 #Put Fusionpbx dialplan scripts into place
@@ -758,12 +764,12 @@ find /usr/share/freeswitch/sounds -type f -exec chmod 660 {} +
 find /usr/share/freeswitch/sounds -type d -exec chmod 770 {} +
 
 #create xml_cdr dir and chown it properly if the module is installed
-mkdir -p "$freeswitch_log"/xml_cdr
+mkdir -p "$fs_log_dir"/xml_cdr
 #chown the xml_cdr dir
-chown freeswitch:freeswitch "$freeswitch_log"/xml_cdr
+chown freeswitch:freeswitch "$fs_log_dir"/xml_cdr
 
 #fix permissions on the freeswitch xml_cdr dir so fusionpbx can read from it
-find "$freeswitch_log"/xml_cdr -type d -exec chmod 770 {} +
+find "$fs_log_dir"/xml_cdr -type d -exec chmod 770 {} +
 
 for i in freeswitch nginx php5-fpm ;do service "${i}" restart >/dev/null 2>&1 ; done
 
@@ -915,8 +921,10 @@ chmod 755 /etc/cron.daily/freeswitch_log_rotation
 #Settinf /etc/default freeswitch stratup options with proper scripts dir and to run without nat.
 #DISABLE NAT
 if [[ $freeswitch_nat == y ]]; then
-	#/bin/sed -i /etc/default/freeswitch -e s,'^DAEMON_OPTS=.*','DAEMON_OPTS="-reincarnate -conf /etc/fusionpbx.conf -scripts /var/lib/fusionpbx/scripts -rp -nonat"',
-	/bin/sed -i /etc/default/freeswitch -e s,'^DAEMON_OPTS=.*','DAEMON_OPTS="-reincarnate -scripts /var/lib/fusionpbx/scripts -rp -nonat"',
+cat > /etc/default/freeswitch << DELIM
+CONFDIR=$CONFIGDIR
+DAEMON_OPTS="-reincarnate -conf $fs_conf_dir -db $fs_db_dir -log $fs_log_dir -scripts $fs_scripts_dir -recordings $fs_recordings.dir -run $fs_run_dir -storage $fs_storage_dir -temp $fs_temp_dir -rp -nonat"
+DELIM
 fi
 
 # restarting services
