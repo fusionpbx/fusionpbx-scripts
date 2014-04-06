@@ -742,8 +742,8 @@ find "$fpbx_fs_act_conf" -type d -exec chmod 770 {} +
 if [ -f /etc/fusionpbx/conf ]
 then
 cat > "/etc/default/freeswitch" << DELIM
-CONFDIR="$CONFIGDIR"
-DAEMON_OPTS="-reincarnate -conf $fs_conf_dir -db $fs_db_dir -log $fs_log_dir -scripts $fs_scripts_dir -recordings $fs_recordings.dir -run $fs_run_dir -storage $fs_storage_dir -temp $fs_temp_dir -rp"
+CONFDIR="$fs_conf_dir"
+DAEMON_OPTS="-reincarnate -conf "$fs_conf_dir" -db "$fs_db_dir" -log "$fs_log_dir" -scripts "$fs_scripts_dir" -recordings "$fs_recordings_dir" -run "$fs_run_dir" -storage "$fs_storage_dir" -temp "$fs_temp_dir" -rp"
 DELIM
 fi
 
@@ -922,8 +922,8 @@ chmod 755 /etc/cron.daily/freeswitch_log_rotation
 #DISABLE NAT
 if [[ $freeswitch_nat == y ]]; then
 cat > "/etc/default/freeswitch" << DELIM
-CONFDIR=$CONFIGDIR
-DAEMON_OPTS="-reincarnate -conf $fs_conf_dir -db $fs_db_dir -log $fs_log_dir -scripts $fs_scripts_dir -recordings $fs_recordings.dir -run $fs_run_dir -storage $fs_storage_dir -temp $fs_temp_dir -rp -nonat"
+CONFDIR="$fs_conf_dir"
+DAEMON_OPTS="-reincarnate -conf "$fs_conf_dir" -db "$fs_db_dir" -log "$fs_log_dir" -scripts "$fs_scripts_dir" -recordings "$fs_recordings_dir" -run "$fs_run_dir" -storage "$fs_storage_dir" -temp "$fs_temp_dir" -rp -nonat"
 DELIM
 fi
 
