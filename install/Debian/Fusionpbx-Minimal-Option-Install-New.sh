@@ -62,16 +62,15 @@ app_conference="n"			#Orignal conference interface
 app_content="n"				#tool for adding contest to pages.
 app_edit="n"				#tools for editing files
 app_exec="n"				#tools for execuing commands at shell level
-app_fax="y"					# enable fax send/recieve
 app_fifo="n"				#First in first out queues
 app_follow_me="y"			#Find me/ Follow me  
-app_hot_desking="n"			#Hot Desking used for unassigned seating
+app_hot_desk="n"			#Hot Desking used for unassigned seating
 app_hunt_group="n"			#THis Module is beign reworked.
 app_ivr_menu="y"			#Company IVR for routign calls
 app_music_on_hold="y"		#tool for adding in and rm moh sound files
 app_park="y"				#Call Parkign
-app_ring_groups="y"			#ring group interface
-app_schema="n"
+app_ring_group="y"			#ring group interface
+app_schemas="n"
 app_services="n"			#tools for running services 
 app_sipml5="n"				#HTML5 sip phone
 app_sql_query="n"			#tool to query the sql/sqlite db
@@ -159,7 +158,7 @@ echo "This is a one time install script."
 echo "It is not intended to be run multi times"
 echo "If it fails for any reason please report to r.neese@gmail.com. "
 echo "Please include any screen output you can to show where it fails."
-echo ""
+echo 
 
 #Testing for internet connection. Pulled from and modified
 #http://www.linuxscrew.com/2009/04/02/tiny-bash-scripts-check-internet-connection-availability/
@@ -492,37 +491,17 @@ for i in fusionpbx-core fusionpbx-conf fusionpbx-scripts fusionpbx-sounds fusion
 		fusionpbx-app-gateways fusionpbx-app-fax fusionpbx-app-login fusionpbx-app-log-viewer \
 		fusionpbx-app-modules fusionpbx-app-registrations fusionpbx-app-settings fusionpbx-app-sip-profiles \
 		fusionpbx-app-sip-status fusionpbx-app-system fusionpbx-app-xml-cdr fusionpbx-app-vars   
-do 	apt-get -y --force-yes install "${i}"
+do apt-get -y --force-yes install "${i}"
 done
 
-# Pbx Themes
-if [[ $theme_accessible == "y" ]]; then
-apt-get -y --force-yes install fusionpbx-theme-accessible
-fi
-
-if [[ $theme_classic == "y" ]]; then
-apt-get -y --force-yes install fusionpbx-theme-classic
-fi
-
-if [[ $theme_default == "y" ]]; then
-apt-get -y --force-yes install fusionpbx-theme-default
-fi
-
-if [[ $theme_enhanced == "y" ]]; then
-apt-get -y --force-yes install fusionpbx-theme-enhanced
-fi
-
-if [[ $theme_nature == "y" ]]; then
-apt-get install fusionpbx-theme-nature
-fi
-
+#fusion app modules
 #install fusionpbx_adminer
 if [[ $app_adminer == "y" ]]; then
 apt-get -y --force-yes install fusionpbx-app-adminer
 fi
 
 #install fusionpbx_call blocking
-if [[ $app_call_blocking == "y" ]]; then
+if [[ $app_call_block == "y" ]]; then
 apt-get -y --force-yes install fusionpbx-app-call-blocking
 fi
 
@@ -593,7 +572,7 @@ apt-get -y install --force-yes fusionpbx-app-hot-desking
 fi
 
 #install fusionpbx_huntgroup
-if [[ $app_hot_desk == "y" ]]; then
+if [[ $app_hunt_group == "y" ]]; then
 apt-get -y install --force-yes fusionpbx-app-hunt-group
 fi
 
@@ -614,18 +593,18 @@ if [[ $app_park == "y" ]]; then
 apt-get -y install --force-yes fusionpbx-app-park
 fi
 
-#install fusionpbx_hot-desking
-if [[ $app_hot_desk == "y" ]]; then
-apt-get -y install --force-yes fusionpbx-app-hot-desking
-fi
-
 #install fusionpbx_app recordings
 if [[ $app_recordings == "y" ]]; then
 apt-get -y --force-yes install fusionpbx-app-recordings
 fi
 
+#install fusionpbx_hot-desking
+if [[ $app_ring_group == "y" ]]; then
+apt-get -y install --force-yes fusionpbx-app-ring-group
+fi
+
 #install fusionpbx_app schemas
-if [[ $app_ring_schemas == "y" ]]; then
+if [[ $app_schemas == "y" ]]; then
 apt-get -y --force-yes install fusionpbx-app-schemas
 fi
 
@@ -650,8 +629,7 @@ if [[ $app_traffic_graph == "y" ]]; then
 apt-get -y --force-yes install fusionpbx-app-traffic-graphoc
 fi
 
-
-#install fusionpbx_voicemail
+#install fusionpbx_sql query
 if [[ $app_sql_query == "y" ]]; then
 apt-get -y --force-yes install fusionpbx-app-sql-query
 fi
@@ -725,6 +703,27 @@ for i in fusionpbx-app-devices fusionpbx-app-provision fusionpbx-provisioning-te
 do apt-get -y --force-yes install "${i}"
 done
 cp -rp /usr/share/fusionpbx/templates/provision/yealink /etc/fusionpbx/templates/provision/
+fi
+
+# Pbx Themes
+if [[ $theme_accessible == "y" ]]; then
+apt-get -y --force-yes install fusionpbx-theme-accessible
+fi
+
+if [[ $theme_classic == "y" ]]; then
+apt-get -y --force-yes install fusionpbx-theme-classic
+fi
+
+if [[ $theme_default == "y" ]]; then
+apt-get -y --force-yes install fusionpbx-theme-default
+fi
+
+if [[ $theme_enhanced == "y" ]]; then
+apt-get -y --force-yes install fusionpbx-theme-enhanced
+fi
+
+if [[ $theme_nature == "y" ]]; then
+apt-get install fusionpbx-theme-nature
 fi
 
 #Put Fusionpbx Freeswitch configs into place
