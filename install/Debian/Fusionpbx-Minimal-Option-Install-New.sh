@@ -135,7 +135,7 @@ install_ajenti="n"
 fs_conf_dir="/etc/fusionpbx/conf"
 fs_db_dir="/var/lib/freeswitch/db"
 fs_log_dir="/var/log/freeswitch"
-fs_mod_dir="/usr/lib/freeswitch/mod"
+#fs_mod_dir="/usr/lib/freeswitch/mod" (not currently used)
 fs_recordings_dir="/var/lib/freeswitch/storage/recordings"
 fs_run_dir="/var/run/freeswitch"
 fs_scripts_dir="/var/lib/fusionpbx/scripts"
@@ -741,7 +741,7 @@ find "$fpbx_fs_act_conf" -type d -exec chmod 770 {} +
 #DAEMON_Optional ARGS
 cat > "/etc/default/freeswitch" << DELIM
 CONFDIR="$fs_conf_dir"
-DAEMON_OPTS="-reincarnate -conf "$fs_conf_dir" -db "$fs_db_dir" -log "$fs_log_dir" -scripts "$fs_scripts_dir" -recordings "$fs_recordings_dir" -run "$fs_run_dir" -storage "$fs_storage_dir" -temp "$fs_temp_dir" -rp"
+DAEMON_OPTS="-reincarnate -conf "$fs_conf_dir" -db "$fs_db_dir" -log "$fs_log_dir" -scripts "$fs_scripts_dir" -recordings "$fs_recordings_dir" -run "$fs_run_dir" -storage "$fs_storage_dir" -temp "$fs_temp_dir" -rp -nc"
 DELIM
 
 #Put Fusionpbx dialplan scripts into place
