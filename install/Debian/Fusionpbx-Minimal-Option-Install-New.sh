@@ -144,8 +144,8 @@ fs_temp_dir="/tmp"
 #<------Stop Edit Here-------->
 ################################################################################
 # Hard Set Varitables (Do Not EDIT)
-#fpbx_fs_act_conf="/etc/fusionpbx/conf"
-fpbx_fs_act_conf="$fs_conf_dir"
+#fpbx_act_conf="/etc/fusionpbx/conf"
+fpbx_act_conf="$fs_conf_dir"
 #Nginx default www dir
 WWW_PATH="/usr/share/nginx/www" #debian nginx default dir
 #set Web User Interface Dir Name
@@ -728,14 +728,14 @@ apt-get install fusionpbx-theme-nature
 fi
 
 #Put Fusionpbx Freeswitch configs into place
-cp -r /usr/share/fusionpbx/resources/templates/conf/ "$fpbx_fs_act_conf"
+cp -r /usr/share/fusionpbx/resources/templates/conf/ "$fpbx_act_conf"
 
 #chown freeswitch  conf files
-chown -R freeswitch:freeswitch "$fpbx_fs_act_conf"
+chown -R freeswitch:freeswitch "$fpbx_act_conf"
 
 #fix permissions for "$freeswitch_act_conf" so www-data can write to it
-find "$fpbx_fs_act_conf" -type f -exec chmod 660 {} +
-find "$fpbx_fs_act_conf" -type d -exec chmod 770 {} +
+find "$fpbx_act_conf" -type f -exec chmod 660 {} +
+find "$fpbx_act_conf" -type d -exec chmod 770 {} +
 
 #Setting /etc/default freeswitch startup options with proper scripts dir and to run behind nat.
 #DAEMON_Optional ARGS
