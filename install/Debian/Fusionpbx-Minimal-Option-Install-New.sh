@@ -728,14 +728,14 @@ apt-get install fusionpbx-theme-nature
 fi
 
 #Put Fusionpbx Freeswitch configs into place
-cp -r /usr/share/fusionpbx/resources/templates/conf/ "$fpbx_act_conf"
+#cp -r /usr/share/fusionpbx/resources/templates/conf/ "$fpbx_act_conf"
 
 #chown freeswitch  conf files
-chown -R freeswitch:freeswitch "$fpbx_act_conf"
+#chown -R freeswitch:freeswitch "$fpbx_act_conf"
 
 #fix permissions for "$freeswitch_act_conf" so www-data can write to it
-find "$fpbx_act_conf" -type f -exec chmod 660 {} +
-find "$fpbx_act_conf" -type d -exec chmod 770 {} +
+#find "$fpbx_act_conf" -type f -exec chmod 660 {} +
+#find "$fpbx_act_conf" -type d -exec chmod 770 {} +
 
 #Setting /etc/default freeswitch startup options with proper scripts dir and to run behind nat.
 #DAEMON_Optional ARGS
@@ -745,10 +745,10 @@ DAEMON_OPTS="-reincarnate -conf "$fs_conf_dir" -db "$fs_db_dir" -log "$fs_log_di
 DELIM
 
 #Put Fusionpbx dialplan scripts into place
-mkdir -p /var/lib/fusionpbx/scripts
-cp -r /usr/share/fusionpbx/resources/install/scripts/* /var/lib/fusionpbx/scripts/
+#mkdir -p /var/lib/fusionpbx/scripts
+#cp -r /usr/share/fusionpbx/resources/install/scripts/* /var/lib/fusionpbx/scripts/
 #chown freeswitch  conf files
-chown -R freeswitch:freeswitch /var/lib/fusionpbx/scripts/
+#chown -R freeswitch:freeswitch /var/lib/fusionpbx/scripts/
 
 #Copy fusionpbx sounds into place
 cp -r /usr/share/fusionpbx/resources/install/sounds/* /usr/share/freeswitch/sounds/
