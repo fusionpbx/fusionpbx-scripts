@@ -138,7 +138,7 @@ fs_log_dir="/var/log/freeswitch"
 #fs_mod_dir="/usr/lib/freeswitch/mod" (not currently used)
 fs_recordings_dir="/var/lib/freeswitch/storage/recordings"
 fs_run_dir="/var/run/freeswitch"
-fs_scripts_dir="/var/lib/fusionpbx/scripts"
+fs__dir="/var/lib/fusionpbx/scripts"
 fs_storage_dir="/var/lib/freeswitch/storage"
 fs_temp_dir="/tmp"
 #<------Stop Edit Here-------->
@@ -727,15 +727,8 @@ if [[ $theme_nature == "y" ]]; then
 apt-get install fusionpbx-theme-nature
 fi
 
-#Put Fusionpbx Freeswitch configs into place
-#cp -r /usr/share/fusionpbx/resources/templates/conf/ "$fpbx_act_conf"
-
-#chown freeswitch  conf files
-#chown -R freeswitch:freeswitch "$fpbx_act_conf"
-
-#fix permissions for "$freeswitch_act_conf" so www-data can write to it
-#find "$fpbx_act_conf" -type f -exec chmod 660 {} +
-#find "$fpbx_act_conf" -type d -exec chmod 770 {} +
+mkdir /etc/fusionpbx/conf
+mkdir /var/lib/fusionpbx/scripts
 
 #Setting /etc/default freeswitch startup options with proper scripts dir and to run behind nat.
 #DAEMON_Optional ARGS
@@ -743,12 +736,6 @@ cat > "/etc/default/freeswitch" << DELIM
 CONFDIR="$fs_conf_dir"
 DAEMON_OPTS="-reincarnate -conf "$fs_conf_dir" -db "$fs_db_dir" -log "$fs_log_dir" -scripts "$fs_scripts_dir" -recordings "$fs_recordings_dir" -run "$fs_run_dir" -storage "$fs_storage_dir" -temp "$fs_temp_dir" -rp -nc"
 DELIM
-
-#Put Fusionpbx dialplan scripts into place
-#mkdir -p /var/lib/fusionpbx/scripts
-#cp -r /usr/share/fusionpbx/resources/install/scripts/* /var/lib/fusionpbx/scripts/
-#chown freeswitch  conf files
-#chown -R freeswitch:freeswitch /var/lib/fusionpbx/scripts/
 
 #Copy fusionpbx sounds into place
 cp -r /usr/share/fusionpbx/resources/install/sounds/* /usr/share/freeswitch/sounds/
