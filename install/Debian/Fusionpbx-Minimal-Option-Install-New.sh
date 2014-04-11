@@ -729,6 +729,7 @@ fi
 
 mkdir /etc/fusionpbx/conf
 mkdir /var/lib/fusionpbx/scripts
+chown -R www-data:www-data /etc/fusionpbx/conf /var/lib/fusionpbx/scripts
 
 #Setting /etc/default freeswitch startup options with proper scripts dir and to run behind nat.
 #DAEMON_Optional ARGS
