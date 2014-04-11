@@ -730,6 +730,8 @@ fi
 mkdir /etc/fusionpbx/conf
 mkdir /var/lib/fusionpbx/scripts
 chown -R www-data:www-data /etc/fusionpbx/conf /var/lib/fusionpbx/scripts
+find /etc/fusionpbx/conf -type d -exec chmod 770 {} +
+find /var/lib/fusionpbx/scripts -type d -exec chmod 770 {} +
 
 #Setting /etc/default freeswitch startup options with proper scripts dir and to run behind nat.
 #DAEMON_Optional ARGS
