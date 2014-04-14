@@ -138,7 +138,7 @@ fs_log_dir="/var/log/freeswitch"
 #fs_mod_dir="/usr/lib/freeswitch/mod" (not currently used)
 fs_recordings_dir="/var/lib/freeswitch/storage/recordings"
 fs_run_dir="/var/run/freeswitch"
-fs__dir="/var/lib/fusionpbx/scripts"
+fs_scripts_dir="/var/lib/fusionpbx/scripts"
 fs_storage_dir="/var/lib/freeswitch/storage"
 fs_temp_dir="/tmp"
 #<------Stop Edit Here-------->
