@@ -140,7 +140,7 @@ fs_recordings_dir="/var/lib/freeswitch/storage/recordings"
 fs_run_dir="/var/run/freeswitch"
 fs_scripts_dir="/var/lib/fusionpbx/scripts"
 fs_storage_dir="/var/lib/freeswitch/storage"
-fs_temp_dir="/tmp"
+#fs_temp_dir="/tmp"
 #<------Stop Edit Here-------->
 ################################################################################
 # Hard Set Varitables (Do Not EDIT)
@@ -736,8 +736,8 @@ find /var/lib/fusionpbx -type d -exec chmod 770 {} +
 #Setting /etc/default freeswitch startup options with proper scripts dir and to run behind nat.
 #DAEMON_Optional ARGS
 cat > "/etc/default/freeswitch" << DELIM
-CONFDIR="$fs_conf_dir"
-DAEMON_OPTS="-reincarnate -conf "$fs_conf_dir" -db "$fs_db_dir" -log "$fs_log_dir" -scripts "$fs_scripts_dir" -recordings "$fs_recordings_dir" -run "$fs_run_dir" -storage "$fs_storage_dir" -temp "$fs_temp_dir" -rp -nc"
+CONFDIR=$fs_conf_dir
+DAEMON_OPTS="-conf "$fs_conf_dir" -db "$fs_db_dir" -log "$fs_log_dir" -scripts "$fs_scripts_dir" -recordings "$fs_recordings_dir" -run "$fs_run_dir" -storage "$fs_storage_dir" -rp -nc"
 DELIM
 
 #Copy fusionpbx sounds into place
@@ -910,7 +910,7 @@ chmod 755 /etc/cron.daily/freeswitch_log_rotation
 if [[ $freeswitch_nat == y ]]; then
 cat > "/etc/default/freeswitch" << DELIM
 CONFDIR="$fs_conf_dir"
-DAEMON_OPTS="-reincarnate -conf "$fs_conf_dir" -db "$fs_db_dir" -log "$fs_log_dir" -scripts "$fs_scripts_dir" -recordings "$fs_recordings_dir" -run "$fs_run_dir" -storage "$fs_storage_dir" -temp "$fs_temp_dir" -rp -nc -nonat"
+DAEMON_OPTS=" -conf "$fs_conf_dir" -db "$fs_db_dir" -log "$fs_log_dir" -scripts "$fs_scripts_dir" -recordings "$fs_recordings_dir" -run "$fs_run_dir" -storage "$fs_storage_dir" -rp -nc -nonat"
 DELIM
 fi
 
