@@ -2077,6 +2077,9 @@ DELIM
 			#lucid ppa conf files changed 1/20/2013
 			PHPINIFILE="/etc/php5/fpm/php.ini"
 			PHPCONFFILE="/etc/php5/fpm/pool.d/www.conf"
+		elif [ $DISTRO = "wheezy" ]; then
+			PHPINIFILE="/etc/php5/fpm/php.ini"
+			PHPCONFFILE="/etc/php5/fpm/php-fpm.conf"
 		else
 			PHPINIFILE="/etc/php5/fpm/php.ini"
 			PHPCONFFILE="/etc/php5/fpm/php5-fpm.conf"
