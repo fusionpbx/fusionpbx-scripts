@@ -737,7 +737,7 @@ find /var/lib/fusionpbx -type d -exec chmod 770 {} +
 #DAEMON_Optional ARGS
 cat > "/etc/default/freeswitch" << DELIM
 CONFDIR=$fs_conf_dir
-DAEMON_OPTS="-conf $fs_conf_dir -db $fs_db_dir -log $fs_log_dir -scripts $fs_scripts_dir -run $fs_run_dir -storage $fs_storage_dir -recordings $fs_recordings_dir -rp -nc"
+DAEMON_OPTS="-rp -nonat -conf $fs_conf_dir -db $fs_db_dir -log $fs_log_dir -scripts $fs_scripts_dir -run $fs_run_dir -storage $fs_storage_dir -recordings $fs_recordings_dir -nc"
 DELIM
 
 #Copy fusionpbx sounds into place
@@ -910,7 +910,7 @@ chmod 755 /etc/cron.daily/freeswitch_log_rotation
 if [[ $freeswitch_nat == y ]]; then
 cat > "/etc/default/freeswitch" << DELIM
 CONFDIR=$fs_conf_dir
-DAEMON_OPTS="-conf $fs_conf_dir -db $fs_db_dir -log $fs_log_dir -scripts $fs_scripts_dir -run $fs_run_dir -storage $fs_storage_dir -recordings $fs_recordings_dir -rp -nc -nonat"
+DAEMON_OPTS="-rp -nonat -conf $fs_conf_dir -db $fs_db_dir -log $fs_log_dir -scripts $fs_scripts_dir -run $fs_run_dir -storage $fs_storage_dir -recordings $fs_recordings_dir -nc"
 DELIM
 fi
 
