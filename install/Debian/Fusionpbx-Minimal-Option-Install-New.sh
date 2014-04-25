@@ -337,6 +337,10 @@ for i in freeswitch freeswitch-init freeswitch-lang-en freeswitch-meta-codecs fr
 do apt-get -y install --force-yes "${i}" 
 done
 
+#make the conf dir 
+mkdir -p "$fs_conf_dir"
+
+#cp the default configugs into place.
 cp -rp "$fs_dflt_conf_dir"/vanilla/* "$fs_conf_dir"
 
 #fix ownership of files for freeswitch and fusion to have access with no conflicts
@@ -742,9 +746,8 @@ if [[ $theme_nature == "y" ]]; then
 apt-get install fusionpbx-theme-nature
 fi
 
-mkdir /etc/fusionpbx/conf
 mkdir /var/lib/fusionpbx/scripts
-chown -R www-data:www-data /etc/fusionpbx/conf /var/lib/fusionpbx/scripts
+chown -R www-data:www-data /var/lib/fusionpbx/scripts
 find /etc/fusionpbx -type d -exec chmod 770 {} +
 find /var/lib/fusionpbx -type d -exec chmod 770 {} +
 
@@ -752,7 +755,7 @@ find /var/lib/fusionpbx -type d -exec chmod 770 {} +
 #DAEMON_Optional ARGS
 cat > "/etc/default/freeswitch" << DELIM
 CONFDIR=$fs_conf_dir
-DAEMON_OPTS="-rp -nonat -conf $fs_conf_dir -db $fs_db_dir -log $fs_log_dir -scripts $fs_scripts_dir -run $fs_run_dir -storage $fs_storage_dir -recordings $fs_recordings_dir -nc"
+DAEMON_OPTS="-rp -conf $fs_conf_dir -db $fs_db_dir -log $fs_log_dir -scripts $fs_scripts_dir -run $fs_run_dir -storage $fs_storage_dir -recordings $fs_recordings_dir -nc"
 DELIM
 
 #Copy fusionpbx sounds into place
