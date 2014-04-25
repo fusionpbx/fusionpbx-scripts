@@ -344,6 +344,7 @@ mkdir -p "$fs_conf_dir"
 cp -rp "$fs_dflt_conf_dir"/vanilla/* "$fs_conf_dir"
 
 #fix ownership of files for freeswitch and fusion to have access with no conflicts
+chown www-data:www-data /etc/fusionpbx
 chown -R freeswitch:freeswitch "$fs_conf_dir"
 
 #fix permissions for "$fs_conf_dir" so www-data can write to it
@@ -759,7 +760,7 @@ DAEMON_OPTS="-rp -conf $fs_conf_dir -db $fs_db_dir -log $fs_log_dir -scripts $fs
 DELIM
 
 #Copy fusionpbx sounds into place
-cp -r /usr/share/fusionpbx/resources/install/sounds/* /usr/share/freeswitch/sounds/
+cp -rp /usr/share/fusionpbx/resources/install/sounds/* /usr/share/freeswitch/sounds/
 
 #chown freeswitch  conf files
 chown -R freeswitch:freeswitch /usr/share/freeswitch/sounds
