@@ -133,6 +133,7 @@ install_ajenti="n"
 
 #Custom Dir Layout
 fs_conf_dir="/etc/fusionpbx/conf"
+fs_dflt_conf_dir="/usr/share/freeswitch/conf"
 fs_db_dir="/var/lib/freeswitch/db"
 fs_log_dir="/var/log/freeswitch"
 #fs_mod_dir="/usr/lib/freeswitch/mod" (not currently used)
@@ -332,9 +333,23 @@ for i in freeswitch freeswitch-init freeswitch-lang-en freeswitch-meta-codecs fr
 		freeswitch-mod-event-multicast freeswitch-mod-event-socket freeswitch-mod-event-test freeswitch-mod-local-stream freeswitch-mod-native-file \
 		freeswitch-mod-sndfile freeswitch-mod-tone-stream freeswitch-mod-lua freeswitch-mod-console freeswitch-mod-logfile freeswitch-mod-syslog \
 		freeswitch-mod-say-en freeswitch-mod-posix-timer freeswitch-mod-timerfd freeswitch-mod-xml-cdr freeswitch-mod-xml-curl freeswitch-mod-xml-rpc \
-		freeswitch-sounds freeswitch-music freeswitch-mod-vlc 
+		freeswitch-sounds freeswitch-music freeswitch-mod-vlc freeswitch-conf-vanilla
 do apt-get -y install --force-yes "${i}" 
 done
+
+cp -rp "$fs_dflt_conf_dir"/vanilla/* "$fs_conf_dir"
+
+#fix ownership of files for freeswitch and fusion to have access with no conflicts
+chown -R freeswitch:freeswitch "$fs_conf_dir"
+
+#fix permissions for "$fs_conf_dir" so www-data can write to it
+find "$fs_conf_dir" -type f -exec chmod 660 {} +
+find "$fs_conf_dir" -type d -exec chmod 770 {} +
+
+#fix permissions on the freeswitch xml_cdr dir so fusionpbx can read from it
+find "$fs_log_dir"/xml_cdr -type d -exec chmod 770 {} +
+
+service freeswitch start
 
 #Start of FusionPBX / nginx / php5 install
 #Install and configure  PHP + Nginx + sqlite3 for use with the fusionpbx gui.
