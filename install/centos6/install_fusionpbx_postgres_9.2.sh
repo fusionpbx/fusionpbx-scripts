@@ -146,9 +146,9 @@ cd fusionpbxinstall
 
 # dz add the postgresql 9.2 repository so it can be installed via yum
 if [ ${MACHINE_TYPE} == 'x86_64' ]; then
-  wget http://yum.pgrpms.org/9.2/redhat/rhel-6-x86_64/pgdg-centos92-9.2-6.noarch.rpm
+  wget http://yum.postgresql.org/9.2/redhat/rhel-6-x86_64/pgdg-centos92-9.2-6.noarch.rpm
 else
-  wget http://yum.pgrpms.org/9.2/redhat/rhel-6-i386/pgdg-centos92-9.2-6.noarch.rpm
+  wget http://yum.postgresql.org/9.2/redhat/rhel-6-i386/pgdg-centos92-9.2-6.noarch.rpm
 fi
 rpm -ivh pgdg-centos92-9.2-6.noarch.rpm
 
