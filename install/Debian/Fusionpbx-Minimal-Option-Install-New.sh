@@ -132,7 +132,7 @@ database_user_name=
 install_ajenti="n"
 
 #Custom Dir Layout
-fs_conf_dir="/etc/fusionpbx/conf"
+fs_conf_dir="/etc/freeswitch"
 fs_dflt_conf_dir="/usr/share/freeswitch/conf"
 fs_db_dir="/var/lib/freeswitch/db"
 fs_log_dir="/var/log/freeswitch"
@@ -344,7 +344,6 @@ mkdir -p "$fs_conf_dir"
 cp -rp "$fs_dflt_conf_dir"/vanilla/* "$fs_conf_dir"
 
 #fix ownership of files for freeswitch and fusion to have access with no conflicts
-chown www-data:www-data /etc/fusionpbx
 chown -R freeswitch:freeswitch "$fs_conf_dir"
 
 #fix permissions for "$fs_conf_dir" so www-data can write to it
@@ -353,6 +352,20 @@ find "$fs_conf_dir" -type d -exec chmod 770 {} +
 
 #fix permissions on the freeswitch xml_cdr dir so fusionpbx can read from it
 find "$fs_log_dir"/xml_cdr -type d -exec chmod 770 {} +
+
+#Settinf /etc/default freeswitch stratup options with proper scripts dir and to run without nat.
+#DISABLE NAT
+if [[ $freeswitch_nat == y ]]; then
+cat > "/etc/default/freeswitch" << DELIM
+CONFDIR=$fs_conf_dir
+DAEMON_ARGS="-rp -nonat -conf $fs_conf_dir -db $fs_db_dir -log $fs_log_dir -scripts $fs_scripts_dir -run $fs_run_dir -storage $fs_storage_dir -recordings $fs_recordings_dir -nc"
+DELIM
+else
+cat > "/etc/default/freeswitch" << DELIM
+CONFDIR=$fs_conf_dir
+DAEMON_ARGS="-rp -conf $fs_conf_dir -db $fs_db_dir -log $fs_log_dir -scripts $fs_scripts_dir -run $fs_run_dir -storage $fs_storage_dir -recordings $fs_recordings_dir -nc"
+DELIM
+fi
 
 service freeswitch start
 
@@ -748,16 +761,10 @@ apt-get install fusionpbx-theme-nature
 fi
 
 mkdir /var/lib/fusionpbx/scripts
+chown -R www-data:www-data /etc/fusionpbx
 chown -R www-data:www-data /var/lib/fusionpbx/scripts
 find /etc/fusionpbx -type d -exec chmod 770 {} +
 find /var/lib/fusionpbx -type d -exec chmod 770 {} +
-
-#Setting /etc/default freeswitch startup options with proper scripts dir and to run behind nat.
-#DAEMON_Optional ARGS
-cat > "/etc/default/freeswitch" << DELIM
-CONFDIR=$fs_conf_dir
-DAEMON_OPTS="-rp -conf $fs_conf_dir -db $fs_db_dir -log $fs_log_dir -scripts $fs_scripts_dir -run $fs_run_dir -storage $fs_storage_dir -recordings $fs_recordings_dir -nc"
-DELIM
 
 #Copy fusionpbx sounds into place
 cp -rp /usr/share/fusionpbx/resources/install/sounds/* /usr/share/freeswitch/sounds/
@@ -771,6 +778,7 @@ find /usr/share/freeswitch/sounds -type d -exec chmod 770 {} +
 
 #create xml_cdr dir and chown it properly if the module is installed
 mkdir -p "$fs_log_dir"/xml_cdr
+
 #chown the xml_cdr dir
 chown freeswitch:freeswitch "$fs_log_dir"/xml_cdr
 
@@ -923,15 +931,6 @@ fi
 DELIM
 
 chmod 755 /etc/cron.daily/freeswitch_log_rotation
-
-#Settinf /etc/default freeswitch stratup options with proper scripts dir and to run without nat.
-#DISABLE NAT
-if [[ $freeswitch_nat == y ]]; then
-cat > "/etc/default/freeswitch" << DELIM
-CONFDIR=$fs_conf_dir
-DAEMON_OPTS="-rp -nonat -conf $fs_conf_dir -db $fs_db_dir -log $fs_log_dir -scripts $fs_scripts_dir -run $fs_run_dir -storage $fs_storage_dir -recordings $fs_recordings_dir -nc"
-DELIM
-fi
 
 # restarting services
 for i in php5-fpm niginx monit fail2ban freeswitch ;do service "${i}" restart  >/dev/null 2>&1 ; done
