@@ -142,6 +142,8 @@ fs_run_dir="/var/run/freeswitch"
 fs_scripts_dir="/var/lib/fusionpbx/scripts"
 fs_storage_dir="/var/lib/freeswitch/storage"
 #fs_temp_dir="/tmp"
+fs_usr=freeswitch
+fs_grp=$fs_usr
 #<------Stop Edit Here-------->
 ################################################################################
 # Hard Set Varitables (Do Not EDIT)
@@ -238,6 +240,8 @@ else
         fi
 fi
 
+apt-get update && apt-get upgrade
+
 #adding FusionPBX repo ( contains freeswitch armhf debs, and a few custom scripts debs)
 case $(uname -m) in armv7l)
 if [[ $freeswitch_repo == "stable" ]]; then
@@ -307,17 +311,17 @@ deb http://repo.fusionpbx.com/deb-dev/debian/ wheezy main
 DELIM
 fi
 
-apt-get update
-
-#freeswitch repo for x86 x86-64 bit pkgs
+#postgresql 9.3 repo for x86 x86-64 bit pkgs
 case $(uname -m) in x86_64|i[4-6]86)
 #add in pgsql 9.3
 cat > "/etc/apt/sources.list.d/pgsql-pgdg.list" << DELIM
 deb http://apt.postgresql.org/pub/repos/apt/ wheezy-pgdg main
 DELIM
 #add pgsql repo key
-wget --quiet -O - https://www.postgresql.org/media/keys/ACCC4CF8.asc | apt-key add -
+wget --quiet -O - http://apt.postgresql.org/pub/repos/apt/ACCC4CF8.asc | apt-key add -
 esac
+
+apt-get update && apt-get upgrade
 
 echo ' Installing freeswitch '
 #install Freeswitch Deps
@@ -358,12 +362,12 @@ find "$fs_log_dir"/xml_cdr -type d -exec chmod 770 {} +
 if [[ $freeswitch_nat == y ]]; then
 cat > "/etc/default/freeswitch" << DELIM
 CONFDIR=$fs_conf_dir
-DAEMON_ARGS="-rp -nonat -conf $fs_conf_dir -db $fs_db_dir -log $fs_log_dir -scripts $fs_scripts_dir -run $fs_run_dir -storage $fs_storage_dir -recordings $fs_recordings_dir -nc"
+DAEMON_ARGS="-u $fs_usr -g $fs_grp -rp -nonat -conf $fs_conf_dir -db $fs_db_dir -log $fs_log_dir -scripts $fs_scripts_dir -run $fs_run_dir -storage $fs_storage_dir -recordings $fs_recordings_dir -nc"
 DELIM
 else
 cat > "/etc/default/freeswitch" << DELIM
 CONFDIR=$fs_conf_dir
-DAEMON_ARGS="-rp -conf $fs_conf_dir -db $fs_db_dir -log $fs_log_dir -scripts $fs_scripts_dir -run $fs_run_dir -storage $fs_storage_dir -recordings $fs_recordings_dir -nc"
+DAEMON_ARGS="-u $fs_usr -g $fs_grp -rp -conf $fs_conf_dir -db $fs_db_dir -log $fs_log_dir -scripts $fs_scripts_dir -run $fs_run_dir -storage $fs_storage_dir -recordings $fs_recordings_dir -nc"
 DELIM
 fi
 
