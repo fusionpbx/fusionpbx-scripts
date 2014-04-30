@@ -58,7 +58,7 @@ fi
 
 # Do a Yum Update to update the system and then install all other required modules 
 yum update -y
-yum -y install autoconf automake gcc-c++ git-core libjpeg-devel libtool make ncurses-devel pkgconfig unixODBC-devel openssl-devel gnutls-devel libogg-devel libvorbis-devel curl-devel libtiff-devel libjpeg-devel python-devel expat-devel zlib zlib-devel bzip2 which postgresql-devel postgresql-odbc postgresql-server subversion screen vim php* ntp
+yum -y install autoconf automake gcc-c++ git-core libjpeg-devel libtool make ncurses-devel pkgconfig unixODBC-devel openssl-devel gnutls-devel libogg-devel libvorbis-devel curl-devel libtiff-devel libjpeg-devel python-devel expat-devel zlib zlib-devel bzip2 which postgresql-devel postgresql-odbc postgresql-server subversion screen vim php* ntp sudo ghostscript libtiff
 
 #lets get the Time Right
 ntpdate pool.ntp.org
@@ -258,6 +258,16 @@ chkconfig postgresql on
 
 #set this back to normal
 /bin/sed -i -e s,'trust','ident', /etc/init.d/postgresql
+
+#create users for core Freeswitch
+cd /var/tmp
+sudo -u postgres /usr/pgsql-9.2/bin/createuser -s -e freeswitch
+sudo -u postgres /usr/pgsql-9.2/bin/createdb -E UTF8 -O freeswitch freeswitch
+
+# dz create a fusionpbx user and a fusionpbx database.
+cd /var/tmp
+sudo -u postgres /usr/pgsql-9.2/bin/createuser -s -e fusionpbx
+sudo -u postgres /usr/pgsql-9.2/bin/createdb -E UTF8 -O fusionpbx fusionpbx
 
 #disable epel repo for normal use. Leaving it enabled canhave unintended consequences
 /bin/sed -i -e s,'enabled=1','enabled=0', /etc/yum.repos.d/epel.repo

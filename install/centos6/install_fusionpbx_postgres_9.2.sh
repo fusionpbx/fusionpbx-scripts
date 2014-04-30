@@ -104,6 +104,10 @@ echo "Aborting"
 exit
 fi
 
+###############
+
+#install dependencies
+yum -y sudo ghostscript libtiff
 
 ###########################################3
 #dz  Install OpenSSL for TLS and SRTP support
@@ -230,7 +234,7 @@ git checkout v1.2.stable
 /bin/sed -i -e s,'#event_handlers/mod_snmp','event_handlers/mod_snmp', /usr/src/freeswitch/modules.conf
 /bin/sed -i -e s,'#formats/mod_shout','formats/mod_shout', /usr/src/freeswitch/modules.conf
 /bin/sed -i -e s,'#asr_tts/mod_tts_commandline','asr_tts/mod_tts_commandline', /usr/src/freeswitch/modules.conf
-/bin/sed -i -e s,'#asr_tts/mod_flite','asr_ttsmod_flite', /usr/src/freeswitch/modules.conf
+/bin/sed -i -e s,'#asr_tts/mod_flite','asr_tts/mod_flite', /usr/src/freeswitch/modules.conf
 
 ./configure --without-libcurl -C
 make -j `cat /proc/cpuinfo |grep processor |wc -l`
