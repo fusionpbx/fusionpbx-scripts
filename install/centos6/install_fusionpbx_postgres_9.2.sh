@@ -85,7 +85,7 @@ else
 DOMAINNAME="$defDOMAINNAME"
 fi
 
-defPUBLICHOSTNAME='voice.${DOMAINNAME}'
+defPUBLICHOSTNAME="voice.${DOMAINNAME}"
 
 read -p "Public Hostname [$defPUBLICHOSTNAME]: " -e t1
 if [ -n "$t1" ]
@@ -147,6 +147,9 @@ cd /usr/local/src
 mkdir fusionpbxinstall
 cd fusionpbxinstall
 
+# Do a Yum Update to update the system
+yum update -y
+yum -y install wget
 
 # dz add the postgresql 9.2 repository so it can be installed via yum
 if [ ${MACHINE_TYPE} == 'x86_64' ]; then
@@ -156,8 +159,7 @@ else
 fi
 rpm -ivh pgdg-centos92-9.2-6.noarch.rpm
 
-# Do a Yum Update to update the system and then install all other required modules
-yum update -y
+#install other required packages
 yum -y install autoconf automake gcc-c++ git-core libjpeg-devel libtool make ncurses-devel pkgconfig unixODBC-devel openssl-devel gnutls-devel libogg-devel libvorbis-devel curl-devel libtiff-devel libjpeg-devel python-devel expat-devel zlib zlib-devel bzip2 which postgresql92-devel postgresql92-odbc postgresql92-server subversion screen vim php* ntp
 
 
@@ -627,3 +629,21 @@ As long as you didnt see errors by this point, PostgreSQL, FreeSWITCH, FusionPBX
 Point your browser to http://$LOCAL_IP/ and let the FusionPBX installer take it from there.
 
 EOT
+
+
+#######################################################
+
+##Additional Notes 
+
+#from iliah.i.borg
+
+#If using postgresql92 you may want to create a symlink from /usr/pgsql-9.2/lib/psqlodbcw.so to /usr/lib/psqlodbcw.so or edit lines 169 and 183 to read:
+#Driver = /usr/pgsql-9.2/lib/psqlodbcw.so
+
+#On a side note, to avoid problems,  at a very early stage of system tuning, I usually disable postgresql from normal repo, like:
+#vi /etc/yum.repos.d/CentOS-Base.repo
+#[base]
+#exclude=postgresql*
+#[updates]
+#exclude=postgresql*
+#and install postgresql92-contrib too
