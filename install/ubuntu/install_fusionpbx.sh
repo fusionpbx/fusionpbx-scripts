@@ -94,7 +94,13 @@ FQDN=$(hostname -f)
 SRCPATH="/usr/src/freeswitch"
 #EN_PATH="/usr/local/freeswitch/conf/autoload_configs" #DEFAULT
 EN_PATH="/usr/local/freeswitch/conf/autoload_configs"
+
+#used by NGINX
 WWW_PATH="/var/www"
+
+#used for Apache
+#WWW_PATH="/var/www/html"
+
 GUI_NAME=fusionpbx
 INST_FPBX=svn
 #INST_FPBX=tgz
