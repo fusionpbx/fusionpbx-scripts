@@ -240,7 +240,7 @@ else
         fi
 fi
 
-apt-get update && apt-get upgrade
+apt-get update && apt-get -y upgrade
 
 #adding FusionPBX repo ( contains freeswitch armhf debs, and a few custom scripts debs)
 case $(uname -m) in armv7l)
