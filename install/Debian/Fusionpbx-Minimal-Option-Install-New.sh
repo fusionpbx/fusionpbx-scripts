@@ -321,7 +321,10 @@ DELIM
 wget --quiet -O - http://apt.postgresql.org/pub/repos/apt/ACCC4CF8.asc | apt-key add -
 esac
 
-apt-get update && apt-get upgrade
+apt-get update
+apt-get install ntp
+service ntp restart
+apt-get upgrade
 
 echo ' Installing freeswitch '
 #install Freeswitch Deps
