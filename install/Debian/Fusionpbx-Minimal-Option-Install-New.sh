@@ -322,7 +322,7 @@ wget --quiet -O - http://apt.postgresql.org/pub/repos/apt/ACCC4CF8.asc | apt-key
 esac
 
 apt-get update
-apt-get install ntp
+apt-get -y install ntp
 service ntp restart
 apt-get upgrade
 
