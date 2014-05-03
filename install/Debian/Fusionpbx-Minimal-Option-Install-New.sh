@@ -768,7 +768,6 @@ apt-get install fusionpbx-theme-nature
 fi
 
 mkdir /var/lib/fusionpbx/scripts
-chown -R www-data:www-data /etc/fusionpbx
 chown -R www-data:www-data /var/lib/fusionpbx/scripts
 find /etc/fusionpbx -type d -exec chmod 770 {} +
 find /var/lib/fusionpbx -type d -exec chmod 770 {} +
