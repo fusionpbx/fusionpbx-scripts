@@ -810,8 +810,10 @@ set daemon 60
 set logfile syslog facility log_daemon
 
 check process freeswitch with pidfile /var/run/freeswitch/freeswitch.pid
+restart program = "service freeswitch restart"
 start program = "service freeswitch start"
 stop program = "service freeswitch stop"
+
 DELIM
 
 #Setting up Fail2ban freeswitch config files.
@@ -880,7 +882,6 @@ cat > "/etc/fail2ban/filter.d/fusionpbx.conf"  <<DELIM
 # Fail2Ban configuration file
 #
 [Definition]
-
 failregex = .* fusionpbx: \[<HOST>\] authentication failed for
           = .* fusionpbx: \[<HOST>\] provision attempt bad password for
 
@@ -888,8 +889,8 @@ ignoreregex =
 DELIM
 
 /bin/cat >> /etc/fail2ban/jail.local  <<DELIM
-[fusionpbx]
 
+[fusionpbx]
 enabled  = true
 port     = 80,443
 protocol = tcp
@@ -900,6 +901,48 @@ action   = iptables-allports[name=fusionpbx, protocol=all]
 maxretry = 5
 findtime = 600
 bantime  = 600
+DELIM
+
+cat > "/etc/fail2ban/filter.d/fusionpbx-inbound.conf" <<DELIM
+# Fail2Ban configuration file
+# inbound route - 404 not found
+
+[Definition]
+
+# Option:  failregex
+# Notes.:  regex to match the password failures messages in the logfile. The
+#          host must be matched by a group named "host". The tag "<HOST>" can
+#          be used for standard IP/hostname matching and is only an alias for
+#          (?:::f{4,6}:)?(?P<host>[\w\-.^_]+)
+# Values:  TEXT
+#
+#failregex = [hostname] FusionPBX: \[<HOST>\] authentication failed
+#[hostname] variable doesn't seem to work in every case. Do this instead:
+failregex = 404 not found <HOST>
+
+#EXECUTE sofia/external/9999421150@cgrates.directvoip.co.uk log([inbound routes] 404 not found 82.68.115.62)
+
+# Option:  ignoreregex
+# Notes.:  regex to ignore. If this regex matches, the line is ignored.
+# Values:  TEXT
+#
+ignoreregex =
+
+DELIM
+
+/bin/cat >> /etc/fail2ban/jail.local  <<DELIM
+
+[fusionpbx-inbound]
+enabled  = true
+port 	= 5080
+protocol = udp
+filter   = fusionpbx-inbound
+logpath  = /usr/local/freeswitch/log/freeswitch.log
+action   = iptables-allports[name=fusionpbx-inbound, protocol=all]
+#      	sendmail-whois[name=fusionpbx-inbound, dest=root, sender=fail2ban@example.org] #no smtp server installed
+maxretry = 5
+findtime = 300
+bantime  = 3600
 DELIM
 
 #restarting fail2ban
