@@ -354,11 +354,11 @@ cp -rp "$fs_dflt_conf_dir"/vanilla/* "$fs_conf_dir"
 chown -R freeswitch:freeswitch "$fs_conf_dir"
 
 #fix permissions for "$fs_conf_dir" so www-data can write to it
-find "$fs_conf_dir" -type f -exec chmod 660 {} +
-find "$fs_conf_dir" -type d -exec chmod 770 {} +
+find "$fs_conf_dir" -type f -exec chmod 664 {} +
+find "$fs_conf_dir" -type d -exec chmod 775 {} +
 
 #fix permissions on the freeswitch xml_cdr dir so fusionpbx can read from it
-find "$fs_log_dir"/xml_cdr -type d -exec chmod 770 {} +
+find "$fs_log_dir"/xml_cdr -type d -exec chmod 775 {} +
 
 #Settinf /etc/default freeswitch stratup options with proper scripts dir and to run without nat.
 #DISABLE NAT
@@ -767,10 +767,16 @@ if [[ $theme_nature == "y" ]]; then
 apt-get install fusionpbx-theme-nature
 fi
 
+#set permissions 
+chmod 775 /etc/fusionpbx
+chmod 775 /var/lib/fusionpbx 
+chmod 775 "$fs_db_dir"
+
 mkdir /var/lib/fusionpbx/scripts
-chown -R www-data:www-data /var/lib/fusionpbx/scripts
-find /etc/fusionpbx -type d -exec chmod 770 {} +
-find /var/lib/fusionpbx -type d -exec chmod 770 {} +
+chown -R freeswitch:freeswitch /var/lib/fusionpbx/scripts
+find "$fs_scripts_dir" -type d -exec chmod 775 {} +
+find "$fs_scripts_dir" -type f -exec chmod 664 {} +
+
 
 #Copy fusionpbx sounds into place
 cp -rp /usr/share/fusionpbx/resources/install/sounds/* /usr/share/freeswitch/sounds/
@@ -779,8 +785,8 @@ cp -rp /usr/share/fusionpbx/resources/install/sounds/* /usr/share/freeswitch/sou
 chown -R freeswitch:freeswitch /usr/share/freeswitch/sounds
 
 #fix permissions for "freeswitch sounds dir " so www-data can write to it
-find /usr/share/freeswitch/sounds -type f -exec chmod 660 {} +
-find /usr/share/freeswitch/sounds -type d -exec chmod 770 {} +
+find /usr/share/freeswitch/sounds -type f -exec chmod 664 {} +
+find /usr/share/freeswitch/sounds -type d -exec chmod 775 {} +
 
 #create xml_cdr dir and chown it properly if the module is installed
 mkdir -p "$fs_log_dir"/xml_cdr
@@ -789,7 +795,7 @@ mkdir -p "$fs_log_dir"/xml_cdr
 chown freeswitch:freeswitch "$fs_log_dir"/xml_cdr
 
 #fix permissions on the freeswitch xml_cdr dir so fusionpbx can read from it
-find "$fs_log_dir"/xml_cdr -type d -exec chmod 770 {} +
+chmod 775 "$fs_log_dir"/xml_cdr
 
 for i in freeswitch nginx php5-fpm ;do service "${i}" restart >/dev/null 2>&1 ; done
 
@@ -925,7 +931,7 @@ if [ $? -eq 0 ]; then
        find "$FSPATH" -name "freeswitch.log.*" -cmin -2 -exec gzip {} \;
        find "$FSPATH" -name "freeswitch.log.*.gz" "-mtime" "+$NUMBERDAYS" -exec /bin/rm {} \;
        chown freeswitch:freeswitch "$FSPATH"/freeswitch.log
-       chmod 660 "$FSPATH"/freeswitch.log
+       chmod 664 "$FSPATH"/freeswitch.log
        logger FreeSWITCH Logs rotated
        rm /tmp/<<DELIM
 else
@@ -936,7 +942,7 @@ fi
 
 DELIM
 
-chmod 755 /etc/cron.daily/freeswitch_log_rotation
+chmod 664 /etc/cron.daily/freeswitch_log_rotation
 
 # restarting services
 for i in php5-fpm niginx monit fail2ban freeswitch ;do service "${i}" restart  >/dev/null 2>&1 ; done
