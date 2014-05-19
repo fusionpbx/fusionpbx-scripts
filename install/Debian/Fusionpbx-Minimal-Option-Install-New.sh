@@ -810,9 +810,9 @@ set daemon 60
 set logfile syslog facility log_daemon
 
 check process freeswitch with pidfile /var/run/freeswitch/freeswitch.pid
-restart program = "service freeswitch restart"
-start program = "service freeswitch start"
-stop program = "service freeswitch stop"
+restart program = "/etc/init.d/freeswitch restart"
+start program = "/etc/init.d/freeswitch start"
+stop program = "/etc/init.dfreeswitch stop"
 
 DELIM
 
