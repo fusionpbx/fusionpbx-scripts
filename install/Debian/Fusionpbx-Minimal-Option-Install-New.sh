@@ -1098,7 +1098,12 @@ cat << DELIM
 DELIM
 fi
 
+#reboot Kernel Panic
+cat > /etc/sysctl.conf << DELIM
+kernel.panic = 10
+DELIM
+
 #apt-get cleanup (clean and remove unused pkgs)
-apt-get clean && apt-get autoremove
+apt-get autoclean && apt-get autoremove
 
 echo " The install has finished...  "
