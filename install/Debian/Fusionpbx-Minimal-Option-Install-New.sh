@@ -135,6 +135,9 @@ database_user_name=
 
 #Extra Option's
 
+#Install openvpn scripts
+install_openvpn="n"
+
 #Add Ajenti Admin Portal
 install_ajenti="n"
 
@@ -1023,6 +1026,11 @@ chmod +x /usr/local/bin/clean-ram-cache.sh
 cat >> "/etc/crontab" << DELIM
 0 *		* * *	root		/usr/local/bin/clean-ram-cache.sh && run-parts --report /etc/cron.hourly
 DELIM
+
+#Install openvpn openvpn-scripts 
+if [[ $install_openvpn == "y" ]]; then
+for i in  openvpn openvpn-scripts ;do apt-get -y install --force-yes "${i}"; done
+fi
 
 #Ajenti admin portal. Makes maintaining the system easier.
 #ADD Ajenti repo & ajenti
