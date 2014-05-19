@@ -24,6 +24,13 @@
 # THE SOFTWARE.
 #
 ################################################################################
+echo
+echo "This is a one time install script."
+echo "It is not intended to be run multi times"
+echo "If it fails for any reason please report to r.neese@gmail.com. "
+echo "Please include any screen output you can to show where it fails."
+echo 
+################################################################################
 #checks to see if installing on openvz server
 if [[ -f /proc/vz ]]; then 
 echo "Note: "
@@ -157,12 +164,6 @@ wui_name="fusionpbx"
 php_ini="/etc/php5/fpm/php.ini"
 #################################################################################
 #Start installation
-
-echo "This is a one time install script."
-echo "It is not intended to be run multi times"
-echo "If it fails for any reason please report to r.neese@gmail.com. "
-echo "Please include any screen output you can to show where it fails."
-echo 
 
 #Testing for internet connection. Pulled from and modified
 #http://www.linuxscrew.com/2009/04/02/tiny-bash-scripts-check-internet-connection-availability/
