@@ -778,7 +778,7 @@ fi
 #set permissions 
 chmod 775 /etc/fusionpbx
 chmod 775 /var/lib/fusionpbx 
-chmod 775 "$fs_db_dir"
+chmod 777 "$fs_db_dir"
 
 mkdir /var/lib/fusionpbx/scripts
 chown -R freeswitch:freeswitch /var/lib/fusionpbx/scripts
