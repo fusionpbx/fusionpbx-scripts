@@ -357,7 +357,8 @@ mkdir -p "$fs_conf_dir"
 
 #cp the default configugs into place.
 cp -rp "$fs_dflt_conf_dir"/vanilla/* "$fs_conf_dir"
-rm "$fs_conf_dir"directory/default/*
+rm "$fs_conf_dir"/directory/default/*
+rm "$fs_conf_dir"/dialplan/default/*
 
 #fix ownership of files for freeswitch and fusion to have access with no conflicts
 chown -R freeswitch:freeswitch "$fs_conf_dir"
