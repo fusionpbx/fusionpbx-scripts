@@ -40,6 +40,7 @@ exit
 fi
 #
 ################################################################################
+
 #<------Start Edit HERE--------->
 #Required
 #stable=1.2/beta=1.4/master=1.5 aka git head
@@ -72,11 +73,11 @@ app_exec="n"				#tools for execuing commands at shell level
 app_fifo="n"				#First in first out queues
 app_follow_me="y"			#Find me/ Follow me  
 app_hot_desk="n"			#Hot Desking used for unassigned seating
-app_hunt_group="n"			#THis Module is beign reworked.
+app_hunt_groups="n"			#THis Module is beign reworked.
 app_ivr_menu="y"			#Company IVR for routign calls
 app_music_on_hold="y"		#tool for adding in and rm moh sound files
 app_park="y"				#Call Parkign
-app_ring_group="y"			#ring group interface
+app_ring_groups="y"			#ring group interface
 app_schemas="n"
 app_services="n"			#tools for running services 
 app_sipml5="n"				#HTML5 sip phone
@@ -155,6 +156,7 @@ fs_storage_dir="/var/lib/freeswitch/storage"
 fs_usr=freeswitch
 fs_grp=$fs_usr
 #<------Stop Edit Here-------->
+
 ################################################################################
 # Hard Set Varitables (Do Not EDIT)
 #fpbx_act_conf="/etc/fusionpbx/conf"
@@ -357,7 +359,9 @@ mkdir -p "$fs_conf_dir"
 
 #cp the default configugs into place.
 cp -rp "$fs_dflt_conf_dir"/vanilla/* "$fs_conf_dir"
+#remove un needed default extension xml files
 rm "$fs_conf_dir"/directory/default/*
+#rm un used default dialplan xml files
 rm "$fs_conf_dir"/dialplan/default/*
 
 #fix ownership of files for freeswitch and fusion to have access with no conflicts
@@ -384,7 +388,7 @@ DAEMON_ARGS="-u $fs_usr -g $fs_grp -rp -conf $fs_conf_dir -db $fs_db_dir -log $f
 DELIM
 fi
 
-service freeswitch start
+service freeswitch restart
 
 #Start of FusionPBX / nginx / php5 install
 #Install and configure  PHP + Nginx + sqlite3 for use with the fusionpbx gui.
@@ -623,8 +627,8 @@ apt-get -y install --force-yes fusionpbx-app-hot-desking
 fi
 
 #install fusionpbx_huntgroup
-if [[ $app_hunt_group == "y" ]]; then
-apt-get -y install --force-yes fusionpbx-app-hunt-group
+if [[ $app_hunt_groups == "y" ]]; then
+apt-get -y install --force-yes fusionpbx-app-hunt-groups
 fi
 
 #install fusionpbx ivr
@@ -650,8 +654,8 @@ apt-get -y --force-yes install fusionpbx-app-recordings
 fi
 
 #install fusionpbx_hot-desking
-if [[ $app_ring_group == "y" ]]; then
-apt-get -y install --force-yes fusionpbx-app-ring-group
+if [[ $app_ring_groups == "y" ]]; then
+apt-get -y install --force-yes fusionpbx-app-ring-groups
 fi
 
 #install fusionpbx_app schemas
@@ -780,9 +784,9 @@ fi
 #set permissions 
 chmod 775 /etc/fusionpbx
 chmod 775 /var/lib/fusionpbx 
-chmod 777 "/var/lib/fusionpbx/db
+chmod 777 /var/lib/fusionpbx/db
 
-mkdir /var/lib/fusionpbx/scripts
+mkdir -p /var/lib/fusionpbx/scripts
 chown -R freeswitch:freeswitch /var/lib/fusionpbx/scripts
 find "$fs_scripts_dir" -type d -exec chmod 775 {} +
 find "$fs_scripts_dir" -type f -exec chmod 664 {} +
@@ -1101,7 +1105,7 @@ echo ''
 	printf '	Please open a web-browser to http://'; ip -f inet addr show dev eth0 | sed -n 's/^ *inet *\([.0-9]*\).*/\1/p'
 cat << DELIM
 	or the Doamin name assigned to the machine like http://"$(hostname).$(dnsdomainname)".
-	On the First Configuration page of the web usre interface "$wui_name".
+	On the First Configuration page of the web user interface "$wui_name".
 	Also Please fill in the SuperUser Name and Password fields.
 	Freeswitch & FusionPBX Web User Interface Installation Completed
 	Now you can configure FreeSWITCH using the FusionPBX web user interface
