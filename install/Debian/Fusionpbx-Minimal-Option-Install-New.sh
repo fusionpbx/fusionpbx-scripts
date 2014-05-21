@@ -116,23 +116,23 @@ postgresql_client="n"
 # You should not use postgresql server on a nand/emmc/sd. It cuts the performance
 # life in half due to all the needed reads and writes. This cuts the life of
 # your pbx emmc/sd in half.
-postgresql_server="y"
+postgresql_server="n"
 
 # Set Postgresql Server Admin username
 # Lower case only
-postgresql_admin=PGQSLAdmin
+postgresql_admin=
 
 # Set Postgresql Server Admin password
-postgresql_admin_passwd=PGSQLAdmin2014
+postgresql_admin_passwd=
 
 # Set Database Name used for fusionpbx in the postgresql server
 # (Default: fusionpbx)
-database_name=voyagepbx
+database_name=
 
 # Set FusionPBX database admin name.(used by fusionpbx to access
 # the database table in the postgresql server.
 # (Default: fusionpbx)
-database_user_name=VoyagePBXAdmin
+database_user_name=
 
 #Extra Option's
 
@@ -140,7 +140,7 @@ database_user_name=VoyagePBXAdmin
 install_openvpn="n"
 
 #Add Ajenti Admin Portal
-install_ajenti="y"
+install_ajenti="n"
 
 #Custom Dir Layout
 fs_conf_dir="/etc/freeswitch"
