@@ -29,10 +29,10 @@ echo "This is a one time install script."
 echo "It is not intended to be run multi times"
 echo "If it fails for any reason please report to r.neese@gmail.com. "
 echo "Please include any screen output you can to show where it fails."
-echo 
+echo
 ################################################################################
 #checks to see if installing on openvz server
-if [[ -f /proc/vz ]]; then 
+if [[ -f /proc/vz ]]; then
 echo "Note: "
 echo "Those of you running this script on openvz. You must run it as root and "
 echo "bash  Fusionpbx-Debian-Pkg-Install-New.sh or it fails the networking check."
@@ -59,45 +59,45 @@ keep_logs=5
 
 #Install and use FusionPBX GUI
 #Optional App's 
-app_adminer="n"				#Database admin tool
-app_call_block="y"			#inbound/outbound call blocking
+app_adminer="n"			#Database admin tool
+app_call_block="y"		#inbound/outbound call blocking
 app_call_broadcast="n"
-app_call_center="n"			#Call Center Queues
-app_call_flows="n"			#use to set special modes/custom dial plan
+app_call_center="y"		#Call Center Queues
+app_call_flows="n"		#use to set special modes/custom dial plan
 app_click_to_call="n"		#tool to click to call off the xl_cdr page and from the directory
-app_conference_centers="n"	#Confrences based singe diel in multi room
-app_conference="n"			#Orignal conference interface
-app_content="n"				#tool for adding contest to pages.
-app_edit="n"				#tools for editing files
-app_exec="n"				#tools for execuing commands at shell level
-app_fifo="n"				#First in first out queues
-app_follow_me="y"			#Find me/ Follow me  
-app_hot_desk="n"			#Hot Desking used for unassigned seating
-app_hunt_groups="n"			#THis Module is beign reworked.
-app_ivr_menu="y"			#Company IVR for routign calls
+app_conference_centers="y"	#Confrences based singe diel in multi room
+app_conference="n"		#Orignal conference interface
+app_content="n"			#tool for adding contest to pages.
+app_edit="n"			#tools for editing files
+app_exec="n"			#tools for execuing commands at shell level
+app_fifo="n"			#First in first out queues
+app_follow_me="y"		#Find me/ Follow me
+app_hot_desk="n"		#Hot Desking used for unassigned seating
+app_hunt_groups="n"		#THis Module is beign reworked.
+app_ivr_menu="y"		#Company IVR for routign calls
 app_music_on_hold="y"		#tool for adding in and rm moh sound files
-app_park="y"				#Call Parkign
-app_ring_groups="y"			#ring group interface
+app_park="y"			#Call Parkign
+app_ring_groups="y"		#ring group interface
 app_schemas="n"
-app_services="n"			#tools for running services 
-app_sipml5="n"				#HTML5 sip phone
-app_sql_query="n"			#tool to query the sql/sqlite db
-app_time_conditions="y"		#used by ivr or other parts for special conditions 
+app_services="n"		#tools for running services
+app_sipml5="n"			#HTML5 sip phone
+app_sql_query="n"		#tool to query the sql/sqlite db
+app_time_conditions="y"		#used by ivr or other parts for special conditions
 app_traffic_graph="n"		#graph for monitoring network traffic
-app_voicemail="y"			#Fusionpbx voicemain
-app_xmpp="n"				#xmpp/gtalk/googlevoice interface
+app_voicemail="y"		#Fusionpbx voicemain
+app_xmpp="n"			#xmpp/gtalk/googlevoice interface
 
 #System themes
 theme_accessible="n"
 theme_classic="n"
 theme_default="n"
-theme_enhanced="y"
+theme_enhanced="n"
 theme_nature="n"
 
 #Phone Provisioning templates
 #To enable provisioning please select from templates below.
 templates_aastra="n"
-templates_cisco="n"
+templates_cisco="y"
 templates_grandstream="n"
 templates_linksys="n"
 templates_panasonic="n"
@@ -106,33 +106,33 @@ templates_snom="n"
 templates_yealink="n"
 
 #Optional (Not Required)
-# Please Select Server or Client not both. 
+# Please Select Server or Client not both.
 # Used for connecting to remote postgresql database servers
 # Install postgresql Client 9.x for connection to remote postgresql servers (y/n)
 postgresql_client="n"
 
 # Install postgresql server 9.x (y/n) (client included)(Local Machine)
 # Notice:
-# You should not use postgresql server on a nand/emmc/sd. It cuts the performance 
-# life in half due to all the needed reads and writes. This cuts the life of 
-# your pbx emmc/sd in half. 
-postgresql_server="n"
+# You should not use postgresql server on a nand/emmc/sd. It cuts the performance
+# life in half due to all the needed reads and writes. This cuts the life of
+# your pbx emmc/sd in half.
+postgresql_server="y"
 
 # Set Postgresql Server Admin username
 # Lower case only
-postgresql_admin=
+postgresql_admin=PGQSLAdmin
 
 # Set Postgresql Server Admin password
-postgresql_admin_passwd=
+postgresql_admin_passwd=PGSQLAdmin2014
 
-# Set Database Name used for fusionpbx in the postgresql server 
+# Set Database Name used for fusionpbx in the postgresql server
 # (Default: fusionpbx)
-database_name=
+database_name=voyagepbx
 
-# Set FusionPBX database admin name.(used by fusionpbx to access 
+# Set FusionPBX database admin name.(used by fusionpbx to access
 # the database table in the postgresql server.
 # (Default: fusionpbx)
-database_user_name=
+database_user_name=VoyagePBXAdmin
 
 #Extra Option's
 
@@ -140,7 +140,7 @@ database_user_name=
 install_openvpn="n"
 
 #Add Ajenti Admin Portal
-install_ajenti="n"
+install_ajenti="y"
 
 #Custom Dir Layout
 fs_conf_dir="/etc/freeswitch"
@@ -303,7 +303,7 @@ curl http://files.freeswitch.org/repo/deb/debian/freeswitch_archive_g0.pub | apt
 for i in update upgrade ;do apt-get -y "${i}" ; done
 esac
 
-#adding FusionPBX repo 
+#adding FusionPBX repo
 if [[ $fusionpbx_repo == "stable" ]]; then
 echo 'installing fusionpbx stable repo'
 /bin/cat > "/etc/apt/sources.list.d/fusionpbx.list" <<DELIM
@@ -347,7 +347,7 @@ for i in freeswitch freeswitch-init freeswitch-lang-en freeswitch-meta-codecs fr
 		freeswitch-mod-sndfile freeswitch-mod-tone-stream freeswitch-mod-lua freeswitch-mod-console freeswitch-mod-logfile freeswitch-mod-syslog \
 		freeswitch-mod-say-en freeswitch-mod-posix-timer freeswitch-mod-timerfd freeswitch-mod-xml-cdr freeswitch-mod-xml-curl freeswitch-mod-xml-rpc \
 		freeswitch-sounds freeswitch-music freeswitch-mod-vlc freeswitch-conf-vanilla
-do apt-get -y install --force-yes "${i}" 
+do apt-get -y install --force-yes "${i}"
 done
 
 case $(uname -m) in x86_64|i[4-6]86)
@@ -443,10 +443,10 @@ server{
                 rewrite ^(.*) https://\$host\$1 permanent;
                 break;
         }
-        
+
         #grandstream gx2200
         rewrite "^.*/provision/cfg([A-Fa-f0-9]{12})(\.(xml|cfg))$" /app/provision/?mac=$1;
-        
+
         access_log /var/log/nginx/access.log;
         error_log /var/log/nginx/.error.log;
 
@@ -489,7 +489,7 @@ server{
 
 		#grandstream gx2200
         rewrite "^.*/provision/cfg([A-Fa-f0-9]{12})(\.(xml|cfg))$" /app/provision/?mac=$1;
-       
+
         access_log /var/log/nginx/access.log;
         error_log /var/log/nginx/.error.log;
 
@@ -545,7 +545,7 @@ for i in fusionpbx-core fusionpbx-conf fusionpbx-scripts fusionpbx-sounds fusion
 		fusionpbx-app-dialplan-inbound fusionpbx-app-dialplan-outbound fusionpbx-app-extensions \
 		fusionpbx-app-gateways fusionpbx-app-fax fusionpbx-app-login fusionpbx-app-log-viewer \
 		fusionpbx-app-modules fusionpbx-app-registrations fusionpbx-app-settings fusionpbx-app-sip-profiles \
-		fusionpbx-app-sip-status fusionpbx-app-system fusionpbx-app-xml-cdr fusionpbx-app-vars   
+		fusionpbx-app-sip-status fusionpbx-app-system fusionpbx-app-xml-cdr fusionpbx-app-vars
 do apt-get -y --force-yes install "${i}"
 done
 
@@ -618,7 +618,7 @@ fi
 
 #install fusionpbx_follow me
 if [[ $app_follow_me == "y" ]]; then
-apt-get -y --force-yes install fusionpbx-app-follow-me 
+apt-get -y --force-yes install fusionpbx-app-follow-me
 fi
 
 #install fusionpbx_hot-desking
@@ -705,7 +705,7 @@ fi
 
 #Phone Provision templates
 if [[ $templates_aastra == "y" ]]; then
-for i in fusionpbx-app-devices fusionpbx-app-provision fusionpbx-provisioning-template-aastra 
+for i in fusionpbx-app-devices fusionpbx-app-provision fusionpbx-provisioning-template-aastra
 do apt-get -y --force-yes install "${i}"
 done 
 cp -rp /usr/share/fusionpbx/templates/provision/aastra /etc/fusionpbx/templates/provision/
@@ -781,9 +781,9 @@ if [[ $theme_nature == "y" ]]; then
 apt-get install fusionpbx-theme-nature
 fi
 
-#set permissions 
+#set permissions
 chmod 775 /etc/fusionpbx
-chmod 775 /var/lib/fusionpbx 
+chmod 775 /var/lib/fusionpbx
 chmod 777 /var/lib/fusionpbx/db
 
 mkdir -p /var/lib/fusionpbx/scripts
