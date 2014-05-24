@@ -57,6 +57,9 @@ freeswitch_nat=n
 #Set how long to keep freeswitch/fusionpbx log files 1 to 30 days (Default:5)
 keep_logs=5
 
+#Dahdi & freetdm
+freeswitch_freetdm="n"
+
 #Install and use FusionPBX GUI
 #Optional App's 
 app_adminer="n"			#Database admin tool
@@ -353,6 +356,12 @@ done
 case $(uname -m) in x86_64|i[4-6]86)
 apt-get install freeswitch-mod-shout
 esac
+
+if [[ $freeswitch_freetdm == y ]]; then
+for i in dahdi dahdi-linux freeswitch-mod-freetdm
+do apt-get -y install --force-yes "${i}"
+done
+fi
 
 #make the conf dir 
 mkdir -p "$fs_conf_dir"
