@@ -408,6 +408,7 @@ for i in ssl-cert sqlite3 nginx php5-cli php5-sqlite php5-odbc php-db php5-fpm p
 /bin/sed -i $php_ini -e s,"upload_max_filesize = 2M","upload_max_filesize = 15M",
 
 #Nginx config Copied from Debian nginx pkg (nginx on debian wheezy uses sockets by default not ports)
+# http://http://seravo.fi/2013/optimizing-web-server-performance-with-nginx-and-php
 echo ' Install NGINX config file '
 cat > "/etc/nginx/sites-available/fusionpbx"  << DELIM
 server{
@@ -424,12 +425,49 @@ server{
                 index index.php;
         }
 
+		set $cache_uri $request_uri;
+
+ 		# POST requests and urls with a query string should always go to PHP
+		if ($request_method = POST) {
+		set $cache_uri 'null cache';
+		}
+		if ($query_string != "") {
+		set $cache_uri 'null cache';
+		}
+
+ 		# Don't cache uris containing the following segments
+		if ($request_uri ~* "(/wp-admin/|/xmlrpc.php|/wp-(app|cron|login|register|mail).php|wp-.*.php|/feed/|index.php|wp-comments-popup.php|wp-links-opml.php|wp-locations.php|sitemap(_index)?.xml|[a-z0-9_-]+-sitemap([0-9]+)?.xml)") {
+			set $cache_uri 'null cache';
+		}
+
+		# Don't use the cache for logged in users or recent commenters
+		if ($http_cookie ~* "comment_author|wordpress_[a-f0-9]+|wp-postpass|wordpress_logged_in") {
+			set $cache_uri 'null cache';
+		}
+		
         location ~ \.php$ {
-                fastcgi_pass unix:/var/run/php5-fpm.sock;
-                #fastcgi_pass 127.0.0.1:9000;
-                fastcgi_index index.php;
-                include fastcgi_params;
-                fastcgi_param   SCRIPT_FILENAME $WWW_PATH/$wui_name\$fastcgi_script_name;
+         ##
+		 # Fastcgi cache
+		 ##
+		 set $skip_cache 1;
+		 if ($cache_uri != "null cache") {
+		 add_header X-Cache-Debug "$cache_uri $cookie_nocache $arg_nocache$arg_comment $http_pragma $http_authorization";
+		 set $skip_cache 0;
+		 }
+		 	fastcgi_cache_bypass $skip_cache;
+		 	fastcgi_cache microcache;
+		 	fastcgi_cache_key $scheme$host$request_uri$request_method;
+		 	fastcgi_cache_valid any 8m;
+		 	fastcgi_cache_use_stale updating;
+		 	fastcgi_cache_bypass $http_pragma;
+		 	fastcgi_cache_use_stale updating error timeout invalid_header http_500;
+            fastcgi_pass unix:/var/run/php5-fpm.sock;
+            fastcgi_index index.php;
+            
+            try_files $uri /index.php;
+            include fastcgi_params;
+            fastcgi_read_timeout 300;
+            fastcgi_param SCRIPT_FILENAME $WWW_PATH/$wui_name\$fastcgi_script_name;
         }
 
         # Disable viewing .htaccess & .htpassword & .db
@@ -466,12 +504,49 @@ server{
           root $WWW_PATH/$wui_name;
           index index.php;
         }
+		set $cache_uri $request_uri;
 
+ 		# POST requests and urls with a query string should always go to PHP
+		if ($request_method = POST) {
+		set $cache_uri 'null cache';
+		}
+		if ($query_string != "") {
+		set $cache_uri 'null cache';
+		}
+
+ 		# Don't cache uris containing the following segments
+		if ($request_uri ~* "(/wp-admin/|/xmlrpc.php|/wp-(app|cron|login|register|mail).php|wp-.*.php|/feed/|index.php|wp-comments-popup.php|wp-links-opml.php|wp-locations.php|sitemap(_index)?.xml|[a-z0-9_-]+-sitemap([0-9]+)?.xml)") {
+			set $cache_uri 'null cache';
+		}
+
+		# Don't use the cache for logged in users or recent commenters
+		if ($http_cookie ~* "comment_author|wordpress_[a-f0-9]+|wp-postpass|wordpress_logged_in") {
+			set $cache_uri 'null cache';
+		}
+		
         location ~ \.php$ {
+         ##
+		 # Fastcgi cache
+		 ##
+		 set $skip_cache 1;
+		 if ($cache_uri != "null cache") {
+		 add_header X-Cache-Debug "$cache_uri $cookie_nocache $arg_nocache$arg_comment $http_pragma $http_authorization";
+		 set $skip_cache 0;
+		 }
+		 	fastcgi_cache_bypass $skip_cache;
+		 	fastcgi_cache microcache;
+		 	fastcgi_cache_key $scheme$host$request_uri$request_method;
+		 	fastcgi_cache_valid any 8m;
+		 	fastcgi_cache_use_stale updating;
+		 	fastcgi_cache_bypass $http_pragma;
+		 	fastcgi_cache_use_stale updating error timeout invalid_header http_500;
             fastcgi_pass unix:/var/run/php5-fpm.sock;
             fastcgi_index index.php;
+            
+            try_files $uri /index.php;
             include fastcgi_params;
-            fastcgi_param   SCRIPT_FILENAME $WWW_PATH/$wui_name\$fastcgi_script_name;
+            fastcgi_read_timeout 300;
+            fastcgi_param SCRIPT_FILENAME $WWW_PATH/$wui_name\$fastcgi_script_name;
         }
 
         # Disable viewing .htaccess & .htpassword & .db
@@ -510,11 +585,49 @@ server{
           index index.php;
         }
 
+		set $cache_uri $request_uri;
+
+ 		# POST requests and urls with a query string should always go to PHP
+		if ($request_method = POST) {
+		set $cache_uri 'null cache';
+		}
+		if ($query_string != "") {
+		set $cache_uri 'null cache';
+		}
+
+ 		# Don't cache uris containing the following segments
+		if ($request_uri ~* "(/wp-admin/|/xmlrpc.php|/wp-(app|cron|login|register|mail).php|wp-.*.php|/feed/|index.php|wp-comments-popup.php|wp-links-opml.php|wp-locations.php|sitemap(_index)?.xml|[a-z0-9_-]+-sitemap([0-9]+)?.xml)") {
+			set $cache_uri 'null cache';
+		}
+
+		# Don't use the cache for logged in users or recent commenters
+		if ($http_cookie ~* "comment_author|wordpress_[a-f0-9]+|wp-postpass|wordpress_logged_in") {
+			set $cache_uri 'null cache';
+		}
+		
         location ~ \.php$ {
+         ##
+		 # Fastcgi cache
+		 ##
+		 set $skip_cache 1;
+		 if ($cache_uri != "null cache") {
+		 add_header X-Cache-Debug "$cache_uri $cookie_nocache $arg_nocache$arg_comment $http_pragma $http_authorization";
+		 set $skip_cache 0;
+		 }
+		 	fastcgi_cache_bypass $skip_cache;
+		 	fastcgi_cache microcache;
+		 	fastcgi_cache_key $scheme$host$request_uri$request_method;
+		 	fastcgi_cache_valid any 8m;
+		 	fastcgi_cache_use_stale updating;
+		 	fastcgi_cache_bypass $http_pragma;
+		 	fastcgi_cache_use_stale updating error timeout invalid_header http_500;
             fastcgi_pass unix:/var/run/php5-fpm.sock;
             fastcgi_index index.php;
+            
+            try_files $uri /index.php;
             include fastcgi_params;
-            fastcgi_param   SCRIPT_FILENAME $WWW_PATH/$wui_name\$fastcgi_script_name;
+            fastcgi_read_timeout 300;
+            fastcgi_param SCRIPT_FILENAME $WWW_PATH/$wui_name\$fastcgi_script_name;
         }
 
         # Disable viewing .htaccess & .htpassword & .db
@@ -528,6 +641,113 @@ server{
                 deny all;
         }
 }
+DELIM
+
+cat > "/etc/nginx/nginx.conf"  << DELIM
+user www-data;
+worker_processes 2;
+pid /var/run/nginx.pid;
+
+events {
+	worker_connections 768;
+	multi_accept on;
+}
+
+http {
+
+	##
+	# Basic Settings
+	##
+
+	sendfile on;
+	tcp_nopush on;
+	tcp_nodelay on;
+	keepalive_timeout 90;
+	keepalive_requests 100000;
+	types_hash_max_size 2048;
+	# server_tokens off;
+
+	# server_names_hash_bucket_size 64;
+	# server_name_in_redirect off;
+
+	include /etc/nginx/mime.types;
+	default_type application/octet-stream;
+
+	open_file_cache max=1000 inactive=20s;
+	open_file_cache_valid 30s;
+	open_file_cache_min_uses 2;
+	open_file_cache_errors on;
+	
+	fastcgi_cache_path /var/cache/nginx levels=1:2 keys_zone=microcache:10m max_size=1000m inactive=60m;
+	
+	##
+	# Logging Settings
+	##
+
+	#access_log /var/log/nginx/access.log;
+	error_log /var/log/nginx/error.log;
+
+	##
+	# Gzip Settings
+	##
+
+	gzip on;
+	gzip_static on;
+	gzip_disable "msie6";
+
+	# gzip_vary on;
+	# gzip_proxied any;
+	# gzip_comp_level 6;
+	# gzip_buffers 16 8k;
+	# gzip_http_version 1.1;
+	# gzip_types text/plain text/css application/json application/x-javascript text/xml application/xml application/xml+rss text/javascript;
+
+	##
+	# nginx-naxsi config
+	##
+	# Uncomment it if you installed nginx-naxsi
+	##
+
+	#include /etc/nginx/naxsi_core.rules;
+
+	##
+	# nginx-passenger config
+	##
+	# Uncomment it if you installed nginx-passenger
+	##
+	
+	#passenger_root /usr;
+	#passenger_ruby /usr/bin/ruby;
+
+	##
+	# Virtual Host Configs
+	##
+
+	include /etc/nginx/conf.d/*.conf;
+	include /etc/nginx/sites-enabled/*;
+}
+
+
+#mail {
+#	# See sample authentication script at:
+#	# http://wiki.nginx.org/ImapAuthenticateWithApachePhpScript
+# 
+#	# auth_http localhost/auth.php;
+#	# pop3_capabilities "TOP" "USER";
+#	# imap_capabilities "IMAP4rev1" "UIDPLUS";
+# 
+#	server {
+#		listen     localhost:110;
+#		protocol   pop3;
+#		proxy      on;
+#	}
+# 
+#	server {
+#		listen     localhost:143;
+#		protocol   imap;
+#		proxy      on;
+#	}
+#}
 DELIM
 
 # linking fusionpbx nginx config from avaible to enabled sites
