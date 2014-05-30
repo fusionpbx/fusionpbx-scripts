@@ -43,7 +43,7 @@ fi
 
 #<------Start Edit HERE--------->
 #Required
-#stable=1.2/beta=1.4/master=1.5 aka git head
+#Stable/release=1.4/master=1.5 aka git head
 # Default is stable
 freeswitch_repo="stable"
 
@@ -88,7 +88,7 @@ app_sql_query="n"		#tool to query the sql/sqlite db
 app_time_conditions="y"		#used by ivr or other parts for special conditions
 app_traffic_graph="n"		#graph for monitoring network traffic
 app_voicemail="y"		#Fusionpbx voicemain
-app_xmpp="n"			#xmpp/gtalk/googlevoice interface
+app_xmpp="n"			#xmpp/gtalk/google voice interface
 
 #System themes
 theme_accessible="n"
@@ -383,7 +383,7 @@ find "$fs_conf_dir" -type d -exec chmod 775 {} +
 #fix permissions on the freeswitch xml_cdr dir so fusionpbx can read from it
 find "$fs_log_dir"/xml_cdr -type d -exec chmod 775 {} +
 
-#Settinf /etc/default freeswitch stratup options with proper scripts dir and to run without nat.
+#Settinf /etc/default freeswitch startup options with proper scripts dir and to run without nat.
 #DISABLE NAT
 if [[ $freeswitch_nat == y ]]; then
 cat > "/etc/default/freeswitch" << DELIM
@@ -427,7 +427,7 @@ server{
 
 		set $cache_uri $request_uri;
 
- 		# POST requests and urls with a query string should always go to PHP
+ 		# POST requests and url's with a query string should always go to PHP
 		if ($request_method = POST) {
 		set $cache_uri 'null cache';
 		}
@@ -435,7 +435,7 @@ server{
 		set $cache_uri 'null cache';
 		}
 
- 		# Don't cache uris containing the following segments
+ 		# Don't cache uri's containing the following segments
 		if ($request_uri ~* "(/wp-admin/|/xmlrpc.php|/wp-(app|cron|login|register|mail).php|wp-.*.php|/feed/|index.php|wp-comments-popup.php|wp-links-opml.php|wp-locations.php|sitemap(_index)?.xml|[a-z0-9_-]+-sitemap([0-9]+)?.xml)") {
 			set $cache_uri 'null cache';
 		}
@@ -506,7 +506,7 @@ server{
         }
 		set $cache_uri $request_uri;
 
- 		# POST requests and urls with a query string should always go to PHP
+ 		# POST requests and url's with a query string should always go to PHP
 		if ($request_method = POST) {
 		set $cache_uri 'null cache';
 		}
@@ -514,7 +514,7 @@ server{
 		set $cache_uri 'null cache';
 		}
 
- 		# Don't cache uris containing the following segments
+ 		# Don't cache uri's containing the following segments
 		if ($request_uri ~* "(/wp-admin/|/xmlrpc.php|/wp-(app|cron|login|register|mail).php|wp-.*.php|/feed/|index.php|wp-comments-popup.php|wp-links-opml.php|wp-locations.php|sitemap(_index)?.xml|[a-z0-9_-]+-sitemap([0-9]+)?.xml)") {
 			set $cache_uri 'null cache';
 		}
@@ -744,8 +744,8 @@ adduser freeswitch www-data
 
 apt-get update
 
-# Install FusionPBX Web User Interface stable/devel
-echo "Installing FusionPBX Web User Interface Debian pkg"
+# Install FusionPBX Web User Interface 
+echo "Installing FusionPBX Web User Interface via Debian pkg"
 
 echo " Installing fusipnpbx basepbx"
 for i in fusionpbx-core fusionpbx-conf fusionpbx-scripts fusionpbx-sounds fusionpbx-app-dialplan \
@@ -1003,7 +1003,7 @@ find "$fs_scripts_dir" -type f -exec chmod 664 {} +
 #Copy fusionpbx sounds into place
 cp -rp /usr/share/fusionpbx/resources/install/sounds/* /usr/share/freeswitch/sounds/
 
-#chown freeswitch  conf files
+#chown freeswitch conf files
 chown -R freeswitch:freeswitch /usr/share/freeswitch/sounds
 
 #fix permissions for "freeswitch sounds dir " so www-data can write to it
@@ -1026,7 +1026,7 @@ for i in freeswitch nginx php5-fpm ;do service "${i}" restart >/dev/null 2>&1 ; 
 for i in fail2ban monit ;do apt-get -y install "${i}" ; done
 
 #Taken From http://wiki.fusionpbx.com/index.php?title=Monit and edited to work with debian pkgs.
-#Adding Monitor to keep freeswitch running.
+#Adding Monit to keep freeswitch running.
 /bin/cat > "/etc/monit/conf.d/freeswitch"  <<DELIM
 set daemon 60
 set logfile syslog facility log_daemon
@@ -1296,7 +1296,7 @@ if [[ $postgresql_server == "y" ]]; then
 echo ''
 	printf '	Please open a web browser to http://'; ip -f inet addr show dev eth0 | sed -n 's/^ *inet *\([.0-9]*\).*/\1/p'   
 cat << DELIM
-	Or the Doamin name assigned to the machine like http://"$(hostname).$(dnsdomainname)".
+	Or the Doamin name asigned to the machine like http://"$(hostname).$(dnsdomainname)".
 	On the First configuration page of the web user interface
 	Please Select the PostgreSQL option in the pull-down menu as your Database
 	Also Please fill in the SuperUser Name and Password fields.
@@ -1312,7 +1312,7 @@ clear
 echo ''
 	printf '	Please open a web-browser to http://'; ip -f inet addr show dev eth0 | sed -n 's/^ *inet *\([.0-9]*\).*/\1/p'
 cat << DELIM
-	or the Doamin name assigned to the machine like http://"$(hostname).$(dnsdomainname)".
+	or the Doamin name asigned to the machine like http://"$(hostname).$(dnsdomainname)".
 	On the First Configuration page of the web user interface "$wui_name".
 	Also Please fill in the SuperUser Name and Password fields.
 	Freeswitch & FusionPBX Web User Interface Installation Completed
