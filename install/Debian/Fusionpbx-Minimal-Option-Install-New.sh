@@ -335,6 +335,10 @@ apt-get -y install ntp
 service ntp restart
 apt-get upgrade
 
+case $(uname -m) in armv7l)
+for i in acpi-support-base usbmount usbtools
+do apt-get install "${i}"
+
 echo ' Installing freeswitch '
 #install Freeswitch Deps
 echo ' installing freeswitch deps '
@@ -1149,7 +1153,16 @@ if [[ $postgresql_client == "y" ]]; then
 	db_user_name="$wui_name"
 	db_passwd="Admin Please Select A Secure Password for your Postgresql Fusionpbx Database"
 	clear
+	case $(uname -m) in x86_64|i[4-6]86)
 	for i in postgresql-client-9.3 php5-pgsql ;do apt-get -y install "${i}"; done
+	esac
+	
+	case $(uname -m) in armv7l)
+	echo "no are deb pkgs for pgsql postgresql-client-9.3"
+	echo "postgresql-client-9.1 is bueing installed"
+	for i in postgresql-client-9.1 php5-pgsql ;do apt-get -y install "${i}"; done
+	esac
+		
 	service php5-fpm restart
 	echo
 	printf '	Please open a web-browser to http://'; ip -f inet addr show dev eth0 | sed -n 's/^ *inet *\([.0-9]*\).*/\1/p'
@@ -1175,7 +1188,16 @@ if [[ $postgresql_server == "y" ]]; then
     db_user_name="$database_user_name"
     db_passwd="$(openssl rand -base64 32;)"
 	clear
+	case $(uname -m) in x86_64|i[4-6]86)
 	for i in postgresql-9.3 php5-pgsql ;do apt-get -y install "${i}"; done
+	esac
+	
+	case $(uname -m) in armv7l)
+	echo "no are deb pkgs for pgsql postgresql-client-9.3"
+	echo "postgresql-9.1 is bueing installed"
+	for i in postgresql-9.1 php5-pgsql ;do apt-get -y install "${i}"; done
+	esac
+	
 	service php5-fpm restart
 	#Adding a SuperUser and Password for Postgresql database.
 	su -l postgres -c "/usr/bin/psql -c \"create role $postgresqluser with superuser login password '$postgresqlpass'\""
