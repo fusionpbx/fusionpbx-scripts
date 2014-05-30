@@ -62,25 +62,25 @@ freeswitch_freetdm="n"
 
 #Install and use FusionPBX GUI
 #Optional App's 
-app_adminer="n"			#Database admin tool
-app_call_block="y"		#inbound/outbound call blocking
+app_adminer="n"				#Database admin tool
+app_call_block="y"			#inbound/outbound call blocking
 app_call_broadcast="n"
-app_call_center="y"		#Call Center Queues
-app_call_flows="n"		#use to set special modes/custom dial plan
+app_call_center="y"			#Call Center Queues
+app_call_flows="n"			#use to set special modes/custom dial plan
 app_click_to_call="n"		#tool to click to call off the xl_cdr page and from the directory
-app_conference_centers="y"	#Confrences based singe diel in multi room
-app_conference="n"		#Orignal conference interface
-app_content="n"			#tool for adding contest to pages.
-app_edit="n"			#tools for editing files
-app_exec="n"			#tools for execuing commands at shell level
-app_fifo="n"			#First in first out queues
-app_follow_me="y"		#Find me/ Follow me
-app_hot_desk="n"		#Hot Desking used for unassigned seating
-app_hunt_groups="n"		#THis Module is beign reworked.
-app_ivr_menu="y"		#Company IVR for routign calls
-app_music_on_hold="y"		#tool for adding in and rm moh sound files
-app_park="y"			#Call Parkign
-app_ring_groups="y"		#ring group interface
+app_conference_centers="y"		#Confrences based singe diel in multi room
+app_conference="n"			#Orignal conference interface
+app_content="n"				#tool for adding contest to pages.
+app_edit="n"				#tools for editing files
+app_exec="n"				#tools for execuing commands at shell level
+app_fifo="n"				#First in first out queues
+app_follow_me="y"			#Find me/ Follow me
+app_hot_desk="n"			#Hot Desking used for unassigned seating
+app_hunt_groups="n"			#THis Module is beign reworked.
+app_ivr_menu="y"			#Company IVR for routign calls
+app_music_on_hold="y"			#tool for adding in and rm moh sound files
+app_park="y"				#Call Parkign
+app_ring_groups="y"			#ring group interface
 app_schemas="n"
 app_services="n"		#tools for running services
 app_sipml5="n"			#HTML5 sip phone
@@ -94,13 +94,13 @@ app_xmpp="n"			#xmpp/gtalk/googlevoice interface
 theme_accessible="n"
 theme_classic="n"
 theme_default="n"
-theme_enhanced="n"
+theme_enhanced="y"
 theme_nature="n"
 
 #Phone Provisioning templates
 #To enable provisioning please select from templates below.
 templates_aastra="n"
-templates_cisco="y"
+templates_cisco="n"
 templates_grandstream="n"
 templates_linksys="n"
 templates_panasonic="n"
@@ -727,27 +727,6 @@ http {
 	include /etc/nginx/sites-enabled/*;
 }
 
-
-#mail {
-#	# See sample authentication script at:
-#	# http://wiki.nginx.org/ImapAuthenticateWithApachePhpScript
-# 
-#	# auth_http localhost/auth.php;
-#	# pop3_capabilities "TOP" "USER";
-#	# imap_capabilities "IMAP4rev1" "UIDPLUS";
-# 
-#	server {
-#		listen     localhost:110;
-#		protocol   pop3;
-#		proxy      on;
-#	}
-# 
-#	server {
-#		listen     localhost:143;
-#		protocol   imap;
-#		proxy      on;
-#	}
-#}
 DELIM
 
 # linking fusionpbx nginx config from avaible to enabled sites
