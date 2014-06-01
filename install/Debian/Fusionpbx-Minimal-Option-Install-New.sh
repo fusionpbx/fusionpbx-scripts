@@ -255,6 +255,7 @@ case $(uname -m) in armv7l)
 apt-get update && apt-get dist-upgrade
 for i in acpi-support-base usbmount usbtools
 do apt-get install "${i}"
+done
 esac
 
 #adding FusionPBX repo ( contains freeswitch armhf debs, and a few custom scripts debs)
