@@ -251,6 +251,12 @@ fi
 
 apt-get update && apt-get -y upgrade
 
+case $(uname -m) in armv7l)
+apt-get update && apt-get dist-upgrade
+for i in acpi-support-base usbmount usbtools
+do apt-get install "${i}"
+esac
+
 #adding FusionPBX repo ( contains freeswitch armhf debs, and a few custom scripts debs)
 case $(uname -m) in armv7l)
 if [[ $freeswitch_repo == "stable" ]]; then
@@ -334,10 +340,6 @@ apt-get update
 apt-get -y install ntp
 service ntp restart
 apt-get upgrade
-
-case $(uname -m) in armv7l)
-for i in acpi-support-base usbmount usbtools
-do apt-get install "${i}"
 
 echo ' Installing freeswitch '
 #install Freeswitch Deps
