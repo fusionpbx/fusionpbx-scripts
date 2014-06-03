@@ -97,16 +97,16 @@ theme_default="n"
 theme_enhanced="y"
 theme_nature="n"
 
-#Phone Provisioning templates
-#To enable provisioning please select from templates below.
-templates_aastra="n"
-templates_cisco="n"
-templates_grandstream="n"
-templates_linksys="n"
-templates_panasonic="n"
-templates_polycom="n"
-templates_snom="n"
-templates_yealink="n"
+#Phone Provisioning template
+#To enable provisioning please select from template below.
+template_aastra="n"
+template_cisco="n"
+template_grandstream="n"
+template_linksys="n"
+template_panasonic="n"
+template_polycom="n"
+template_snom="n"
+template_yealink="n"
 
 #Optional (Not Required)
 # Please Select Server or Client not both.
@@ -805,58 +805,58 @@ do apt-get -y --force-yes install "${i}"
 done
 fi
 
-#Phone Provision templates
-if [[ $templates_aastra == "y" ]]; then
+#Phone Provision template
+if [[ $template_aastra == "y" ]]; then
 for i in fusionpbx-app-devices fusionpbx-app-provision fusionpbx-provisioning-template-aastra
 do apt-get -y --force-yes install "${i}"
 done 
 cp -rp /usr/share/fusionpbx/templates/provision/aastra /etc/fusionpbx/templates/provision/
 fi
 
-if [[ $templates_cisco == "y" ]]; then
+if [[ $template_cisco == "y" ]]; then
 for i in fusionpbx-app-devices fusionpbx-app-provision fusionpbx-provisioning-template-cisco
 do apt-get -y --force-yes install "${i}"
 done
-cp -rp /usr/share/fusionpbx/templates/provision/cisco /etc/fusionpbx/templates/provision/
+cp -rp /usr/share/fusionpbx/template/provisions/cisco /etc/fusionpbx/templates/provision/
 fi
 
-if [[ $templates_grandstream == "y" ]]; then
+if [[ $template_grandstream == "y" ]]; then
 for i in fusionpbx-app-devices fusionpbx-app-provision fusionpbx-provisioning-template-grandstream
 do apt-get -y --force-yes install "${i}"
 done
-cp -rp /usr/share/fusionpbx/templates/provision/grandstream /etc/fusionpbx/templates/provision/
+cp -rp /usr/share/fusionpbx/template/provisions/grandstream /etc/fusionpbx/templates/provision/
 fi
 
-if [[ $templates_linksys == "y" ]]; then
+if [[ $template_linksys == "y" ]]; then
 for i in fusionpbx-app-devices fusionpbx-app-provision fusionpbx-provisioning-template-linksys
 do apt-get -y --force-yes install "${i}"
 done
 cp -rp /usr/share/fusionpbx/templates/provision/linksys /etc/fusionpbx/templates/provision/
 fi
 
-if [[ $templates_panasonic == "y" ]]; then
+if [[ $template_panasonic == "y" ]]; then
 for i in fusionpbx-app-devices fusionpbx-app-provision fusionpbx-provisioning-template-panasonic
 do apt-get -y --force-yes install "${i}"
 done
 cp -rp /usr/share/fusionpbx/templates/provision/panasonic /etc/fusionpbx/templates/provision/
 fi
 
-if [[ $templates_polycom == "y" ]]; then
+if [[ $template_polycom == "y" ]]; then
 for i in fusionpbx-app-devices fusionpbx-app-provision fusionpbx-provisioning-template-polycom
 do apt-get -y --force-yes install "${i}"
 done
 cp -rp /usr/share/fusionpbx/templates/provision/polycom /etc/fusionpbx/templates/provision/
 fi
 
-if [[ $templates_snom == "y" ]]; then
+if [[ $template_snom == "y" ]]; then
 for i in fusionpbx-app-devices fusionpbx-app-provision fusionpbx-provisioning-template-snom
 do apt-get -y --force-yes install "${i}"
 done
 cp -rp /usr/share/fusionpbx/templates/provision/snom /etc/fusionpbx/templates/provision/
 fi
 
-if [[ $templates_yealink == "y" ]]; then
-for i in fusionpbx-app-devices fusionpbx-app-provision fusionpbx-provisioning-template-yealink
+if [[ $template_yealink == "y" ]]; then
+for i in fusionpbx-app-devices fusionpbx-app-provision fusionpbx-provisioning-templates-yealink
 do apt-get -y --force-yes install "${i}"
 done
 cp -rp /usr/share/fusionpbx/templates/provision/yealink /etc/fusionpbx/templates/provision/
