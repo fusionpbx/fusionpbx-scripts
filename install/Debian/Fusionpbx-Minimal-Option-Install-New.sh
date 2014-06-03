@@ -26,6 +26,8 @@
 ################################################################################
 echo
 echo "This is a one time install script."
+echo "This script is ment to be run on a fresh install of debian 7 (wheezy).
+echo "I am working to get jessies pkgs done soon."
 echo "It is not intended to be run multi times"
 echo "If it fails for any reason please report to r.neese@gmail.com. "
 echo "Please include any screen output you can to show where it fails."
@@ -36,6 +38,10 @@ if [[ -f /proc/vz ]]; then
 echo "Note: "
 echo "Those of you running this script on openvz. You must run it as root and "
 echo "bash  Fusionpbx-Debian-Pkg-Install-New.sh or it fails the networking check."
+echo
+echo "Please take the time to refer to this document if you have install issues on openvz"
+echo "http://openvz.org/Virtual_Ethernet_device and make sure to setup a eth0 ."
+echo
 exit
 fi
 #
@@ -810,56 +816,56 @@ if [[ $template_aastra == "y" ]]; then
 for i in fusionpbx-app-devices fusionpbx-app-provision fusionpbx-provisioning-template-aastra
 do apt-get -y --force-yes install "${i}"
 done 
-cp -rp /usr/share/fusionpbx/templates/provision/aastra /etc/fusionpbx/templates/provision/
+cp -rp /usr/share/fusionpbx/resources/templates/provision/aastra /etc/fusionpbx/resources/templates/provision/
 fi
 
 if [[ $template_cisco == "y" ]]; then
 for i in fusionpbx-app-devices fusionpbx-app-provision fusionpbx-provisioning-template-cisco
 do apt-get -y --force-yes install "${i}"
 done
-cp -rp /usr/share/fusionpbx/template/provisions/cisco /etc/fusionpbx/templates/provision/
+cp -rp /usr/share/fusionpbx/resources/template/provisions/cisco /etc/fusionpbx/resources/templates/provision/
 fi
 
 if [[ $template_grandstream == "y" ]]; then
 for i in fusionpbx-app-devices fusionpbx-app-provision fusionpbx-provisioning-template-grandstream
 do apt-get -y --force-yes install "${i}"
 done
-cp -rp /usr/share/fusionpbx/template/provisions/grandstream /etc/fusionpbx/templates/provision/
+cp -rp /usr/share/fusionpbx/resources/template/provisions/grandstream /etc/fusionpbx/resources/templates/provision/
 fi
 
 if [[ $template_linksys == "y" ]]; then
 for i in fusionpbx-app-devices fusionpbx-app-provision fusionpbx-provisioning-template-linksys
 do apt-get -y --force-yes install "${i}"
 done
-cp -rp /usr/share/fusionpbx/templates/provision/linksys /etc/fusionpbx/templates/provision/
+cp -rp /usr/share/fusionpbx/resources/templates/provision/linksys /etc/fusionpbx/resources/templates/provision/
 fi
 
 if [[ $template_panasonic == "y" ]]; then
 for i in fusionpbx-app-devices fusionpbx-app-provision fusionpbx-provisioning-template-panasonic
 do apt-get -y --force-yes install "${i}"
 done
-cp -rp /usr/share/fusionpbx/templates/provision/panasonic /etc/fusionpbx/templates/provision/
+cp -rp /usr/share/fusionpbx/resources/templates/provision/panasonic /etc/fusionpbx/resources/templates/provision/
 fi
 
 if [[ $template_polycom == "y" ]]; then
 for i in fusionpbx-app-devices fusionpbx-app-provision fusionpbx-provisioning-template-polycom
 do apt-get -y --force-yes install "${i}"
 done
-cp -rp /usr/share/fusionpbx/templates/provision/polycom /etc/fusionpbx/templates/provision/
+cp -rp /usr/share/fusionpbx/resources/templates/provision/polycom /etc/fusionpbx/resources/templates/provision/
 fi
 
 if [[ $template_snom == "y" ]]; then
 for i in fusionpbx-app-devices fusionpbx-app-provision fusionpbx-provisioning-template-snom
 do apt-get -y --force-yes install "${i}"
 done
-cp -rp /usr/share/fusionpbx/templates/provision/snom /etc/fusionpbx/templates/provision/
+cp -rp /usr/share/fusionpbx/resources/templates/provision/snom /etc/fusionpbx/resources/templates/provision/
 fi
 
 if [[ $template_yealink == "y" ]]; then
 for i in fusionpbx-app-devices fusionpbx-app-provision fusionpbx-provisioning-templates-yealink
 do apt-get -y --force-yes install "${i}"
 done
-cp -rp /usr/share/fusionpbx/templates/provision/yealink /etc/fusionpbx/templates/provision/
+cp -rp /usr/share/fusionpbx/resources/templates/provision/yealink /etc/fusionpbx/resources/templates/provision/
 fi
 
 # Pbx Themes
