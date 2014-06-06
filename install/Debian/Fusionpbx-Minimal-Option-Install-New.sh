@@ -648,7 +648,7 @@ apt-get update
 echo "Installing FusionPBX Web User Interface via Debian pkg"
 
 echo " Installing fusipnpbx basepbx"
-for i in fusionpbx-core fusionpbx-conf fusionpbx-scripts fusionpbx-sounds fusionpbx-app-dialplan \
+for i in fusionpbx-core fusionpbx-conf fusionpbx-sqldb fusionpbx-scripts fusionpbx-sounds fusionpbx-app-dialplan \
 		fusionpbx-app-calls fusionpbx-app-calls-active fusionpbx-app-contacts fusionpbx-app-destinations \
 		fusionpbx-app-dialplan-inbound fusionpbx-app-dialplan-outbound fusionpbx-app-extensions \
 		fusionpbx-app-gateways fusionpbx-app-fax fusionpbx-app-login fusionpbx-app-log-viewer \
@@ -816,6 +816,7 @@ if [[ $template_aastra == "y" ]]; then
 for i in fusionpbx-app-devices fusionpbx-app-provision fusionpbx-provisioning-template-aastra
 do apt-get -y --force-yes install "${i}"
 done 
+mkdir -p /etc/fusionpbx/resources/templates/provision
 cp -rp /usr/share/fusionpbx/resources/templates/provision/aastra /etc/fusionpbx/resources/templates/provision/
 fi
 
@@ -823,6 +824,7 @@ if [[ $template_cisco == "y" ]]; then
 for i in fusionpbx-app-devices fusionpbx-app-provision fusionpbx-provisioning-template-cisco
 do apt-get -y --force-yes install "${i}"
 done
+mkdir -p /etc/fusionpbx/resources/templates/provision
 cp -rp /usr/share/fusionpbx/resources/template/provisions/cisco /etc/fusionpbx/resources/templates/provision/
 fi
 
@@ -830,6 +832,7 @@ if [[ $template_grandstream == "y" ]]; then
 for i in fusionpbx-app-devices fusionpbx-app-provision fusionpbx-provisioning-template-grandstream
 do apt-get -y --force-yes install "${i}"
 done
+mkdir -p /etc/fusionpbx/resources/templates/provision
 cp -rp /usr/share/fusionpbx/resources/template/provisions/grandstream /etc/fusionpbx/resources/templates/provision/
 fi
 
@@ -837,6 +840,7 @@ if [[ $template_linksys == "y" ]]; then
 for i in fusionpbx-app-devices fusionpbx-app-provision fusionpbx-provisioning-template-linksys
 do apt-get -y --force-yes install "${i}"
 done
+mkdir -p /etc/fusionpbx/resources/templates/provision
 cp -rp /usr/share/fusionpbx/resources/templates/provision/linksys /etc/fusionpbx/resources/templates/provision/
 fi
 
@@ -844,6 +848,7 @@ if [[ $template_panasonic == "y" ]]; then
 for i in fusionpbx-app-devices fusionpbx-app-provision fusionpbx-provisioning-template-panasonic
 do apt-get -y --force-yes install "${i}"
 done
+mkdir -p /etc/fusionpbx/resources/templates/provision
 cp -rp /usr/share/fusionpbx/resources/templates/provision/panasonic /etc/fusionpbx/resources/templates/provision/
 fi
 
@@ -851,6 +856,7 @@ if [[ $template_polycom == "y" ]]; then
 for i in fusionpbx-app-devices fusionpbx-app-provision fusionpbx-provisioning-template-polycom
 do apt-get -y --force-yes install "${i}"
 done
+mkdir -p /etc/fusionpbx/resources/templates/provision
 cp -rp /usr/share/fusionpbx/resources/templates/provision/polycom /etc/fusionpbx/resources/templates/provision/
 fi
 
@@ -858,6 +864,7 @@ if [[ $template_snom == "y" ]]; then
 for i in fusionpbx-app-devices fusionpbx-app-provision fusionpbx-provisioning-template-snom
 do apt-get -y --force-yes install "${i}"
 done
+mkdir -p /etc/fusionpbx/resources/templates/provision
 cp -rp /usr/share/fusionpbx/resources/templates/provision/snom /etc/fusionpbx/resources/templates/provision/
 fi
 
@@ -865,6 +872,7 @@ if [[ $template_yealink == "y" ]]; then
 for i in fusionpbx-app-devices fusionpbx-app-provision fusionpbx-provisioning-templates-yealink
 do apt-get -y --force-yes install "${i}"
 done
+mkdir -p /etc/fusionpbx/resources/templates/provision
 cp -rp /usr/share/fusionpbx/resources/templates/provision/yealink /etc/fusionpbx/resources/templates/provision/
 fi
 
