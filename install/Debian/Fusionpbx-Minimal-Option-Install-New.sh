@@ -26,7 +26,7 @@
 ################################################################################
 echo
 echo "This is a one time install script."
-echo "This script is ment to be run on a fresh install of debian 7 (wheezy).
+echo "This script is ment to be run on a fresh install of debian 7 (wheezy)."
 echo "I am working to get jessies pkgs done soon."
 echo "It is not intended to be run multi times"
 echo "If it fails for any reason please report to r.neese@gmail.com. "
@@ -224,7 +224,7 @@ if [ $? -eq 0 ]; then
 else
 		lsb_release -c |grep -i jessie > /dev/null
 		if [ $? -eq 0 ]; then
-                /bin/echo 'OK you are running Debian 8 CodeName (Jessie). This script is known to work'
+                /bin/echo "OK you are running Debian 8 CodeName: Jessie. This script is known to work"
 		/bin/echo
                 CONTINUE=YES
         fi
