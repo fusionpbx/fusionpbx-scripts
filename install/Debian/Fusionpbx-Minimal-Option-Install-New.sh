@@ -1217,7 +1217,7 @@ if [[ $postgresql_server == "y" ]]; then
 	
 	service php5-fpm restart
 	#Adding a SuperUser and Password for Postgresql database.
-	su -l postgres -c "/usr/bin/psql -c \"create role $postgresqluser with superuser login password '$postgresqlpass'\""
+	su -l postgres -c "/usr/bin/psql -c \"create role $postgresql_admin with superuser login password '$postgresql_admin_passwd'\""
 	clear
 echo ''
 	printf '	Please open a web browser to http://'; ip -f inet addr show dev eth0 | sed -n 's/^ *inet *\([.0-9]*\).*/\1/p'   
