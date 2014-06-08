@@ -434,7 +434,12 @@ service freeswitch restart
 #Start of FusionPBX / nginx / php5 install
 #Install and configure  PHP + Nginx + sqlite3 for use with the fusionpbx gui.
 echo ' installing nginx & php & deps '
-for i in ssl-cert sqlite3 nginx php5-cli php5-sqlite php5-odbc php-db php5-fpm php5-common php5-gd php-pear php5-memcache php-apc ;do apt-get -y install "${i}" ; done
+
+apt-get -y install sqlite3
+
+for i in ssl-cert nginx ;do apt-get -y install "${i}" ; done
+
+for i in php5-cli php5-common php-apc php5-gd php-db php5-fpm php5-memcache php5-odbc php-pear php5-sqlite ;do apt-get -y install "${i}" ; done
 
 # Changing file upload size from 2M to 15M
 /bin/sed -i $php_ini -e s,"upload_max_filesize = 2M","upload_max_filesize = 15M",
