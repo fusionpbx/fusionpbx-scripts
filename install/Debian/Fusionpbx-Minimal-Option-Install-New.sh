@@ -362,10 +362,12 @@ service ntp restart
 apt-get upgrade
 
 echo ' Installing freeswitch '
+
 #install Freeswitch Deps
 echo ' installing freeswitch deps '
 for i in curl unixodbc uuid memcached libtiff5 libtiff-tools ghostscript ;do apt-get -y install "${i}" ; done
-# install freeswitch fusionpbx install
+
+# install freeswitch
 echo ' installing freeswitch pkgs '
 for i in freeswitch freeswitch-init freeswitch-lang-en freeswitch-meta-codecs freeswitch-mod-commands freeswitch-mod-curl \
 		freeswitch-mod-db freeswitch-mod-distributor freeswitch-mod-dptools freeswitch-mod-enum freeswitch-mod-esf freeswitch-mod-esl \
@@ -380,7 +382,7 @@ do apt-get -y install --force-yes "${i}"
 done
 
 case $(uname -m) in x86_64|i[4-6]86)
-apt-get install freeswitch-mod-shout
+apt-get -y install --force-yes freeswitch-mod-shout
 esac
 
 case $(uname -m) in armv7l)
@@ -658,8 +660,6 @@ for i in nginx php5-fpm ;do service "${i}" restart > /dev/null 2>&1 ; done
 #Adding users to needed groups
 adduser www-data freeswitch
 adduser freeswitch www-data
-
-apt-get update
 
 # Install FusionPBX Web User Interface 
 echo "Installing FusionPBX Web User Interface via Debian pkg"
