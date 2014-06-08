@@ -26,20 +26,28 @@
 ################################################################################
 echo
 echo "This is a one time install script."
+echo
 echo "This script is ment to be run on a fresh install of debian 7 (wheezy)."
+echo
 echo "I am working to get jessies pkgs done soon."
+echo
 echo "It is not intended to be run multi times"
+echo
 echo "If it fails for any reason please report to r.neese@gmail.com. "
+echo
 echo "Please include any screen output you can to show where it fails."
 echo
 ################################################################################
 #checks to see if installing on openvz server
 if [[ -f /proc/vz ]]; then
 echo "Note: "
+echo
 echo "Those of you running this script on openvz. You must run it as root and "
+echo
 echo "bash  Fusionpbx-Debian-Pkg-Install-New.sh or it fails the networking check."
 echo
 echo "Please take the time to refer to this document if you have install issues on openvz"
+echo
 echo "http://openvz.org/Virtual_Ethernet_device and make sure to setup a eth0 ."
 echo
 exit
