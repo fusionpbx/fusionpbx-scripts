@@ -49,11 +49,11 @@ case $(uname -m) in armv7l)
 echo
 echo " It is suggested you only use sqlite and or postgresql client for best preformance on "
 echo
-echo " armhf when using a sd or emmc or nand.
+echo " armhf when using a sd or emmc or nand."
 echo
-echo " For those arm units supporting sata and usb3 harddrives you can opt for Postgrsql if you wish.
+echo " For those arm units supporting sata and usb3 harddrives you can opt for Postgrsql if you wish."
 echo
-echo " Currently only Oostgresql 9.1 is supported in the armhf pkgs. I have not foud a repo with 9.3 pkgs.
+echo " Currently only Oostgresql 9.1 is supported in the armhf pkgs. I have not foud a repo with 9.3 pkgs."
 echo
 echo " I will update the script when I do."
 echo
