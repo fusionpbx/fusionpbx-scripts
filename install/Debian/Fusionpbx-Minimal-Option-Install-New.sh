@@ -692,7 +692,7 @@ for i in fusionpbx-core fusionpbx-app-calls fusionpbx-app-calls-active fusionpbx
 		fusionpbx-app-destinations fusionpbx-app-dialplan fusionpbx-app-dialplan-inbound \
 		fusionpbx-app-dialplan-outbound fusionpbx-app-extensions fusionpbx-app-gateways \
 		fusionpbx-app-fax fusionpbx-app-login fusionpbx-app-log-viewer fusionpbx-app-modules \
-		fusionpbx-app-registrations  fusionpbx-app-settings fusionpbx-app-sip-profiles \
+		fusionpbx-app-registrations fusionpbx-app-settings fusionpbx-app-sip-profiles \
 		fusionpbx-app-sip-status fusionpbx-app-system fusionpbx-sounds fusionpbx-app-xml-cdr \
 		fusionpbx-app-vars fusionpbx-conf fusionpbx-scripts fusionpbx-sqldb
 do apt-get -y --force-yes install "${i}"
@@ -947,7 +947,6 @@ mkdir -p /var/lib/fusionpbx/scripts
 chown -R freeswitch:freeswitch /var/lib/fusionpbx/scripts
 find "$fs_scripts_dir" -type d -exec chmod 775 {} +
 find "$fs_scripts_dir" -type f -exec chmod 664 {} +
-
 
 #Copy fusionpbx sounds into place
 cp -rp /usr/share/fusionpbx/resources/install/sounds/* /usr/share/freeswitch/sounds/
