@@ -181,8 +181,6 @@ fs_grp=$fs_usr
 
 ################################################################################
 # Hard Set Varitables (Do Not EDIT)
-#fpbx_act_conf="/etc/fusionpbx/conf"
-fpbx_act_conf="$fs_conf_dir"
 #Nginx default www dir
 WWW_PATH="/usr/share/nginx/www" #debian nginx default dir
 #set Web User Interface Dir Name
@@ -492,8 +490,17 @@ server{
                 break;
         }
 
-        #grandstream gx2200
-        rewrite "^.*/provision/cfg([A-Fa-f0-9]{12})(\.(xml|cfg))$" /app/provision/?mac=$1;
+		#grandstream
+        rewrite "^.*/provision/cfg([A-Fa-f0-9]{12})(\.(xml|cfg))?$" /app/provision/?mac=$1;
+
+		#aastra
+		#rewrite "^.*/provision/([A-Fa-f0-9]{12})(\.(cfg))?$" /app/provision/?mac=$1 last;
+
+		#yealink common
+		rewrite "^.*/provision/(y[0-9]{12})(\.cfg)?$" /app/provision/index.php?file=$1$2;
+
+		#yealink mac
+		rewrite "^.*/provision/([A-Fa-f0-9]{12})(\.(xml|cfg))?$" /app/provision/index.php?mac=$1 last;
 
         access_log /var/log/nginx/access.log;
         error_log /var/log/nginx/.error.log;
@@ -535,8 +542,17 @@ server{
         ssl_protocols           SSLv3 TLSv1;
         ssl_ciphers     HIGH:!ADH:!MD5;
 
-		#grandstream gx2200
-        rewrite "^.*/provision/cfg([A-Fa-f0-9]{12})(\.(xml|cfg))$" /app/provision/?mac=$1;
+		#grandstream
+        rewrite "^.*/provision/cfg([A-Fa-f0-9]{12})(\.(xml|cfg))?$" /app/provision/?mac=$1;
+
+		#aastra
+		#rewrite "^.*/provision/([A-Fa-f0-9]{12})(\.(cfg))?$" /app/provision/?mac=$1 last;
+
+		#yealink common
+		rewrite "^.*/provision/(y[0-9]{12})(\.cfg)?$" /app/provision/index.php?file=$1$2;
+
+		#yealink mac
+		rewrite "^.*/provision/([A-Fa-f0-9]{12})(\.(xml|cfg))?$" /app/provision/index.php?mac=$1 last;
 
         access_log /var/log/nginx/access.log;
         error_log /var/log/nginx/.error.log;
