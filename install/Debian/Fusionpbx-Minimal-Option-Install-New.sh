@@ -44,7 +44,20 @@ echo "http://openvz.org/Virtual_Ethernet_device and make sure to setup a eth0 ."
 echo
 exit
 fi
-#
+################################################################################
+case $(uname -m) in armv7l)
+echo
+echo " It is suggested you only use sqlite and or postgresql client for best preformance on "
+echo
+echo " armhf when using a sd or emmc or nand.
+echo
+echo " For those arm units supporting sata and usb3 harddrives you can opt for Postgrsql if you wish.
+echo
+echo " Currently only Oostgresql 9.1 is supported in the armhf pkgs. I have not foud a repo with 9.3 pkgs.
+echo
+echo " I will update the script when I do."
+echo
+esac
 ################################################################################
 
 #<------Start Edit HERE--------->
@@ -63,7 +76,7 @@ freeswitch_nat=n
 #Set how long to keep freeswitch/fusionpbx log files 1 to 30 days (Default:5)
 keep_logs=5
 
-#Dahdi & freetdm
+#Dahdi & freetdm (Under Development in pkgs)(Not Yet Useable)
 freeswitch_freetdm="n"
 
 #Install and use FusionPBX GUI
@@ -258,9 +271,9 @@ fi
 apt-get update && apt-get -y upgrade
 
 case $(uname -m) in armv7l)
-apt-get update && apt-get dist-upgrade
+apt-get -y update && apt-get -y dist-upgrade
 for i in acpi-support-base usbmount usbtools
-do apt-get install "${i}"
+do apt-get -y install "${i}"
 done
 esac
 
@@ -362,12 +375,16 @@ for i in freeswitch freeswitch-init freeswitch-lang-en freeswitch-meta-codecs fr
 		freeswitch-mod-event-multicast freeswitch-mod-event-socket freeswitch-mod-event-test freeswitch-mod-local-stream freeswitch-mod-native-file \
 		freeswitch-mod-sndfile freeswitch-mod-tone-stream freeswitch-mod-lua freeswitch-mod-console freeswitch-mod-logfile freeswitch-mod-syslog \
 		freeswitch-mod-say-en freeswitch-mod-posix-timer freeswitch-mod-timerfd freeswitch-mod-v8 freeswitch-mod-xml-cdr freeswitch-mod-xml-curl \
-		freeswitch-mod-xml-rpc freeswitch-sounds freeswitch-music freeswitch-mod-vlc freeswitch-conf-vanilla
+		freeswitch-mod-xml-rpc freeswitch-sounds freeswitch-music freeswitch-conf-vanilla
 do apt-get -y install --force-yes "${i}"
 done
 
 case $(uname -m) in x86_64|i[4-6]86)
 apt-get install freeswitch-mod-shout
+esac
+
+case $(uname -m) in armv7l)
+apt-get -y install --force-yes freeswitch-mod-vlc
 esac
 
 if [[ $freeswitch_freetdm == y ]]; then
@@ -1151,7 +1168,7 @@ DELIM
 
 #Install openvpn openvpn-scripts 
 if [[ $install_openvpn == "y" ]]; then
-for i in  openvpn openvpn-scripts ;do apt-get -y install --force-yes "${i}"; done
+for i in openvpn openvpn-scripts ;do apt-get -y install --force-yes "${i}"; done
 fi
 
 #Ajenti admin portal. Makes maintaining the system easier.
@@ -1211,7 +1228,7 @@ if [[ $postgresql_server == "y" ]]; then
 	
 	case $(uname -m) in armv7l)
 	echo "no are deb pkgs for pgsql postgresql-client-9.3"
-	echo "postgresql-9.1 is bueing installed"
+	echo "postgresql-9.1 is being installed"
 	for i in postgresql-9.1 php5-pgsql ;do apt-get -y install "${i}"; done
 	esac
 	
