@@ -162,7 +162,7 @@ database_user_name=
 install_openvpn="n"
 
 #Add Ajenti Admin Portal
-install_ajenti="n"
+install_ajenti="y"
 
 #Custom Dir Layout
 fs_conf_dir="/etc/freeswitch"
@@ -389,11 +389,13 @@ case $(uname -m) in armv7l)
 apt-get -y install --force-yes freeswitch-mod-vlc
 esac
 
+case $(uname -m) in x86_64|i[4-6]86)
 if [[ $freeswitch_freetdm == y ]]; then
 for i in dahdi dahdi-linux freeswitch-mod-freetdm
 do apt-get -y install --force-yes "${i}"
 done
 fi
+esac
 
 #make the conf dir 
 mkdir -p "$fs_conf_dir"
@@ -670,12 +672,13 @@ adduser freeswitch www-data
 echo "Installing FusionPBX Web User Interface via Debian pkg"
 
 echo " Installing fusipnpbx basepbx"
-for i in fusionpbx-core fusionpbx-conf fusionpbx-sqldb fusionpbx-scripts fusionpbx-sounds fusionpbx-app-dialplan \
-		fusionpbx-app-calls fusionpbx-app-calls-active fusionpbx-app-contacts fusionpbx-app-destinations \
-		fusionpbx-app-dialplan-inbound fusionpbx-app-dialplan-outbound fusionpbx-app-extensions \
-		fusionpbx-app-gateways fusionpbx-app-fax fusionpbx-app-login fusionpbx-app-log-viewer \
-		fusionpbx-app-modules fusionpbx-app-registrations fusionpbx-app-settings fusionpbx-app-sip-profiles \
-		fusionpbx-app-sip-status fusionpbx-app-system fusionpbx-app-xml-cdr fusionpbx-app-vars
+for i in fusionpbx-core fusionpbx-app-calls fusionpbx-app-calls-active fusionpbx-app-contacts \
+		fusionpbx-app-destinations fusionpbx-app-dialplan fusionpbx-app-dialplan-inbound \
+		fusionpbx-app-dialplan-outbound fusionpbx-app-extensions fusionpbx-app-gateways \
+		fusionpbx-app-fax fusionpbx-app-login fusionpbx-app-log-viewer fusionpbx-app-modules \
+		fusionpbx-app-registrations  fusionpbx-app-settings fusionpbx-app-sip-profiles \
+		fusionpbx-app-sip-status fusionpbx-app-system fusionpbx-sounds fusionpbx-app-xml-cdr \
+		fusionpbx-app-vars fusionpbx-conf fusionpbx-scripts fusionpbx-sqldb
 do apt-get -y --force-yes install "${i}"
 done
 
