@@ -278,7 +278,7 @@ apt-get update && apt-get -y upgrade
 
 case $(uname -m) in armv7l)
 apt-get -y update && apt-get -y dist-upgrade
-for i in acpi-support-base usbmount usbtools
+for i in acpi-support-base usbmount usbutils
 do apt-get -y install "${i}"
 done
 esac
