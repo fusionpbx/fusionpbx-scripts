@@ -1224,7 +1224,7 @@ if [[ $postgresql_client == "y" ]]; then
 	
 	case $(uname -m) in armv7l)
 	echo "no are deb pkgs for pgsql postgresql-client-9.3"
-	echo "postgresql-client-9.1 is bueing installed"
+	echo "postgresql-client-9.1 is being installed"
 	for i in postgresql-client-9.1 php5-pgsql ;do apt-get -y install "${i}"; done
 	esac
 		
