@@ -69,6 +69,10 @@ esac
 ################################################################################
 
 #<------Start Edit HERE--------->
+#Please Select 1 of the followinf if using arm boards
+cubie_board="n"
+odroid_boards="n"
+
 #Required
 #Stable/release=1.4/master=1.5 aka git head
 # Default is stable
@@ -1299,7 +1303,29 @@ cat > /etc/sysctl.conf << DELIM
 kernel.panic = 10
 DELIM
 
+#DigiDaz Tested and approved
+if [[ $cubie_boards == "y" ]]; then
+cat >/etc/fstab << DELIM
+#<file system>  <mount point>   <type>  <options>       <dump>  <pass>
+/dev/mmcblk0p1	/		ext4	noatime,nodiratime	0	1
+tmpfs	/tmp	tmpfs	defaults	0	0
+tmpfs	/var/lib/freeswitch/db	tmpfs	defaults	0	0
+tmpfs   /var/tmp	tmpfs	defaults	0	0
+DELIM
+fi
+
+#DigiDaz Tested and approved
+if [[ $odroid_boards == "y" ]]; then
+
+fi
+
+#DigiDaz Tested and approved
+case $(uname -m) in armv7l)
+/bin/sed -i /usr/share/freeswitch/conf/autoload_configs/logfile.conf.xml -i -e s,'<map name="all" value="debug,info,notice,warning,err,crit,alert"/>','<map name="all" value="warning,err,crit,alert"/>';
+/bin/sed -i /usr/share/nginx/www/fusionpbx/app/vars/app_defaults.php -i -e s,'{"var_name":"xml_cdr_archive","var_value":"dir","var_cat":"Defaults","var_enabled":"true","var_description":""}','{"var_name":"xml_cdr_archive","var_value":"none","var_cat":"Defaults","var_enabled":"true","var_description":""}';
+esac
+
 #apt-get cleanup (clean and remove unused pkgs)
 apt-get autoclean && apt-get autoremove
 
-echo " The install has finished...  "
+echo " The install $wui_name has finished...  "
