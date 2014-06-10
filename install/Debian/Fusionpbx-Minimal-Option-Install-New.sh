@@ -70,8 +70,8 @@ esac
 
 #<------Start Edit HERE--------->
 #Please Select 1 of the followinf if using arm boards
-cubie_board="n"
-odroid_boards="n"
+cubie_boards="n"
+#odroid_boards="n"
 
 #Required
 #Stable/release=1.4/master=1.5 aka git head
@@ -454,7 +454,7 @@ for i in ssl-cert nginx ;do apt-get -y install "${i}" ; done
 for i in php5-cli php5-common php-apc php5-gd php-db php5-fpm php5-memcache php5-odbc php-pear php5-sqlite ;do apt-get -y install "${i}" ; done
 
 # Changing file upload size from 2M to 15M
-/bin/sed -i $php_ini -e s,"upload_max_filesize = 2M","upload_max_filesize = 15M",
+/bin/sed -i $php_ini -e 's#"upload_max_filesize = 2M"#"upload_max_filesize = 15M"#'
 
 #Nginx config Copied from Debian nginx pkg (nginx on debian wheezy uses sockets by default not ports)
 echo ' Install NGINX config file '
@@ -1315,9 +1315,11 @@ DELIM
 fi
 
 #DigiDaz Tested and approved
-if [[ $odroid_boards == "y" ]]; then
-
-fi
+#case $(uname -m) in armv7l)
+#if [[ $odroid_boards == "y" ]]; then
+#
+#fi
+#esac
 
 #DigiDaz Tested and approved
 case $(uname -m) in armv7l)
