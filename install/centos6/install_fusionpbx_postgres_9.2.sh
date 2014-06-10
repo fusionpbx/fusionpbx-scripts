@@ -107,7 +107,7 @@ fi
 ###############
 
 #install dependencies
-yum -y sudo ghostscript libtiff
+yum -y install sudo ghostscript libtiff
 
 ###########################################3
 #dz  Install OpenSSL for TLS and SRTP support
