@@ -70,7 +70,11 @@ esac
 
 #<------Start Edit HERE--------->
 #Please Select 1 of the followinf if using arm boards
-cubie_boards="n"
+#Use this setting for installing on a sd on a cubie board
+cubie_boards_sd="n"
+#Use this setting for installing on the nand on a cubie board
+cubie_boards_nand="n"
+#Use for configuring a odroid
 odroid_boards="n"
 
 #Required
@@ -718,7 +722,7 @@ fi
 
 #install fusionpbx_call blocking
 if [[ $app_call_block == "y" ]]; then
-apt-get -y --force-yes install fusionpbx-app-call-blocking
+apt-get -y --force-yes install fusionpbx-app-call-block
 fi
 
 #install fusionpbx_call broadcast
@@ -842,7 +846,7 @@ fi
 
 #install fusionpbx_app traffice graph
 if [[ $app_traffic_graph == "y" ]]; then
-apt-get -y --force-yes install fusionpbx-app-traffic-graphoc
+apt-get -y --force-yes install fusionpbx-app-traffic-graph
 fi
 
 #install fusionpbx_sql query
@@ -878,7 +882,7 @@ for i in fusionpbx-app-devices fusionpbx-app-provision fusionpbx-provisioning-te
 do apt-get -y --force-yes install "${i}"
 done
 mkdir -p /etc/fusionpbx/resources/templates/provision
-cp -rp /usr/share/fusionpbx/resources/template/provisions/cisco /etc/fusionpbx/resources/templates/provision/
+cp -rp /usr/share/fusionpbx/resources/templates/provision/cisco/ /etc/fusionpbx/resources/templates/provision/
 fi
 
 if [[ $template_grandstream == "y" ]]; then
@@ -886,7 +890,7 @@ for i in fusionpbx-app-devices fusionpbx-app-provision fusionpbx-provisioning-te
 do apt-get -y --force-yes install "${i}"
 done
 mkdir -p /etc/fusionpbx/resources/templates/provision
-cp -rp /usr/share/fusionpbx/resources/template/provisions/grandstream /etc/fusionpbx/resources/templates/provision/
+cp -rp /usr/share/fusionpbx/resources/templates/provision/grandstream /etc/fusionpbx/resources/templates/provision/
 fi
 
 if [[ $template_linksys == "y" ]]; then
@@ -922,7 +926,7 @@ cp -rp /usr/share/fusionpbx/resources/templates/provision/snom /etc/fusionpbx/re
 fi
 
 if [[ $template_yealink == "y" ]]; then
-for i in fusionpbx-app-devices fusionpbx-app-provision fusionpbx-provisioning-templates-yealink
+for i in fusionpbx-app-devices fusionpbx-app-provision fusionpbx-provisioning-template-yealink
 do apt-get -y --force-yes install "${i}"
 done
 mkdir -p /etc/fusionpbx/resources/templates/provision
@@ -1305,10 +1309,21 @@ kernel.panic = 10
 DELIM
 
 #fix for cubieboard performance
-if [[ $cubie_boards == "y" ]]; then
+if [[ $cubie_boards_sd == "y" ]]; then
 cat >/etc/fstab << DELIM
 #<file system>  <mount point>   <type>  <options>       <dump>  <pass>
 /dev/mmcblk0p1	/		ext4	noatime,nodiratime	0	1
+tmpfs	/tmp	tmpfs	defaults	0	0
+tmpfs	/var/lib/freeswitch/db	tmpfs	defaults	0	0
+tmpfs   /var/tmp	tmpfs	defaults	0	0
+DELIM
+fi
+
+#fix for cubieboard performance
+if [[ $cubie_boards_nand == "y" ]]; then
+cat >/etc/fstab << DELIM
+#<file system>  <mount point>   <type>  <options>       <dump>  <pass>
+/dev/nandb      /               ext4    noatime,nodiratime      0       1
 tmpfs	/tmp	tmpfs	defaults	0	0
 tmpfs	/var/lib/freeswitch/db	tmpfs	defaults	0	0
 tmpfs   /var/tmp	tmpfs	defaults	0	0
