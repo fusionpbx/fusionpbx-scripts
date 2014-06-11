@@ -71,7 +71,7 @@ esac
 #<------Start Edit HERE--------->
 #Please Select 1 of the followinf if using arm boards
 cubie_boards="n"
-#odroid_boards="n"
+odroid_boards="n"
 
 #Required
 #Stable/release=1.4/master=1.5 aka git head
@@ -1216,6 +1216,7 @@ wget http://repo.ajenti.org/debian/key -O- | apt-key add -
 apt-get update &> /dev/null && apt-get -y install ajenti
 fi
 
+#install 
 #Install postgresql-client
 if [[ $postgresql_client == "y" ]]; then
 	db_name="$wui_name"
@@ -1303,7 +1304,7 @@ cat > /etc/sysctl.conf << DELIM
 kernel.panic = 10
 DELIM
 
-#DigiDaz Tested and approved
+#fix for cubieboard performance
 if [[ $cubie_boards == "y" ]]; then
 cat >/etc/fstab << DELIM
 #<file system>  <mount point>   <type>  <options>       <dump>  <pass>
@@ -1315,11 +1316,24 @@ DELIM
 fi
 
 #DigiDaz Tested and approved
-#case $(uname -m) in armv7l)
-#if [[ $odroid_boards == "y" ]]; then
-#
-#fi
-#esac
+if [[ $odroid_boards == "y" ]]; then
+cat > /etc/network/if-pre-up.d/copyip << DELIM
+#!/bin/bash
+if [ ! -f "/boot/ip.txt ];
+then
+break ;;
+elif [ -f "/boot/ip.txt.bak ];
+then
+break ;;
+else
+if [ -f "/boot/ip.txt ];
+then
+cp /boot/ip.txt /etc/network/interfaces
+mv /boot/ip.txt /boot/ip.txt.bak
+fi
+fi
+DELIM
+fi
 
 #DigiDaz Tested and approved
 case $(uname -m) in armv7l)
