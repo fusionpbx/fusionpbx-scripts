@@ -742,14 +742,14 @@ fi
 
 #install fusionpbx_conference-centers
 if [[ $app_conference_centers == "y" ]]; then
-for i in freeswitch-mod-conference fusionpbx-app-conference-centers fusionpbx-app-conferences-active
+for i in freeswitch-mod-conference fusionpbx-app-conference-centers fusionpbx-app-conferences-active fusionpbx-app-meetings
 do apt-get -y --force-yes install "${i}"
 done
 fi
 
 #install fusionpbx_confrences
 if [[ $app_conference == "y" ]]; then
-for i in freeswitch-mod-conference fusionpbx-app-conferences fusionpbx-app-conferences-active
+for i in freeswitch-mod-conference fusionpbx-app-conferences fusionpbx-app-conferences-active fusionpbx-app-meetings
 do apt-get -y --force-yes install "${i}"
 done
 fi
