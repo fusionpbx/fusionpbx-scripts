@@ -18,6 +18,8 @@ LICENSE=$( cat << DELIM
 #
 # Credit: Based off of the BEER-WARE LICENSE (REVISION 42) by Poul-Henning Kamp
 #
+#  Contributor(s):
+#		Gill Abada <ga@steadfasttelecom.com>
 #------------------------------------------------------------------------------
 DELIM
 )
@@ -84,7 +86,7 @@ FPBXBRANCH="http://fusionpbx.googlecode.com/svn/branches/dev/fusionpbx"
 FSGIT=git://git.freeswitch.org/freeswitch.git
 #FSGIT=git://github.com/FreeSWITCH/FreeSWITCH.git
 FSSTABLE=true
-FSStableVer="v1.2.stable"
+FSStableVer="v1.4"
 
 #right now, make -j not working. see: jira FS-3005
 #CORES=$(/bin/grep processor -c /proc/cpuinfo)
@@ -94,8 +96,6 @@ FQDN=$(hostname -f)
 SRCPATH="/usr/src/freeswitch"
 #EN_PATH="/usr/local/freeswitch/conf/autoload_configs" #DEFAULT
 EN_PATH="/usr/local/freeswitch/conf/autoload_configs"
-
-#used by NGINX
 WWW_PATH="/var/www"
 
 #used for Apache
@@ -820,8 +820,11 @@ if [ $INSFREESWITCH -eq 1 ]; then
 
 	if [ $DISTRO = "precise" ]; then
 		/usr/bin/apt-get -y install ssh vim git-core subversion build-essential \
-		autoconf automake libtool libncurses5 libncurses5-dev libjpeg-dev ssh \
-		screen htop pkg-config bzip2 curl libtiff4-dev ntp time\
+		autoconf automake devscripts gawk g++ libtool libncurses5 libncurses5-dev \
+		 libjpeg-dev ssh libperl-dev libgdbm-dev gettext libssl-dev \
+		 libcurl4-openssl-dev libpcre3-dev libspeex-dev libspeexdsp-dev \
+		 libsqlite3-dev libedit-dev libgdbm-dev libmemcached-dev \
+		screen htop pkg-config bzip2 curl libtiff4-dev ntp memcached libldns-dev  \
 		time bison libssl-dev \
 		unixodbc libmyodbc unixodbc-dev libtiff-tools
 	elif [ $DISTRO = "wheezy" ]; then
@@ -915,7 +918,7 @@ if [ $INSFREESWITCH -eq 1 ]; then
 				POSTGRES9=9
 				#update repository for postgres 9.3 ...
 				/bin/echo "deb http://apt.postgresql.org/pub/repos/apt/ precise-pgdg main" > /etc/apt/sources.list.d/pgdg.list
-				wget --quiet -O - http://apt.postgresql.org/pub/repos/apt/ACCC4CF8.asc | apt-key add -
+				wget --quiet -O - http://apt.postgresql.org/pub/repos/apt/ACCC4CF8.asc | sudo apt-key add -
 				/usr/bin/apt-get update
 				/usr/bin/apt-get -y install postgresql-9.3 libpq-dev
 			elif [ $DISTRO = "wheezy" ]; then
@@ -990,8 +993,7 @@ if [ $INSFREESWITCH -eq 1 ]; then
 		cd /usr/src
 		if [ "$FSSTABLE" == true ]; then
 			echo "installing stable $FSStableVer of FreeSWITCH"
-			#/usr/bin/time /usr/bin/git clone $FSGIT
-			time /usr/bin/git clone $FSGIT
+			/usr/bin/time /usr/bin/git clone $FSGIT
 			cd /usr/src/freeswitch
 			/usr/bin/git checkout $FSStableVer
 			if [ $? -ne 0 ]; then
@@ -1001,8 +1003,7 @@ if [ $INSFREESWITCH -eq 1 ]; then
 			fi
 		else
 			echo "going dev branch.  Hope this works for you."
-			#/usr/bin/time /usr/bin/git clone $FSGIT
-			time /usr/bin/git clone $FSGIT
+			/usr/bin/time /usr/bin/git clone $FSGIT
 			if [ $? -ne 0 ]; then
 				#git had an error
 				/bin/echo "GIT ERROR"
@@ -1058,16 +1059,14 @@ if [ $INSFREESWITCH -eq 1 ]; then
 				/bin/echo
 				read -p "Press Enter to continue (check for errors)"
 			fi
-			#/usr/bin/time /usr/src/freeswitch/bootstrap.sh -j
-			time /usr/src/freeswitch/bootstrap.sh -j
+			/usr/bin/time /usr/src/freeswitch/bootstrap.sh -j
 		else 
 			/bin/echo "  singlecore processor detected. Starting Bootstrap sans -j"
 			if [ $DEBUG -eq 1 ]; then
 				/bin/echo
 				read -p "Press Enter to continue (check for errors)"
 			fi
-			#/usr/bin/time /usr/src/freeswitch/bootstrap.sh
-			time /usr/src/freeswitch/bootstrap.sh
+			/usr/bin/time /usr/src/freeswitch/bootstrap.sh
 		fi
 
 		if [ $? -ne 0 ]; then
@@ -1125,12 +1124,10 @@ if [ $INSFREESWITCH -eq 1 ]; then
 		/bin/echo -ne " ."
 		case "$SQLITEMYSQL" in
 		[Pp]*)
-			#/usr/bin/time /usr/src/freeswitch/configure --enable-core-pgsql-support --enable-zrtp
-			time /usr/src/freeswitch/configure --enable-core-pgsql-support --enable-zrtp
+			/usr/bin/time /usr/src/freeswitch/configure --enable-core-pgsql-support --enable-zrtp
 		;;
 		*)
-			#/usr/bin/time /usr/src/freeswitch/configure --enable-zrtp
-			time /usr/src/freeswitch/configure --enable-zrtp
+			/usr/bin/time /usr/src/freeswitch/configure --enable-zrtp
 		;;
 		esac
 
@@ -1177,14 +1174,11 @@ if [ $INSFREESWITCH -eq 1 ]; then
 		if [ $CORES -gt 1 ]; then 
 			/bin/echo "  multicore processor detected. Compiling with -j $CORES"
 			#per anthm compile the freeswitch core first, then the modules.
-			#/usr/bin/time /usr/bin/make -j $CORES core
-			time /usr/bin/make -j $CORES core
-			#/usr/bin/time /usr/bin/make -j $CORES
-			time /usr/bin/make -j $CORES
+			/usr/bin/time /usr/bin/make -j $CORES core
+			/usr/bin/time /usr/bin/make -j $CORES
 		else 
 			/bin/echo "  singlecore processor detected. Starting compile sans -j"
-			#/usr/bin/time /usr/bin/make 
-			time /usr/bin/make 
+			/usr/bin/time /usr/bin/make 
 		fi
 
 		if [ $? -ne 0 ]; then
@@ -1221,12 +1215,10 @@ if [ $INSFREESWITCH -eq 1 ]; then
 		cd /usr/src/freeswitch
 		if [ $CORES -gt 1 ]; then 
 			/bin/echo "  multicore processor detected. Installing with -j $CORES"
-			#/usr/bin/time /usr/bin/make -j $CORES install
-			time /usr/bin/make -j $CORES install
+			/usr/bin/time /usr/bin/make -j $CORES install
 		else 
 			/bin/echo "  singlecore processor detected. Starting install sans -j"
-			#/usr/bin/time /usr/bin/make install
-			time /usr/bin/make install
+			/usr/bin/time /usr/bin/make install
 		fi
 		#/usr/bin/time /usr/bin/make install
 
@@ -1257,12 +1249,10 @@ if [ $INSFREESWITCH -eq 1 ]; then
 		cd /usr/src/freeswitch
 		if [ $CORES -gt 1 ]; then 
 			/bin/echo "  multicore processor detected. Installing with -j $CORES"
-			#/usr/bin/time /usr/bin/make -j $CORES hd-sounds-install
-			time /usr/bin/make -j $CORES hd-sounds-install
+			/usr/bin/time /usr/bin/make -j $CORES hd-sounds-install
 		else 
 			/bin/echo "  singlecore processor detected. Starting install sans -j"
-			#/usr/bin/time /usr/bin/make hd-sounds-install
-			time /usr/bin/make hd-sounds-install
+			/usr/bin/time /usr/bin/make hd-sounds-install
 		fi
 		#/usr/bin/time /usr/bin/make hd-sounds-install
 
@@ -1300,12 +1290,10 @@ if [ $INSFREESWITCH -eq 1 ]; then
 		cd /usr/src/freeswitch
 		if [ $CORES -gt 1 ]; then 
 			/bin/echo "  multicore processor detected. Installing with -j $CORES"
-			#/usr/bin/time /usr/bin/make -j $CORES hd-moh-install
-			time /usr/bin/make -j $CORES hd-moh-install
+			/usr/bin/time /usr/bin/make -j $CORES hd-moh-install
 		else 
 			/bin/echo "  singlecore processor detected. Starting install sans -j"
-			#/usr/bin/time /usr/bin/make hd-moh-install
-			time /usr/bin/make hd-moh-install
+			/usr/bin/time /usr/bin/make hd-moh-install
 		fi
 		#/usr/bin/make hd-moh-install
 
@@ -2632,12 +2620,10 @@ if [ $UPGFREESWITCH -eq 1 ]; then
 
 		if [ $CORES > "1" ]; then 
 			/bin/echo "  multicore processor detected. Upgrading with -j $CORES"
-			#/usr/bin/time /usr/bin/make -j $CORES current
-			time /usr/bin/make -j $CORES current
+			/usr/bin/time /usr/bin/make -j $CORES current
 		else 
 			/bin/echo "  singlecore processor detected. Starting upgrade sans -j"
-			#/usr/bin/time /usr/bin/make current
-			time /usr/bin/make current
+			/usr/bin/time /usr/bin/make current
 		fi
 		#/usr/bin/make current
 		if [ $? -ne 0 ]; then
