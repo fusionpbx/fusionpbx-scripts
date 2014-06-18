@@ -821,27 +821,28 @@ if [ $INSFREESWITCH -eq 1 ]; then
 	if [ $DISTRO = "precise" ]; then
 		/usr/bin/apt-get -y install ssh vim git-core libjpeg-dev subversion build-essential \
 		autoconf automake devscripts gawk g++ git-core libtool make libncurses5-dev \
+		python-dev pkg-config libtiff5-dev \
 		libperl-dev libgdbm-dev gettext libssl-dev \
 		libcurl4-openssl-dev libpcre3-dev libspeex-dev libspeexdsp-dev \
 		libsqlite3-dev libedit-dev libgdbm-dev libmemcached-dev \
-		screen htop pkg-config bzip2 curl libtiff4-dev ntp memcached libldns-dev  \
-		time bison unixodbc libmyodbc unixodbc-dev libtiff-tools
+		screen htop pkg-config bzip2 curl ntp memcached libldns-dev  \
+		time bison unixodbc libmyodbc unixodbc-dev libtiff-tools libmemcached-dev
 	elif [ $DISTRO = "wheezy" ]; then
 		/usr/bin/apt-get -y install ssh vim git-core libjpeg-dev subversion build-essential \
 		autoconf automake devscripts gawk g++ git-core libtool make libncurses5-dev \
-		python-dev pkg-config libtiff5-dev \
+		python-dev pkg-config libtiff5-dev libldns-dev \
 		libperl-dev libgdbm-dev libdb-dev gettext libcurl4-openssl-dev \
 		libpcre3-dev libspeex-dev libspeexdsp-dev libsqlite3-dev libedit-dev \
-		screen htop pkg-config bzip2 curl libtiff4-dev ntp \
-		time bison libssl-dev unixodbc libmyodbc unixodbc-dev libtiff-tools
+		screen htop pkg-config bzip2 curl ntp \
+		time bison libssl-dev unixodbc libmyodbc unixodbc-dev libtiff-tools libmemcached-dev
 	else
 		/usr/bin/apt-get -y install ssh vim git-core libjpeg-dev subversion build-essential \
-		python-dev pkg-config libtiff5-dev \
+		python-dev pkg-config libtiff5-dev libldns-dev \
 		libperl-dev libgdbm-dev libdb-dev gettext libcurl4-openssl-dev \
 		libpcre3-dev libspeex-dev libspeexdsp-dev libsqlite3-dev libedit-dev \
 		autoconf automake devscripts gawk g++ git-core libtool make libncurses5-dev libjpeg62-dev \
-		screen htop pkg-config bzip2 curl libtiff4-dev ntp \
-		time bison libssl-dev unixodbc libmyodbc unixodbc-dev libtiff-tools
+		screen htop pkg-config bzip2 curl ntp \
+		time bison libssl-dev unixodbc libmyodbc unixodbc-dev libtiff-tools libmemcached-dev
 	fi
 
 	#added libgnutls-dev libgnutls26 for dingaling...
