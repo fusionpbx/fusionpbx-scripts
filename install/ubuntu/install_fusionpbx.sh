@@ -819,26 +819,29 @@ if [ $INSFREESWITCH -eq 1 ]; then
 	/usr/bin/apt-get -y upgrade
 
 	if [ $DISTRO = "precise" ]; then
-		/usr/bin/apt-get -y install ssh vim git-core subversion build-essential \
-		autoconf automake devscripts gawk g++ libtool libncurses5 libncurses5-dev \
-		 libjpeg-dev ssh libperl-dev libgdbm-dev gettext libssl-dev \
-		 libcurl4-openssl-dev libpcre3-dev libspeex-dev libspeexdsp-dev \
-		 libsqlite3-dev libedit-dev libgdbm-dev libmemcached-dev \
+		/usr/bin/apt-get -y install ssh vim git-core libjpeg-dev subversion build-essential \
+		autoconf automake devscripts gawk g++ git-core libtool make libncurses5-dev \
+		libperl-dev libgdbm-dev gettext libssl-dev \
+		libcurl4-openssl-dev libpcre3-dev libspeex-dev libspeexdsp-dev \
+		libsqlite3-dev libedit-dev libgdbm-dev libmemcached-dev \
 		screen htop pkg-config bzip2 curl libtiff4-dev ntp memcached libldns-dev  \
-		time bison libssl-dev \
-		unixodbc libmyodbc unixodbc-dev libtiff-tools
+		time bison unixodbc libmyodbc unixodbc-dev libtiff-tools
 	elif [ $DISTRO = "wheezy" ]; then
-		/usr/bin/apt-get -y install ssh vim git-core subversion build-essential \
-		autoconf automake libtool libncurses5 libncurses5-dev libjpeg-dev ssh \
-		screen htop pkg-config bzip2 curl libtiff4-dev ntp time\
-		time bison libssl-dev \
-		unixodbc libmyodbc unixodbc-dev libtiff-tools
+		/usr/bin/apt-get -y install ssh vim git-core libjpeg-dev subversion build-essential \
+		autoconf automake devscripts gawk g++ git-core libtool make libncurses5-dev \
+		python-dev pkg-config libtiff5-dev \
+		libperl-dev libgdbm-dev libdb-dev gettext libcurl4-openssl-dev \
+		libpcre3-dev libspeex-dev libspeexdsp-dev libsqlite3-dev libedit-dev \
+		screen htop pkg-config bzip2 curl libtiff4-dev ntp \
+		time bison libssl-dev unixodbc libmyodbc unixodbc-dev libtiff-tools
 	else
-		/usr/bin/apt-get -y install ssh vim git-core subversion build-essential \
-			autoconf automake libtool libncurses5 libncurses5-dev libjpeg62-dev ssh \
-			screen htop pkg-config bzip2 curl libtiff4-dev ntp \
-			time bison libssl-dev \
-			unixodbc libmyodbc unixodbc-dev libtiff-tools time
+		/usr/bin/apt-get -y install ssh vim git-core libjpeg-dev subversion build-essential \
+		python-dev pkg-config libtiff5-dev \
+		libperl-dev libgdbm-dev libdb-dev gettext libcurl4-openssl-dev \
+		libpcre3-dev libspeex-dev libspeexdsp-dev libsqlite3-dev libedit-dev \
+		autoconf automake devscripts gawk g++ git-core libtool make libncurses5-dev libjpeg62-dev \
+		screen htop pkg-config bzip2 curl libtiff4-dev ntp \
+		time bison libssl-dev unixodbc libmyodbc unixodbc-dev libtiff-tools
 	fi
 
 	#added libgnutls-dev libgnutls26 for dingaling...
