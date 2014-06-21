@@ -55,6 +55,7 @@ DISTRO=precise
 #DISTRO=squeeze
 #DISTRO=precise
 #DISTRO=lucid
+#DISTRO=wheezy
 
 #below is a list of modules we want to add to provide functionality for FusionPBX
 #don't worry about the applications/mod_ format.  This script will find that in modules.conf
@@ -141,7 +142,7 @@ function nginxconfig {
 	#gets escaped.
 	#manually escaping now. needs variables....
 	/bin/cat > /etc/nginx/sites-available/$GUI_NAME  <<DELIM
-server{
+server {
 	listen 127.0.0.1:80;
 	server_name 127.0.0.1;
 	access_log /var/log/nginx/access.log;
@@ -175,7 +176,7 @@ server{
 	}
 }
 
-server{
+server {
 	listen 80;
 	server_name $GUI_NAME;
 	if (\$uri !~* ^.*provision.*$) {
@@ -226,7 +227,7 @@ server{
 	}
 }
 
-server{
+server {
 	listen 443;
 	server_name $GUI_NAME;
 	ssl                     on;
@@ -711,8 +712,6 @@ else
 fi
 
 
-#check for 10.04 LTS Lucid
-
 #/bin/grep -i lucid /etc/lsb-release > /dev/null
 lsb_release -c |grep -i lucid > /dev/null
 if [ $? -eq 0 ]; then
@@ -821,12 +820,12 @@ if [ $INSFREESWITCH -eq 1 ]; then
 	if [ $DISTRO == "precise" ]; then
 		/usr/bin/apt-get -y install ssh vim git-core libjpeg-dev subversion build-essential \
 		autoconf automake devscripts gawk g++ git-core libtool make libncurses5-dev \
-		python-dev pkg-config libtiff5-dev \
+		python-dev pkg-config libtiff4-dev \
 		libperl-dev libgdbm-dev gettext libssl-dev \
 		libcurl4-openssl-dev libpcre3-dev libspeex-dev libspeexdsp-dev \
 		libsqlite3-dev libedit-dev libgdbm-dev libmemcached-dev \
 		screen htop pkg-config bzip2 curl ntp memcached libldns-dev  \
-		time bison unixodbc libmyodbc unixodbc-dev libtiff-tools libmemcached-dev
+		time bison unixodbc libmyodbc unixodbc-dev libtiff-tools
 	elif [ $DISTRO == "wheezy" ]; then
 		/usr/bin/apt-get -y install ssh vim git-core libjpeg-dev subversion build-essential \
 		autoconf automake devscripts gawk g++ git-core libtool make libncurses5-dev \
