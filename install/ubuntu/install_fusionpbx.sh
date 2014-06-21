@@ -818,7 +818,7 @@ if [ $INSFREESWITCH -eq 1 ]; then
 	/usr/bin/apt-get update
 	/usr/bin/apt-get -y upgrade
 
-	if [ $DISTRO = "precise" ]; then
+	if [ $DISTRO == "precise" ]; then
 		/usr/bin/apt-get -y install ssh vim git-core libjpeg-dev subversion build-essential \
 		autoconf automake devscripts gawk g++ git-core libtool make libncurses5-dev \
 		python-dev pkg-config libtiff5-dev \
@@ -827,7 +827,7 @@ if [ $INSFREESWITCH -eq 1 ]; then
 		libsqlite3-dev libedit-dev libgdbm-dev libmemcached-dev \
 		screen htop pkg-config bzip2 curl ntp memcached libldns-dev  \
 		time bison unixodbc libmyodbc unixodbc-dev libtiff-tools libmemcached-dev
-	elif [ $DISTRO = "wheezy" ]; then
+	elif [ $DISTRO == "wheezy" ]; then
 		/usr/bin/apt-get -y install ssh vim git-core libjpeg-dev subversion build-essential \
 		autoconf automake devscripts gawk g++ git-core libtool make libncurses5-dev \
 		python-dev pkg-config libtiff5-dev libldns-dev \
@@ -886,7 +886,7 @@ if [ $INSFREESWITCH -eq 1 ]; then
 	if [ $DEBUG -eq 1 ]; then
 		/bin/echo "New Option..."
 		/bin/echo "  FreeSWITCH now has native support for PostgreSQL (no more odbc in the core)"
-		/bin/echo " also note that freeswitch is now compiled with zrtp support"
+		/bin/echo "  also note that freeswitch is now compiled with zrtp support"
 		/bin/echo
 		read -p "  Would you like to install PostgreSQL or stay with Sqlite (p/S)? " SQLITEMYSQL
 		case "$SQLITEMYSQL" in
