@@ -2093,7 +2093,7 @@ DELIM
 			/bin/echo
 			/bin/echo "/etc/php5/fpm/php.ini already edited. Skipping..."
 		fi
-		
+
 		#change to socket
 		grep "listen = 127.0.0.1:9000" $PHPCONFFILE |grep \; 
 		if [ $? -ne 0 ]; then
@@ -2101,9 +2101,9 @@ DELIM
 		fi
 
 		#uncomment lines that are needed for unix socket
-		/bin/sed -i -e s,"#listen.owner","listen.owner", $PHPCONFFILE
-		/bin/sed -i -e s,"#listen.group","listen.group", $PHPCONFFILE
-		/bin/sed -i -e s,"#listen.mode","listen.mode", $PHPCONFFILE
+		/bin/sed -i -e s,";listen.owner","listen.owner", $PHPCONFFILE
+		/bin/sed -i -e s,";listen.group","listen.group", $PHPCONFFILE
+		/bin/sed -i -e s,";listen.mode","listen.mode", $PHPCONFFILE
 
 		##Applying fix for cgi.fix_pathinfo
 		/bin/grep 'cgi\.fix_pathinfo=0' $PHPINIFILE > /dev/null
