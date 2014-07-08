@@ -732,7 +732,7 @@ fi
 
 # install fusionpbx call center
 if [[ $app_call_center == "y" ]]; then
-apt-get -y --force-yes install fusionpbx-app-callcenter fusionpbx-app-call-center-active
+apt-get -y --force-yes install fusionpbx-app-call-center fusionpbx-app-call-center-active
 fi
 
 # install fusionpbx call flows
