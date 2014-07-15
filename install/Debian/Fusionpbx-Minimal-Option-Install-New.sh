@@ -172,6 +172,10 @@ database_name=
 # (Default: fusionpbx)
 database_user_name=
 
+# Set FusionPBX database admin password .(used by fusionpbx to access
+# the database table in the postgresql server.
+
+database_user_passwd=
 #Extra Option's
 
 #Install openvpn scripts
@@ -1260,7 +1264,7 @@ fi
 if [[ $postgresql_server == "y" ]]; then
     db_name="$database_name"
     db_user_name="$database_user_name"
-    db_passwd="$(openssl rand -base64 32;)"
+    db_passwd="$database_user_passwd"
 	clear
 	case $(uname -m) in x86_64|i[4-6]86)
 	for i in postgresql-9.3 php5-pgsql ;do apt-get -y install "${i}"; done
