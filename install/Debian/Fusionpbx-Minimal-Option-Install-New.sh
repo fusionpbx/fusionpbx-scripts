@@ -714,7 +714,7 @@ for i in fusionpbx-core fusionpbx-app-calls fusionpbx-app-calls-active fusionpbx
 		fusionpbx-app-fax fusionpbx-app-login fusionpbx-app-log-viewer fusionpbx-app-modules \
 		fusionpbx-app-registrations fusionpbx-app-settings fusionpbx-app-sip-profiles \
 		fusionpbx-app-sip-status fusionpbx-app-system fusionpbx-sounds fusionpbx-app-xml-cdr \
-		fusionpbx-app-vars fusionpbx-conf fusionpbx-scripts fusionpbx-sqldb
+		fusionpbx-app-vars fusionpbx-conf fusionpbx-scripts fusionpbx-sqldb custom-scripts
 do apt-get -y --force-yes install "${i}"
 done
 
