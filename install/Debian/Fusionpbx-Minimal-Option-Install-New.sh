@@ -1196,19 +1196,6 @@ iptables -I INPUT -j DROP -p udp --dport 5068 -m string --string "friendly-scann
 iptables -I INPUT -j DROP -p udp --dport 5069 -m string --string "friendly-scanner" --algo bm
 iptables -I INPUT -j DROP -p udp --dport 5080 -m string --string "friendly-scanner" --algo bm
 
-#adding in ram cache clearing script. run's once an hour
-echo installing ram cache cleaner script
-cat > "/usr/local/bin/clean-ram-cache.sh" << DELIM
-#!/bin/sh
-sync; echo 3 > /proc/sys/vm/drop_caches
-DELIM
-
-chmod +x /usr/local/bin/clean-ram-cache.sh
-
-cat >> "/etc/crontab" << DELIM
-0 *		* * *	root		/usr/local/bin/clean-ram-cache.sh && run-parts --report /etc/cron.hourly
-DELIM
-
 #Install openvpn openvpn-scripts 
 if [[ $install_openvpn == "y" ]]; then
 for i in openvpn openvpn-scripts ;do apt-get -y install --force-yes "${i}"; done
