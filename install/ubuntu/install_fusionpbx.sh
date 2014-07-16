@@ -84,7 +84,7 @@ FPBXBRANCH="http://fusionpbx.googlecode.com/svn/branches/dev/fusionpbx"
 #modules_comp_default=( `/bin/grep -v ^$ /usr/src/freeswitch/modules.conf |/bin/grep -v ^# | /usr/bin/tr '\n' ' '` )
 
 #staying with default repository, feel free to change this to github. Some report faster downloads.
-FSGIT=git://git.freeswitch.org/freeswitch.git
+FSGIT=git://stash.freeswitch.org/scm/fs/freeswitch.git
 #FSGIT=git://github.com/FreeSWITCH/FreeSWITCH.git
 FSSTABLE=true
 FSStableVer="v1.4"
@@ -2598,7 +2598,7 @@ if [ $UPGFREESWITCH -eq 1 ]; then
 				fi
 			fi
 
-			#/usr/bin/time /usr/bin/git clone -b $FSStableVer git://git.freeswitch.org/freeswitch.git
+			#/usr/bin/time /usr/bin/git clone -b $FSStableVer git://stash.freeswitch.org/scm/fs/freeswitch.git
 			/usr/bin/git pull
 			if [ $? -ne 0 ]; then
 				#git checkout had an error
