@@ -58,6 +58,11 @@ esac
 ################################################################################
 
 #<------Start Edit HERE--------->
+
+#Network Interface selection
+#Default = eth0/  Proxmox VE = vmbr0
+net_iface=eth0
+
 #Please Select 1 of the followinf if using arm boards (Embedded)
 #Use this setting for installing on a sd on a cubie board
 #saves on writes to the sd/nand
@@ -918,7 +923,7 @@ if [[ $postgresql_client == "y" ]]; then
 		
 	service php5-fpm restart
 	echo
-	printf '	Please open a web-browser to http://'; ip -f inet addr show dev eth0 | sed -n 's/^ *inet *\([.0-9]*\).*/\1/p'
+	printf '	Please open a web-browser to http://'; ip -f inet addr show dev $net_iface | sed -n 's/^ *inet *\([.0-9]*\).*/\1/p'
 cat << DELIM
 	Or the Doamin name assigned to the machine like http://"$(hostname).$(dnsdomainname)".
 	On the First configuration page of the web user interface.
@@ -956,7 +961,7 @@ if [[ $postgresql_server == "y" ]]; then
 	su -l postgres -c "/usr/bin/psql -c \"create role $postgresql_admin with superuser login password '$postgresql_admin_passwd'\""
 	clear
 echo ''
-	printf '	Please open a web browser to http://'; ip -f inet addr show dev eth0 | sed -n 's/^ *inet *\([.0-9]*\).*/\1/p'   
+	printf '	Please open a web browser to http://'; ip -f inet addr show dev $net_iface | sed -n 's/^ *inet *\([.0-9]*\).*/\1/p'   
 cat << DELIM
 	Or the Doamin name asigned to the machine like http://"$(hostname).$(dnsdomainname)".
 	On the First configuration page of the web user interface
@@ -972,7 +977,7 @@ DELIM
 else
 clear
 echo ''
-	printf '	Please open a web-browser to http://'; ip -f inet addr show dev eth0 | sed -n 's/^ *inet *\([.0-9]*\).*/\1/p'
+	printf '	Please open a web-browser to http://'; ip -f inet addr show dev $net_iface | sed -n 's/^ *inet *\([.0-9]*\).*/\1/p'
 cat << DELIM
 	or the Doamin name asigned to the machine like http://"$(hostname).$(dnsdomainname)".
 	On the First Configuration page of the web user interface "$wui_name".
