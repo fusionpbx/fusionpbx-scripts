@@ -89,6 +89,7 @@ keep_logs=5
 #Dahdi & freetdm (Under Development in pkgs)(Not Yet Useable)
 freeswitch_freetdm="n"
 
+#------Postgresql start-------
 #Optional (Not Required)
 # Please Select Server or Client not both.
 # Used for connecting to remote postgresql database servers
@@ -119,11 +120,12 @@ database_name=
 database_user_name=
 
 # Set FusionPBX database admin password .(used by fusionpbx to access
-# the database table in the postgresql server.
-
+# the database table in the postgresql server).
 database_user_passwd=
-#Extra Option's
 
+#-------Postgresql-End--------------
+
+#Extra Option's
 #Install openvpn scripts
 install_openvpn="n"
 
