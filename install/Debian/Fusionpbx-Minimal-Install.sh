@@ -63,11 +63,6 @@ esac
 #Default = eth0/  Proxmox VE = vmbr0
 net_iface=eth0
 
-#Please Select 1 of the followinf if using arm boards (Embedded)
-#Use this setting for installing on a sd on a cubie board
-#saves on writes to the sd/nand
-embedded_boards="n"
-
 #Use for configuring a odroid
 odroid_boards="n"
 
@@ -994,14 +989,15 @@ cat > /etc/sysctl.conf << DELIM
 kernel.panic = 10
 DELIM
 
+#DigiDaz Tested and approved
 #fix for cubieboard performance
-if [[ embedded_boards == "y" ]]; then
+case $(uname -m) in armv7l)
 cat >> /etc/fstab << DELIM
 tmpfs	/tmp	tmpfs	defaults	0	0
 tmpfs	/var/lib/freeswitch/db	tmpfs	defaults	0	0
 tmpfs   /var/tmp	tmpfs	defaults	0	0
 DELIM
-fi
+esac
 
 
 #DigiDaz Tested and approved
