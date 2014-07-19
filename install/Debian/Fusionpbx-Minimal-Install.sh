@@ -61,7 +61,11 @@ esac
 
 #Network Interface selection
 #Default = eth0/  Proxmox VE = vmbr0
+if [[ -f /dev/vmbr0 ]]; then
+net_iface=vmbr0
+else
 net_iface=eth0
+fi
 
 #Use for configuring a odroid
 odroid_boards="n"
