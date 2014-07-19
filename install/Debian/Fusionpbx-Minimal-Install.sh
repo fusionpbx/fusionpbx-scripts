@@ -36,23 +36,23 @@ DELIM
 #checks to see if installing on openvz server
 if [[ -f /proc/vz ]]; then
 cat << DELIM
-              Note: "
-             Those of you running this script on openvz. You must run it as root and 
-             bash  Fusionpbx-Debian-Pkg-Install-New.sh or it fails the networking check.
-             Please take the time to refer to this document if you have install issues on openvz
-             http://openvz.org/Virtual_Ethernet_device and make sure to setup a eth0 .
-echo
+      Note: "
+            Those of you running this script on openvz. You must run it as root and 
+            bash  Fusionpbx-Debian-Pkg-Install-New.sh or it fails the networking check.
+            Please take the time to refer to this document if you have install issues on openvz
+            http://openvz.org/Virtual_Ethernet_device and make sure to setup a eth0 .
 DELIM
 exit
 fi
 ################################################################################
 case $(uname -m) in armv7l)
 cat << DELIM
+    Note:
         It is suggested you only use sqlite and or postgresql client for best preformance on 
-       armhf when using a sd or emmc or nand.
-       For those arm units supporting sata and usb3 harddrives you can opt for Postgrsql if you wish.
-       Currently only Postgresql 9.1 is supported in the armhf pkgs. I have not foud a repo with 9.3 pkgs.
-       I will update the script when I do.
+        armhf when using a sd or emmc or nand.
+        For those arm units supporting sata and usb3 harddrives you can opt for Postgrsql if you wish.
+        Currently only Postgresql 9.1 is supported in the armhf pkgs. I have not foud a repo with 9.3 pkgs.
+        I will update the script when I do.
 DELIM
 esac
 ################################################################################
