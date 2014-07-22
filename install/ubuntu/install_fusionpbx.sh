@@ -35,7 +35,7 @@ APACHENGINX=n
 # for mysql set m. for sqlite set s. for postgresql set p
 SQLITEMYSQL=s
 
-# for postgresql v 9.0 (from ppa) set to 9, otherwise stick with 8
+# for postgresql v 9.0 (from ppa) set to 9
 # must set SQLITEMYSQL to p
 POSTGRES9=9
 
