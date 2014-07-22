@@ -35,7 +35,6 @@ else {
 }
 
 //get the includes
-	require "resources/require.php";
 	require_once "resources/header.php";
 	echo "<pre>\n";
 
