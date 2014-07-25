@@ -100,19 +100,19 @@ postgresql_server="n"
 
 # Set Postgresql Server Admin username
 # Lower case only
-postgresql_admin=
+pgsql_admin=
 
 # Set Postgresql Server Admin password
-postgresql_admin_passwd=
+pgsql_admin_passwd=
 
 # Set Database Name used for fusionpbx in the postgresql server
 # (Default: fusionpbx)
-database_name=
+db_name=
 
 # Set FusionPBX database admin name.(used by fusionpbx to access
 # the database table in the postgresql server.
 # (Default: fusionpbx)
-database_user_name=
+db_user_name=
 
 # Set FusionPBX database admin password .(used by fusionpbx to access
 # the database table in the postgresql server).
@@ -654,7 +654,7 @@ for i in fusionpbx-core fusionpbx-app-calls fusionpbx-app-calls-active fusionpbx
 		fusionpbx-app-fax fusionpbx-app-login fusionpbx-app-log-viewer fusionpbx-app-modules \
 		fusionpbx-app-registrations fusionpbx-app-settings fusionpbx-app-sip-profiles \
 		fusionpbx-app-sip-status fusionpbx-app-system fusionpbx-sounds fusionpbx-app-xml-cdr \
-		fusionpbx-app-vars fusionpbx-conf fusionpbx-scripts fusionpbx-sqldb custom-scripts
+		fusionpbx-app-vars fusionpbx-conf fusionpbx-scripts fusionpbx-sqldb fusionpbx-theme-enhanced
 do apt-get -y --force-yes install "${i}"
 done
 
@@ -896,17 +896,8 @@ iptables -I INPUT -j DROP -p udp --dport 5068 -m string --string "friendly-scann
 iptables -I INPUT -j DROP -p udp --dport 5069 -m string --string "friendly-scanner" --algo bm
 iptables -I INPUT -j DROP -p udp --dport 5080 -m string --string "friendly-scanner" --algo bm
 
-#Install openvpn openvpn-scripts 
-if [[ $install_openvpn == "y" ]]; then
-for i in openvpn openvpn-scripts ;do apt-get -y install --force-yes "${i}"; done
-fi
-
-#install 
 #Install postgresql-client
 if [[ $postgresql_client == "y" ]]; then
-	db_name="$wui_name"
-	db_user_name="$wui_name"
-	db_passwd="Admin Please Select A Secure Password for your Postgresql Fusionpbx Database"
 	clear
 	case $(uname -m) in x86_64|i[4-6]86)
 	for i in postgresql-client-9.3 php5-pgsql ;do apt-get -y install "${i}"; done
@@ -931,7 +922,7 @@ cat << DELIM
 	Port: use the port for the remote postgresql server
 	Database Name: "$db_name"
 	Database Username: "$db_user_name"
-	Database Password: "$db_passwd"
+	Database Password: "$db_user_passwd"
 	Create Database Username: Database_Superuser_Name of the remote postgresql server
 	Create Database Password: Database_Superuser_password of the remote postgresql server
 DELIM
@@ -939,9 +930,6 @@ fi
 
 #install & configure basic postgresql-server
 if [[ $postgresql_server == "y" ]]; then
-    db_name="$database_name"
-    db_user_name="$database_user_name"
-    db_passwd="$database_user_passwd"
 	clear
 	case $(uname -m) in x86_64|i[4-6]86)
 	for i in postgresql-9.3 php5-pgsql ;do apt-get -y install "${i}"; done
@@ -955,7 +943,7 @@ if [[ $postgresql_server == "y" ]]; then
 	
 	service php5-fpm restart
 	#Adding a SuperUser and Password for Postgresql database.
-	su -l postgres -c "/usr/bin/psql -c \"create role $postgresql_admin with superuser login password '$postgresql_admin_passwd'\""
+	su -l postgres -c "/usr/bin/psql -c \"create role $pgsql_admin with superuser login password '$pgsql_admin_passwd'\""
 	clear
 echo ''
 	printf '	Please open a web browser to http://'; ip -f inet addr show dev $net_iface | sed -n 's/^ *inet *\([.0-9]*\).*/\1/p'   
@@ -968,8 +956,8 @@ cat << DELIM
 	Database Name: "$db_name"
 	Database Username: "$db_user_name"
 	Database Password: "$db_passwd"
-	Create Database Username: "$postgresql_admin"
-	Create Database Password: "$postgresql_admin_passwd"
+	Create Database Username: "$pgsql_admin"
+	Create Database Password: "$pgsql_admin_passwd"
 DELIM
 else
 clear
@@ -1020,11 +1008,18 @@ fi
 DELIM
 fi
 
+apt-get install -y --force-yes custom-scripts
+
 #DigiDaz Tested and approved
 case $(uname -m) in armv7l)
 /bin/sed -i /usr/share/fusionpbx/resources/templates/conf/autoload_configs/logfile.conf.xml -e 's#<map name="all" value="debug,info,notice,warning,err,crit,alert"/>#<map name="all" "warning,err,crit,alert"/>#'
 /bin/sed -i "$WWW_PATH"/"$wui_name"/app/vars/app_defaults.php -e 's#{"var_name":"xml_cdr_archive","var_value":"dir","var_cat":"Defaults","var_enabled":"true","var_description":""}#{"var_name":"xml_cdr_archive","var_value":"none","var_cat":"Defaults","var_enabled":"true","var_description":""}#'
 esac
+
+#Install openvpn openvpn-scripts 
+if [[ $install_openvpn == "y" ]]; then
+for i in openvpn openvpn-scripts ;do apt-get -y install --force-yes "${i}"; done
+fi
 
 #apt-get cleanup (clean and remove unused pkgs)
 apt-get autoclean && apt-get autoremove
