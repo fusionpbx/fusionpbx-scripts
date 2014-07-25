@@ -648,13 +648,14 @@ adduser freeswitch www-data
 echo "Installing FusionPBX Web User Interface via Debian pkg"
 
 echo " Installing fusipnpbx basepbx"
-for i in fusionpbx-core fusionpbx-app-calls fusionpbx-app-calls-active fusionpbx-app-contacts \
-		fusionpbx-app-destinations fusionpbx-app-dialplan fusionpbx-app-dialplan-inbound \
-		fusionpbx-app-dialplan-outbound fusionpbx-app-extensions fusionpbx-app-gateways \
-		fusionpbx-app-fax fusionpbx-app-login fusionpbx-app-log-viewer fusionpbx-app-modules \
-		fusionpbx-app-registrations fusionpbx-app-settings fusionpbx-app-sip-profiles \
-		fusionpbx-app-sip-status fusionpbx-app-system fusionpbx-sounds fusionpbx-app-xml-cdr \
-		fusionpbx-app-vars fusionpbx-conf fusionpbx-scripts fusionpbx-sqldb fusionpbx-theme-enhanced
+for i in fusionpbx-core fusionpbx-app-calls fusionpbx-app-calls-active fusionpbx-app-call-block \
+		fusionpbx-app-contacts fusionpbx-app-destinations fusionpbx-app-dialplan fusionpbx-app-dialplan-inbound \
+		fusionpbx-app-dialplan-outbound fusionpbx-app-extensions fusionpbx-app-followme fusionpbx-app-gateways \
+		fusionpbx-app-fax fusionpbx-app-ivr-menu fusionpbx-app-login fusionpbx-app-log-viewer fusionpbx-app-modules \
+		fusionpbx-app-music-on-hold fusionpbx-app-recordings fusionpbx-app-registrations fusionpbx-app-ring-groups \
+		fusionpbx-app-settings fusionpbx-app-sip-profiles fusionpbx-app-sip-status fusionpbx-app-system \
+		fusionpbx-app-time-conditions fusionpbx-sounds fusionpbx-app-xml-cdr fusionpbx-app-vars fusionpbx-app-voicemails \
+		fusionpbx-app-voicemail-greetings fusionpbx-conf fusionpbx-scripts fusionpbx-sqldb fusionpbx-theme-enhanced
 do apt-get -y --force-yes install "${i}"
 done
 
