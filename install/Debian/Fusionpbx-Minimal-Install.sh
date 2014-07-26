@@ -68,10 +68,10 @@ odroid_boards="n"
 
 #Required
 #Stable/release=1.4/master=1.5 aka git head
-# Default is stable
+# Default is stable (currently there is only one working repo for freeswitch)
 freeswitch_repo="stable"
 
-#Fusionpbx repo (stable/devel)
+#Fusionpbx repo (release = 3.6.0 / devel = 3.5) 
 fusionpbx_repo="devel"
 
 # To start FreeSWITCH with -nonat option set freeswitch_NAT to y
@@ -230,9 +230,7 @@ apt-get update && apt-get -y upgrade
 
 case $(uname -m) in armv7l)
 apt-get -y update && apt-get -y dist-upgrade
-for i in acpi-support-base usbmount usbutils
-do apt-get -y install "${i}"
-done
+apt-get -y install acpi-support-base usbmount usbutils
 esac
 
 #adding FusionPBX repo ( contains freeswitch armhf debs, and a few custom scripts debs)
@@ -323,11 +321,10 @@ echo ' Installing freeswitch '
 
 #install Freeswitch Deps
 echo ' installing freeswitch deps '
-for i in curl unixodbc uuid memcached libtiff5 libtiff-tools ghostscript ;do apt-get -y install "${i}" ; done
+apt-get install curl unixodbc uuid memcached libtiff5 libtiff-tools ghostscript
 
 # install freeswitch
-echo ' installing freeswitch pkgs '
-for i in freeswitch freeswitch-init freeswitch-lang-en freeswitch-meta-codecs freeswitch-mod-commands freeswitch-mod-curl \
+apt-get -y install --force-yes freeswitch freeswitch-init freeswitch-lang-en freeswitch-meta-codecs freeswitch-mod-commands freeswitch-mod-curl \
 		freeswitch-mod-db freeswitch-mod-distributor freeswitch-mod-dptools freeswitch-mod-enum freeswitch-mod-esf freeswitch-mod-esl \
 		freeswitch-mod-expr freeswitch-mod-fsv freeswitch-mod-hash freeswitch-mod-memcache freeswitch-mod-portaudio freeswitch-mod-portaudio-stream \
 		freeswitch-mod-random freeswitch-mod-spandsp freeswitch-mod-spy freeswitch-mod-translate freeswitch-mod-valet-parking freeswitch-mod-flite \
@@ -336,22 +333,18 @@ for i in freeswitch freeswitch-init freeswitch-lang-en freeswitch-meta-codecs fr
 		freeswitch-mod-sndfile freeswitch-mod-tone-stream freeswitch-mod-lua freeswitch-mod-console freeswitch-mod-logfile freeswitch-mod-syslog \
 		freeswitch-mod-say-en freeswitch-mod-posix-timer freeswitch-mod-timerfd freeswitch-mod-v8 freeswitch-mod-xml-cdr freeswitch-mod-xml-curl \
 		freeswitch-mod-xml-rpc freeswitch-sounds freeswitch-music freeswitch-conf-vanilla
-do apt-get -y install --force-yes "${i}"
-done
 
 case $(uname -m) in x86_64|i[4-6]86)
-apt-get -y install --force-yes freeswitch-mod-shout
+apt-get -y install freeswitch-mod-shout
 esac
 
 case $(uname -m) in armv7l)
-apt-get -y install --force-yes freeswitch-mod-vlc
+apt-get -y install freeswitch-mod-vlc
 esac
 
 case $(uname -m) in x86_64|i[4-6]86)
 if [[ $freeswitch_freetdm == y ]]; then
-for i in dahdi dahdi-linux freeswitch-mod-freetdm
-do apt-get -y install --force-yes "${i}"
-done
+apt-get -y install dahdi dahdi-linux freeswitch-mod-freetdm
 fi
 esac
 
@@ -395,12 +388,9 @@ service freeswitch restart
 #Install and configure  PHP + Nginx + sqlite3 for use with the fusionpbx gui.
 echo ' installing nginx & php & deps '
 
-apt-get -y install sqlite3
-
-for i in ssl-cert nginx ;do apt-get -y install "${i}" ; done
-
-for i in php5-cli php5-common php-apc php5-gd php-db php5-fpm php5-memcache php5-odbc php-pear php5-sqlite ;do apt-get -y install "${i}" ; done
-
+apt-get -y install sqlite3 ssl-cert nginx php5-cli php5-common php-apc php5-gd php-db \
+				php5-fpm php5-memcache php5-odbc php-pear php5-sqlite
+				
 # Changing file upload size from 2M to 15M
 /bin/sed -i $php_ini -e 's#"upload_max_filesize = 2M"#"upload_max_filesize = 15M"#'
 
@@ -648,7 +638,7 @@ adduser freeswitch www-data
 echo "Installing FusionPBX Web User Interface via Debian pkg"
 
 echo " Installing fusipnpbx basepbx"
-for i in fusionpbx-core fusionpbx-app-calls fusionpbx-app-calls-active fusionpbx-app-call-block \
+apt-get -y --force-yes install fusionpbx-core fusionpbx-app-calls fusionpbx-app-calls-active fusionpbx-app-call-block \
 		fusionpbx-app-contacts fusionpbx-app-destinations fusionpbx-app-dialplan fusionpbx-app-dialplan-inbound \
 		fusionpbx-app-dialplan-outbound fusionpbx-app-extensions fusionpbx-app-followme fusionpbx-app-gateways \
 		fusionpbx-app-fax fusionpbx-app-ivr-menu fusionpbx-app-login fusionpbx-app-log-viewer fusionpbx-app-modules \
@@ -656,8 +646,6 @@ for i in fusionpbx-core fusionpbx-app-calls fusionpbx-app-calls-active fusionpbx
 		fusionpbx-app-settings fusionpbx-app-sip-profiles fusionpbx-app-sip-status fusionpbx-app-system \
 		fusionpbx-app-time-conditions fusionpbx-sounds fusionpbx-app-xml-cdr fusionpbx-app-vars fusionpbx-app-voicemails \
 		fusionpbx-app-voicemail-greetings fusionpbx-conf fusionpbx-scripts fusionpbx-sqldb fusionpbx-theme-enhanced
-do apt-get -y --force-yes install "${i}"
-done
 
 #set permissions
 chmod 775 /etc/fusionpbx
@@ -1019,10 +1007,12 @@ esac
 
 #Install openvpn openvpn-scripts 
 if [[ $install_openvpn == "y" ]]; then
-for i in openvpn openvpn-scripts ;do apt-get -y install --force-yes "${i}"; done
+apt-get install openvpn openvpn-scripts
 fi
 
 #apt-get cleanup (clean and remove unused pkgs)
+case $(uname -m) in armv7l)
 apt-get autoclean && apt-get autoremove
+esac
 
 echo " The install $wui_name minimal install has finished...  "
