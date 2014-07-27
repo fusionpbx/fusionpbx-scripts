@@ -321,7 +321,7 @@ echo ' Installing freeswitch '
 
 #install Freeswitch Deps
 echo ' installing freeswitch deps '
-apt-get install curl unixodbc uuid memcached libtiff5 libtiff-tools ghostscript
+apt-get -y install curl unixodbc uuid memcached libtiff5 libtiff-tools ghostscript
 
 # install freeswitch
 apt-get -y install --force-yes freeswitch freeswitch-init freeswitch-lang-en freeswitch-meta-codecs freeswitch-mod-commands freeswitch-mod-curl \
