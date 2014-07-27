@@ -640,7 +640,7 @@ echo "Installing FusionPBX Web User Interface via Debian pkg"
 echo " Installing fusipnpbx basepbx"
 apt-get -y --force-yes install fusionpbx-core fusionpbx-app-calls fusionpbx-app-calls-active fusionpbx-app-call-block \
 		fusionpbx-app-contacts fusionpbx-app-destinations fusionpbx-app-dialplan fusionpbx-app-dialplan-inbound \
-		fusionpbx-app-dialplan-outbound fusionpbx-app-extensions fusionpbx-app-followme fusionpbx-app-gateways \
+		fusionpbx-app-dialplan-outbound fusionpbx-app-extensions fusionpbx-app-follow-me fusionpbx-app-gateways \
 		fusionpbx-app-fax fusionpbx-app-ivr-menu fusionpbx-app-login fusionpbx-app-log-viewer fusionpbx-app-modules \
 		fusionpbx-app-music-on-hold fusionpbx-app-recordings fusionpbx-app-registrations fusionpbx-app-ring-groups \
 		fusionpbx-app-settings fusionpbx-app-sip-profiles fusionpbx-app-sip-status fusionpbx-app-system \
