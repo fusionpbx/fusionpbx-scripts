@@ -744,12 +744,12 @@ else
 	if [ $? -eq 0 ]; then
 		DISTRO=precise
 		/bin/echo "OK you're running Ubuntu 12.04 LTS [precise].  This script is"
-		/bin/echo "   a work in progress.  It is not recommended that you try it"
-		/bin/echo "   at this time."
+		/bin/echo "   works fine."
+		/bin/echo "   
 		/bin/echo 
 		CONTINUE=YES
 	else
-		/bin/echo "This script was written for Ubuntu 10.04 LTS codename Lucid"
+		/bin/echo "This script was written for Ubuntu 10.04 LTS codename Lucid, 12.04 LTS and Debian Squeeze"
 		/bin/echo
 		/bin/echo "Your OS appears to be:"
 		lsb_release -a
@@ -759,6 +759,8 @@ else
 		[yY]*)
 			/bin/echo "Ok, this doesn't always work..,"
 			/bin/echo "  but we'll give it a go."
+			#set the default to try to install like precise instead of lucid. PPA's aren't required for wheezy or precise going forward...
+			DISTRO=precise
 		;;
 
 		*)
