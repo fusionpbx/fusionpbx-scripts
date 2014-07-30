@@ -107,15 +107,16 @@ pgsql_admin_passwd=
 
 # Set Database Name used for fusionpbx in the postgresql server
 # (Default: fusionpbx)
-db_name=
+db_name=fusionpbx
 
 # Set FusionPBX database admin name.(used by fusionpbx to access
 # the database table in the postgresql server.
 # (Default: fusionpbx)
-db_user_name=
+db_user_name=fusionpbx
 
 # Set FusionPBX database admin password .(used by fusionpbx to access
 # the database table in the postgresql server).
+# Please set a ver secure passwd
 database_user_passwd=
 
 #-------Postgresql-End--------------
@@ -124,6 +125,26 @@ database_user_passwd=
 #Install openvpn scripts
 install_openvpn="n"
 
+#--------Secure-Server-Root Lockdown-------------
+# This will lock down the root user to using keys to login to ssh. meaning no 
+# root login to ssh with out a ssh key
+secure_server="n"
+
+# Please paste the public key you wish to add to the permited keys file 
+# for root access via ssh
+ssh_key=
+ 
+#-----------------------------------------------
+# Addd a Extra User with sudo privilages
+add_sudo_user="n"
+
+# Set user name
+user_name=
+
+#set user passwd
+user_passwd=
+
+#-------- Edit only if necessary---------
 #Custom Dir Layout
 fs_conf_dir="/etc/freeswitch"
 fs_dflt_conf_dir="/usr/share/freeswitch/conf"
@@ -137,6 +158,7 @@ fs_storage_dir="/var/lib/freeswitch/storage"
 #fs_temp_dir="/tmp"
 fs_usr=freeswitch
 fs_grp=$fs_usr
+
 #<------Stop Edit Here-------->
 
 ################################################################################
@@ -1014,5 +1036,27 @@ fi
 case $(uname -m) in armv7l)
 apt-get autoclean && apt-get autoremove
 esac
+
+#Secure System
+if [[ $secure_system == "y" ]]; then
+mdir ~/.ssh
+touch ~/.ssh/authorized_keys
+cat >> ~/.ssh/authorized_keys << DELIM
+$ssh_key
+DELIM
+sed -i /etc/ssh/sshd_config -e s,'PermitRootLogin yes','#PermitRootLogin no',
+sevice ssh restart
+fi
+
+if [[ $add_sudo_user == "y" ]]; then
+#add sudo pkg
+apt-get install sudo
+#add new user to system
+adduser $user_name -p $user_pwd -D /usr/home/$user_name
+#add user to sudo in sudo group
+sudo adduser $user_name sudo
+#restart sudo
+service sudo restart
+fi
 
 echo " The install $wui_name minimal install has finished...  "
