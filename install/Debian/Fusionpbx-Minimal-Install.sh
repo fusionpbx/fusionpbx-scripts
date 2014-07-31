@@ -134,16 +134,6 @@ secure_server="n"
 # for root access via ssh
 ssh_key=
  
-#-----------------------------------------------
-# Addd a Extra User with sudo privilages
-add_sudo_user="n"
-
-# Set user name
-user_name=
-
-#set user passwd
-user_passwd=
-
 #-------- Edit only if necessary---------
 #Custom Dir Layout
 fs_conf_dir="/etc/freeswitch"
@@ -1046,17 +1036,6 @@ $ssh_key
 DELIM
 sed -i /etc/ssh/sshd_config -e s,'PermitRootLogin yes','#PermitRootLogin no',
 sevice ssh restart
-fi
-
-if [[ $add_sudo_user == "y" ]]; then
-#add sudo pkg
-apt-get install sudo
-#add new user to system
-adduser $user_name -p $user_pwd -D /usr/home/$user_name
-#add user to sudo in sudo group
-sudo adduser $user_name sudo
-#restart sudo
-service sudo restart
 fi
 
 echo " The install $wui_name minimal install has finished...  "
