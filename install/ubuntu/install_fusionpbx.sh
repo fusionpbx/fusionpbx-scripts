@@ -2455,6 +2455,86 @@ DELIM
 			#apache2 is installed.
 			/etc/init.d/apache2 restart
 		fi
+		
+		/bin/echo
+		/bin/echo "By default, FreeSWITCH is using sqlite, until we tell it not to."
+		/bin/echo "FreeSWITCH can be configured to use postgresql natively, but it is"
+		/bin/echo "not always advantageous to do so."
+		read -p "  Use Postgres (p) or Sqlite (s) [p/S]? " FSDB
+		case $FSDB in
+			[pP])
+				#tell FS about the postgresql database...
+				echo "  Please type in the password for the freeswitch database you configured below."
+				read -p "Password: " FSDBPASS
+		
+				FPATH="/var/www/fusionpbx/resources/templates/conf"
+				/bin/echo "setting switch.conf.xml"
+				sed -i $FPATH/autoload_configs/switch.conf.xml -e s,\<\/settings\>,,g -e s,\<\/configuration\>,,g
+				cat >> $FPATH/autoload_configs/switch.conf.xml <<EOF
+
+                <param name="core-db-dsn" value="pgsql://hostaddr=127.0.0.1 dbname=freeswitch user=fusionpbx password=$FSDBPASS options='-c client_min_messages=NOTICE' application_name='freeswitch'" />
+
+        </settings>
+</configuration>
+EOF
+				
+				/bin/echo "setting callcenter.conf.xml"
+				sed -i $FPATH/autoload_configs/callcenter.conf.xml -e s,\<\/settings\>,,g -e s,\<\/configuration\>,,g
+				cat >> $FPATH/autoload_configs/callcenter.conf.xml <<EOF
+
+                <param name="odbc-dsn" value="\$\${dsn}"/>
+
+        </settings>
+</configuration>
+EOF
+
+				/bin/echo "setting fifo.conf.xml"
+				sed -i $FPATH/autoload_configs/fifo.conf.xml -e s,\<\/settings\>,,g -e s,\<\/configuration\>,,g
+				cat >> $FPATH/autoload_configs/fifo.conf.xml <<EOF
+
+                <param name="odbc-dsn" value="\$\${dsn}"/>
+
+        </settings>
+</configuration>
+EOF
+
+				/bin/echo "setting internal.conf.xml"
+				sed -i $FPATH/sip_profiles/internal.xml -e s,\<\/settings\>,,g -e s,\<\/configuration\>,,g
+				cat >> $FPATH/sip_profiles/internal.xml <<EOF
+
+                <param name="odbc-dsn" value="\$\${dsn}"/>
+
+        </settings>
+</configuration>
+EOF
+
+				/bin/echo "setting external.conf.xml"
+				sed -i $FPATH/sip_profiles/external.xml -e s,\<\/settings\>,,g -e s,\<\/configuration\>,,g
+				cat >> $FPATH/sip_profiles/external.xml <<EOF
+
+                <param name="odbc-dsn" value="\$\${dsn}"/>
+
+        </settings>
+</configuration>
+EOF
+	
+				/bin/echo "setting db.conf.xml"
+				sed -i $FPATH/autoload_configs/db.conf.xml -e s,\<\/settings\>,,g -e s,\<\/configuration\>,,g
+				cat >> $FPATH/autoload_configs/db.conf.xml <<EOF
+
+                <param name="odbc-dsn" value="\$\${dsn}"/>
+
+        </settings>
+</configuration>
+EOF
+			
+			;;
+			
+			*)
+				/bin/echo "Ok, using sqlite, nothing more to do here."
+			;;
+		esac
+		
 		/bin/echo "Now you'll need to manually finish the install and come back"
 		/bin/echo "  This way I can finish up the last bit of permissions issues"
 		/bin/echo "  Just go to"
@@ -2470,24 +2550,6 @@ DELIM
 		/bin/echo "  I will wait here until you get done with that."
 		/bin/echo -ne "  When PostgreSQL is configured come back and press enter. "
 		read
-
-		#tell FS about the postgresql database...
-		echo
-		echo
-		echo "NOW WE HAVE TO TELL FREESWITCH TO USE POSTGRESQL"
-		echo "  Please type in the password for the freeswitch database you configured below."
-		read -p "Password: " FSDBPASS
-
-		sed -i /usr/local/freeswitch/conf/autoload_configs/switch.conf.xml -e s,\<\/settings\>,,g -e s,\<\/configuration\>,,g
-
-		cat >> /usr/local/freeswitch/conf/autoload_configs/switch.conf.xml <<EOF
-
-                <param name="core-db-dsn" value="pgsql://hostaddr=127.0.0.1 dbname=freeswitch user=fusionpbx password=$FSDBPASS options='-c client_min_messages=NOTICE' application_name='freeswitch'" />
-
-        </settings>
-</configuration>
-EOF
-
 	;;
 
 	*)
