@@ -33,14 +33,14 @@ DELIM
 APACHENGINX=n
 
 # for mysql set m. for sqlite set s. for postgresql set p
-SQLITEMYSQL=s
+SQLITEMYSQL=p
 
 # for postgresql v 9.0 (from ppa) set to 9
 # must set SQLITEMYSQL to p
 POSTGRES9=9
 
 # to start FreeSWITCH with -nonat option set SETNONAT to y
-SETNONAT=n
+SETNONAT=y
 
 # rm -Rf /opt? A default install doesn't have /opt so no worries
 # if you do, set to no, and it will link /usr/local/freeswitch to /opt/freeswitch
@@ -51,11 +51,11 @@ SETNONAT=n
 DO_DAHDI=n
 
 # default distro
-DISTRO=precise
+#DISTRO=precise
 #DISTRO=squeeze
 #DISTRO=precise
 #DISTRO=lucid
-#DISTRO=wheezy
+DISTRO=wheezy
 
 #below is a list of modules we want to add to provide functionality for FusionPBX
 #don't worry about the applications/mod_ format.  This script will find that in modules.conf
@@ -712,15 +712,20 @@ else
 fi
 
 
-#/bin/grep -i lucid /etc/lsb-release > /dev/null
-lsb_release -c |grep -i lucid > /dev/null
-if [ $? -eq 0 ]; then
-	DISTRO=lucid
-	/bin/echo "Good, you're running Ubuntu 10.04 LTS codename Lucid"
-	/bin/echo
-else
-	lsb_release -c |grep -i squeeze > /dev/null
-	if [ $? -eq 0 ]; then
+##/bin/grep -i lucid /etc/lsb-release > /dev/null
+#lsb_release -c |grep -i lucid > /dev/null
+DISTRO_DETECT=$(lsb_release -c |sed -e s/Codename://g |sed -r 's/\s+//g')
+case $DISTRO_DETECT in
+	lucid)
+#if [ $? -eq 0 ]; then
+		DISTRO=lucid
+		/bin/echo "Good, you're running Ubuntu 10.04 LTS codename Lucid"
+		/bin/echo
+	;;
+#else
+#	lsb_release -c |grep -i squeeze > /dev/null
+#	if [ $? -eq 0 ]; then
+	squeeze)
 		DISTRO=squeeze
 		/bin/echo "OK you're running Debian Squeeze.  This script is known to work"
 		/bin/echo "   with apache/nginx and mysql|sqlite|postgres8 options"
@@ -728,9 +733,11 @@ else
 		/bin/echo "   and php-fpm."
 		/bin/echo 
 		CONTINUE=YES
-	fi
-	lsb_release -c |grep -i wheezy > /dev/null
-	if [ $? -eq 0 ]; then
+#	fi
+	;;
+#	lsb_release -c |grep -i wheezy > /dev/null
+#	if [ $? -eq 0 ]; then
+	wheezy)
 		DISTRO=wheezy
 		/bin/echo "OK you're running Debian Wheezy.  This script is known to work"
 		/bin/echo "   with apache/nginx and sqlite|postgres9.3 options"
@@ -738,17 +745,20 @@ else
 		
 		/bin/echo 
 		CONTINUE=YES
-	fi
+#	fi
+	;;
 	
-	lsb_release -c |grep -i precise > /dev/null
-	if [ $? -eq 0 ]; then
+#	lsb_release -c |grep -i precise > /dev/null
+#	if [ $? -eq 0 ]; then
+	precise)
 		DISTRO=precise
 		/bin/echo "OK you're running Ubuntu 12.04 LTS [precise].  This script is"
 		/bin/echo "   works fine."
-		/bin/echo "   
 		/bin/echo 
 		CONTINUE=YES
-	else
+	;;
+#	else
+	*)
 		/bin/echo "This script was written for Ubuntu 10.04 LTS codename Lucid, 12.04 LTS and Debian Squeeze"
 		/bin/echo
 		/bin/echo "Your OS appears to be:"
@@ -768,8 +778,10 @@ else
 			exit 1
 		;;
 		esac
-	fi
-fi
+	;;
+#	fi
+#fi
+esac
 
 #Check for new version
 WHEREAMI=$(echo "`pwd`/`basename $0`")
@@ -877,7 +889,7 @@ if [ $INSFREESWITCH -eq 1 ]; then
 
 	if [ $DEBUG -eq 1 ]; then
 		/bin/echo
-		read -p "Press Enter to continue (check for errors)"
+		read -p "Press Enter to continue check for errors"
 	fi
 
 	#-----------------
@@ -910,6 +922,7 @@ if [ $INSFREESWITCH -eq 1 ]; then
 	case "$SQLITEMYSQL" in
 	[Pp]*)
 		/bin/echo -ne "Installing PostgeSQL"
+		/bin/echo "DISTRO IS $DISTRO space"
 
 		if [ $POSTGRES9 == "9" ]; then
 			/bin/echo " version 9.x"
@@ -932,7 +945,19 @@ if [ $INSFREESWITCH -eq 1 ]; then
 				/bin/echo "deb http://apt.postgresql.org/pub/repos/apt/ wheezy-pgdg main" > /etc/apt/sources.list.d/pgdg.list
 				wget --quiet -O - http://apt.postgresql.org/pub/repos/apt/ACCC4CF8.asc | apt-key add -
 				/usr/bin/apt-get update
-				/usr/bin/apt-get -y install postgresql-9.3 libpq-dev php5-pgsql			
+				/usr/bin/apt-get -y install postgresql-9.3 libpq-dev php5-pgsql		
+				
+				service postgresql status |grep down
+				if [ $? -eq 0 ]; then
+					echo "The postgresql service is not running"
+					echo "It may have not detected the locale correctly"
+					echo "In another screen you should create a new cluster"
+					echo "   example:"
+					echo "     pg_createcluster --locale en_US.UTF-8 --start 9.3 main"
+					echo " then see if it is running with 'service postgresql status'"
+					read -p " this script will pause until this issue is resolved"
+				fi
+					
 			else
 				#add the ppa
 				/usr/bin/apt-add-repository ppa:pitti/postgresql
@@ -947,9 +972,9 @@ if [ $INSFREESWITCH -eq 1 ]; then
 			#  postgresql-client-common postgresql-common
 		fi
 
-		/bin/su -l postgres -c "/usr/bin/createuser -s -e freeswitch"
-		#/bin/su -l postgres -c "/usr/bin/createdb -E UTF8 -O freeswitch freeswitch"
-		/bin/su -l postgres -c "/usr/bin/createdb -E UTF8 -T template0 -O freeswitch freeswitch"
+		/bin/su -l postgres -c "/usr/bin/createuser -s -e fusionpbx"
+		#/bin/su -l postgres -c "/usr/bin/createdb -E UTF8 -O fusionpbx freeswitch"
+		/bin/su -l postgres -c "/usr/bin/createdb -E UTF8 -T template0 -O fusionpbx freeswitch"
 		PGSQLPASSWORD="dummy"
 		PGSQLPASSWORD2="dummy2"
 		while [ $PGSQLPASSWORD != $PGSQLPASSWORD2 ]; do
@@ -960,13 +985,13 @@ if [ $INSFREESWITCH -eq 1 ]; then
 		/bin/echo "AS A BASH VARIABLE, AND USING ECHO TO PIPE IT TO"
 		/bin/echo "psql. THE COMMAND USED IS:"
 		/bin/echo
-		/bin/echo "/bin/su -l postgres -c \"/bin/echo 'ALTER USER freeswitch with PASSWORD \$PGSQLPASSWORD;' | psql freeswitch\""
+		/bin/echo "/bin/su -l postgres -c \"/bin/echo 'ALTER USER fusionpbx with PASSWORD \$PGSQLPASSWORD;' | psql freeswitch\""
 		/bin/echo
 		/bin/echo "AFTERWARDS WE OVERWRITE THE VARIABLE WITH RANDOM DATA"
 		/bin/echo
-		/bin/echo "The pgsql username is freeswitch"
+		/bin/echo "The pgsql username is fusionpbx"
 		/bin/echo "The pgsql database name is freeswitch"
-		/bin/echo "Please provide a password for the freeswitch user"
+		/bin/echo "Please provide a password for the fusionpbx user"
 		#/bin/stty -echo
 		read -s -p "  Password: " PGSQLPASSWORD
 		/bin/echo
@@ -976,7 +1001,7 @@ if [ $INSFREESWITCH -eq 1 ]; then
 		#/bin/stty echo
 		done
 
-		/bin/su -l postgres -c "/bin/echo \"ALTER USER freeswitch with PASSWORD '$PGSQLPASSWORD';\" | /usr/bin/psql freeswitch"
+		/bin/su -l postgres -c "/bin/echo \"ALTER USER fusionpbx with PASSWORD '$PGSQLPASSWORD';\" | /usr/bin/psql freeswitch"
 		/bin/echo "overwriting pgsql password variable with random data"
 		PGSQLPASSWORD=$(/usr/bin/head -c 512 /dev/urandom)
 		PGSQLPASSWORD2=$(/usr/bin/head -c 512 /dev/urandom)
@@ -2016,6 +2041,11 @@ DELIM
 			/bin/cat /tmp/dotdeb.gpg | apt-key add - 
 			/bin/rm /tmp/dotdeb.gpg
 			/usr/bin/apt-get update
+
+		elif [ $DISTRO = "wheezy" ]; then
+                        #included in main repo we have nginx [nginx-full] and php5-fpm
+                        echo "already in Debian 7.x [wheezy], nothing to add."
+
 		elif [ $DISTRO = "precise" ]; then
 			#included in main repo we have nginx [nginx-full] and php5-fpm
 			echo "already in 12.04 LTS [precise], nothing to add."
@@ -2362,6 +2392,13 @@ DELIM
 			elif [ $DISTRO = "precise" ]; then
 				#already there...
 				/usr/bin/apt-get -y install php5-pgsql
+			elif [ $DISTRO = "wheezy" ]; then
+                                POSTGRES9=9
+                                #update repository for postgres 9.3 ...
+                                /bin/echo "deb http://apt.postgresql.org/pub/repos/apt/ wheezy-pgdg main" > /etc/apt/sources.list.d/pgdg.list
+                                wget --quiet -O - http://apt.postgresql.org/pub/repos/apt/ACCC4CF8.asc | apt-key add -
+                                /usr/bin/apt-get update
+                                /usr/bin/apt-get -y install postgresql-9.3 libpq-dev php5-pgsql
 			else
 				#add the ppa
 				/usr/bin/apt-add-repository ppa:pitti/postgresql
@@ -2433,7 +2470,26 @@ DELIM
 		/bin/echo "  I will wait here until you get done with that."
 		/bin/echo -ne "  When PostgreSQL is configured come back and press enter. "
 		read
+
+		#tell FS about the postgresql database...
+		echo
+		echo
+		echo "NOW WE HAVE TO TELL FREESWITCH TO USE POSTGRESQL"
+		echo "  Please type in the password for the freeswitch database you configured below."
+		read -p "Password: " FSDBPASS
+
+		sed -i /usr/local/freeswitch/conf/autoload_configs/switch.conf.xml -e s,\<\/settings\>,,g -e s,\<\/configuration\>,,g
+
+		cat >> /usr/local/freeswitch/conf/autoload_configs/switch.conf.xml <<EOF
+
+                <param name="core-db-dsn" value="pgsql://hostaddr=127.0.0.1 dbname=freeswitch user=fusionpbx password=$FSDBPASS options='-c client_min_messages=NOTICE' application_name='freeswitch'" />
+
+        </settings>
+</configuration>
+EOF
+
 	;;
+
 	*)
 	#elif [ $SQLITEMYSQL == "s" || $SQLITEMYSQL == "S" || $SQLITEMYSQL == "" ]; then
 		/bin/echo "SQLITE is chosen. already done. nothing left to install..."
