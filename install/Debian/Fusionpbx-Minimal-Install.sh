@@ -979,14 +979,13 @@ kernel.panic = 10
 DELIM
 
 #DigiDaz Tested and approved
-#fix for cubieboard performance
-case $(uname -m) in armv7l)
+#set fs to run in atempfs ramdrive
 cat >> /etc/fstab << DELIM
 tmpfs	/tmp	tmpfs	defaults	0	0
 tmpfs	/var/lib/freeswitch/db	tmpfs	defaults	0	0
 tmpfs   /var/tmp	tmpfs	defaults	0	0
 DELIM
-esac
+
 
 
 #DigiDaz Tested and approved
