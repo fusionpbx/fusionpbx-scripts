@@ -986,8 +986,6 @@ tmpfs	/var/lib/freeswitch/db	tmpfs	defaults	0	0
 tmpfs   /var/tmp	tmpfs	defaults	0	0
 DELIM
 
-
-
 #DigiDaz Tested and approved
 if [[ $odroid_boards == "y" ]]; then
 cat > /etc/network/if-pre-up.d/copyip << DELIM
