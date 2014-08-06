@@ -73,7 +73,7 @@ fi
 
 # Lets go Get the FreeSWITCH Source and install it
 cd /usr/src
-git clone git://git.freeswitch.org/freeswitch.git
+git clone https://stash.freeswitch.org/scm/fs/freeswitch.git
 cd freeswitch
 ./bootstrap.sh -j
 ./configure --without-libcurl -C

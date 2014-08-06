@@ -217,7 +217,7 @@ fi
 
 # Lets go Get the FreeSWITCH Source and install it
 cd /usr/src
-git clone git://git.freeswitch.org/freeswitch.git
+git clone https://stash.freeswitch.org/scm/fs/freeswitch.git
 cd freeswitch
 git checkout v1.2.stable
 ./bootstrap.sh -j
