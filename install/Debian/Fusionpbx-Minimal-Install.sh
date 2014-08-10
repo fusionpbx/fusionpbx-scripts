@@ -25,7 +25,7 @@
 #
 ################################################################################
 cat  <<  DELIM
-            This is a one time install script.
+            This is a one time install script. (NOT MENT FOR LAMP INSTALLS)
             This script is ment to be run on a fresh install of debian 7 (wheezy).
             I am working to get jessies pkgs done soon.
             It is not intended to be run multi times
@@ -1010,7 +1010,7 @@ apt-get install -y --force-yes custom-scripts
 
 #DigiDaz Tested and approved
 case $(uname -m) in armv7l)
-/bin/sed -i /usr/share/fusionpbx/resources/templates/conf/autoload_configs/logfile.conf.xml -e 's#<map name="all" value="debug,info,notice,warning,err,crit,alert"/>#<map name="all" "warning,err,crit,alert"/>#'
+/bin/sed -i /usr/share/fusionpbx/resources/templates/conf/autoload_configs/logfile.conf.xml -e 's#<map name="all" value="debug,info,notice,warning,err,crit,alert"/>#<map name="all" value="warning,err,crit,alert"/>#'
 /bin/sed -i "$WWW_PATH"/"$wui_name"/app/vars/app_defaults.php -e 's#{"var_name":"xml_cdr_archive","var_value":"dir","var_cat":"Defaults","var_enabled":"true","var_description":""}#{"var_name":"xml_cdr_archive","var_value":"none","var_cat":"Defaults","var_enabled":"true","var_description":""}#'
 esac
 
