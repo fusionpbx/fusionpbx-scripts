@@ -828,7 +828,7 @@ enabled  = true
 port 	= 5080
 protocol = udp
 filter   = fusionpbx-inbound
-logpath  = /usr/local/freeswitch/log/freeswitch.log
+logpath  = /var/log/freeswitch/freeswitch.log
 action   = iptables-allports[name=fusionpbx-inbound, protocol=all]
 #      	sendmail-whois[name=fusionpbx-inbound, dest=root, sender=fail2ban@example.org] #no smtp server installed
 maxretry = 5
