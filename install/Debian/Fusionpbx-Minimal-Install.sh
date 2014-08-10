@@ -27,7 +27,6 @@
 cat  <<  DELIM
             This is a one time install script. (NOT MENT FOR LAMP INSTALLS)
             This script is ment to be run on a fresh install of debian 7 (wheezy).
-            I am working to get jessies pkgs done soon.
             It is not intended to be run multi times
             If it fails for any reason please report to r.neese@gmail.com. 
             Please include any screen output you can to show where it fails.
@@ -39,7 +38,8 @@ cat << DELIM
       Note: "
             Those of you running this script on openvz. You must run it as root and 
             bash  Fusionpbx-Debian-Pkg-Install-New.sh or it fails the networking check.
-            Please take the time to refer to this document if you have install issues on openvz
+            Please take the time to refer to this document if you have install issues 
+            on openvz
             http://openvz.org/Virtual_Ethernet_device and make sure to setup a eth0 .
 DELIM
 exit
@@ -50,9 +50,9 @@ cat << DELIM
     Note:
         It is suggested you only use sqlite and or postgresql client for best preformance on 
         armhf when using a sd or emmc or nand.
-        For those arm units supporting sata and usb3 harddrives you can opt for Postgrsql if you wish.
-        Currently only Postgresql 9.1 is supported in the armhf pkgs. I have not foud a repo with 9.3 pkgs.
-        I will update the script when I do.
+        For those arm units supporting sata and usb3 harddrives you can opt for Postgrsql if 
+        you wish. Currently only Postgresql 9.1 is supported in the armhf pkgs. I have not 
+        foud a repo with 9.3 pkgs. I will update the script when I do.
 DELIM
 esac
 ################################################################################
@@ -60,7 +60,7 @@ esac
 #<------Start Edit HERE--------->
 
 #Network Interface selection
-#Default = eth0 /  Proxmox VE = vmbr0
+#Default = eth0 
 net_iface=eth0
 
 #Use for configuring a odroid
@@ -88,10 +88,10 @@ freeswitch_freetdm="n"
 #Optional (Not Required)
 # Please Select Server or Client not both.
 # Used for connecting to remote postgresql database servers
-# Install postgresql Client 9.x for connection to remote postgresql servers (y/n)
+# Install postgresql Client 9.3 for connection to remote postgresql servers (y/n)
 postgresql_client="n"
 
-# Install postgresql server 9.x (y/n) (client included)(Local Machine)
+# Install postgresql server 9.3 (y/n) (client included)(Local Machine)
 # Notice:
 # You should not use postgresql server on a nand/emmc/sd. It cuts the performance
 # life in half due to all the needed reads and writes. This cuts the life of
