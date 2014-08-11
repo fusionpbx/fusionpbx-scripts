@@ -956,7 +956,7 @@ cat << DELIM
 	On the Second Configuration Page of the web user interface please fill in the following fields:
 	Database Name: "$db_name"
 	Database Username: "$db_user_name"
-	Database Password: "$db_passwd"
+	Database Password: "$db_user_passwd"
 	Create Database Username: "$pgsql_admin"
 	Create Database Password: "$pgsql_admin_passwd"
 DELIM
