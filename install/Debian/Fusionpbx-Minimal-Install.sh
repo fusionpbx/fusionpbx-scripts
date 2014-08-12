@@ -117,7 +117,7 @@ db_user_name=fusionpbx
 # Set FusionPBX database admin password .(used by fusionpbx to access
 # the database table in the postgresql server).
 # Please set a ver secure passwd
-database_user_passwd=
+db_user_passwd=
 
 #-------Postgresql-End--------------
 
