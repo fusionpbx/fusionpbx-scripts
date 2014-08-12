@@ -329,10 +329,7 @@ apt-get -y install ntp
 service ntp restart
 apt-get upgrade
 
-echo ' Installing freeswitch '
-
 #install Freeswitch Deps
-echo ' installing freeswitch deps '
 apt-get -y install curl unixodbc uuid memcached libtiff5 libtiff-tools ghostscript libreoffice-common
 
 # install freeswitch
@@ -398,7 +395,6 @@ service freeswitch restart
 
 #Start of FusionPBX / nginx / php5 install
 #Install and configure  PHP + Nginx + sqlite3 for use with the fusionpbx gui.
-echo ' installing nginx & php & deps '
 
 apt-get -y install sqlite3 ssl-cert nginx php5-cli php5-common php-apc php5-gd php-db \
 				php5-fpm php5-memcache php5-odbc php-pear php5-sqlite
@@ -407,7 +403,6 @@ apt-get -y install sqlite3 ssl-cert nginx php5-cli php5-common php-apc php5-gd p
 /bin/sed -i $php_ini -e 's#"upload_max_filesize = 2M"#"upload_max_filesize = 15M"#'
 
 #Nginx config Copied from Debian nginx pkg (nginx on debian wheezy uses sockets by default not ports)
-echo ' Install NGINX config file '
 cat > "/etc/nginx/sites-available/fusionpbx"  << DELIM
 server{
         listen 127.0.0.1:80;
@@ -647,9 +642,6 @@ adduser www-data freeswitch
 adduser freeswitch www-data
 
 # Install FusionPBX Web User Interface 
-echo "Installing FusionPBX Web User Interface via Debian pkg"
-
-echo " Installing fusipnpbx basepbx"
 apt-get -y --force-yes install fusionpbx-core fusionpbx-app-calls fusionpbx-app-calls-active fusionpbx-app-call-block \
 		fusionpbx-app-contacts fusionpbx-app-destinations fusionpbx-app-dialplan fusionpbx-app-dialplan-inbound \
 		fusionpbx-app-dialplan-outbound fusionpbx-app-extensions fusionpbx-app-follow-me fusionpbx-app-gateways \
@@ -858,7 +850,7 @@ done
 NUMBERDAYS="$keep_logs"
 FSPATH="/var/log/freeswitch"
 
-"$FSPATH"/bin/freeswitch_cli -x "fsctl send_sighup" |grep '+OK' >/tmp/rotateFSlogs
+/usr/bin/freeswitch_cli -x "fsctl send_sighup" |grep '+OK' >/tmp/rotateFSlogs
 
 if [ $? -eq 0 ]; then
        #-cmin 2 could bite us (leave some files uncompressed, eg 11M auto-rotate). Maybe -1440 is better?
