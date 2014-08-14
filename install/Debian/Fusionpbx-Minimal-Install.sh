@@ -457,8 +457,13 @@ server{
 		rewrite "^.*/provision/(y[0-9]{12})(\.cfg)?$" /app/provision/index.php?file=$1$2;
 
 		#yealink mac
-		rewrite "^.*/provision/([A-Fa-f0-9]{12})(\.(xml|cfg))?$" /app/provision/index.php?mac=$1 last;
-
+		rewrite "^.*/([A-Fa-f0-9]{12})(\.(xml|cfg))?$" /app/provision/index.php?mac=\$1 last;
+	
+		if (\$uri !~* ^.*provision.*$) {
+			rewrite ^(.*) https://\$host\$1 permanent;
+			break;
+		}	
+		
         access_log /var/log/nginx/access.log;
         error_log /var/log/nginx/.error.log;
 
