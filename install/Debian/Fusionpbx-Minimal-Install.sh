@@ -72,7 +72,7 @@ odroid_boards="n"
 freeswitch_repo="stable"
 
 #Fusionpbx repo (release = 3.6.0 / devel = 3.5) 
-fusionpbx_repo="devel"
+fusionpbx_repo="release"
 
 # To start FreeSWITCH with -nonat option set freeswitch_NAT to y
 # Set to y if on public static IP
