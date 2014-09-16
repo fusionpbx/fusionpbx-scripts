@@ -60,12 +60,12 @@ else {
 	$result = $prep_statement->fetchAll(PDO::FETCH_NAMED);
 	foreach($result as $row) {
 		$sql = "delete from v_dialplans where dialplan_uuid = '".$row['dialplan_uuid']."'";
-		echo $sql."\n";
+		echo $sql.";\n";
 		$db->query($sql);
 		unset($sql);
 
 		$sql = "delete from v_dialplan_details where dialplan_uuid = '".$row['dialplan_uuid']."'";
-		echo $sql."\n";
+		echo $sql.";\n";
 		$db->query($sql);
 		unset($sql);
 	}
@@ -135,7 +135,7 @@ else {
 				$sql .= "'$voicemail_enabled', ";
 				$sql .= "'$voicemail_description' ";
 				$sql .= ");\n";
-				echo $sql;
+				echo $sql.";";
 				$db->exec(check_sql($sql));
 				unset($sql);
 			}
@@ -300,7 +300,7 @@ else {
 //loop through the sql array
 	$sql_array = explode(";", $data);
 	foreach($sql_array as $sql) {
-		echo $sql."\n";
+		echo $sql.";\n";
 		$db->exec(check_sql($sql));
 	}
 
