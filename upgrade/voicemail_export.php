@@ -300,7 +300,7 @@ else {
 //loop through the sql array
 	$sql_array = explode(";", $data);
 	foreach($sql_array as $sql) {
-		echo $sql.";\n";
+		echo $sql."\n";
 		$db->exec(check_sql($sql));
 	}
 
