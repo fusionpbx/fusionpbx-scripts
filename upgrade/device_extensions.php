@@ -66,7 +66,7 @@ require_once "resources/check_auth.php";
 				}
 
 			//set a new uuid
-				device_line_uuid = uuid();
+				$device_line_uuid = uuid();
 
 			//get the server address from the domains array using the domain_uuid
 				$server_address = $_SESSION[domains][$domain_uuid]["domain_name"];
@@ -107,7 +107,6 @@ require_once "resources/check_auth.php";
 				echo $sql;
 				//$db->exec(check_sql($sql));
 				unset($sql);
-
 		}
 	}
 
