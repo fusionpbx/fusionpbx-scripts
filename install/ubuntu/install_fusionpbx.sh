@@ -71,7 +71,7 @@ fi
 #DEFINES
 #-------
 VERSION="Version - using subversion, no longer keeping track. WAF License"
-#latest stable
+#latest release
 #FPBXBRANCH="http://fusionpbx.googlecode.com/svn/trunk/fusionpbx"
 #dev branch
 FPBXBRANCH="http://fusionpbx.googlecode.com/svn/branches/dev/fusionpbx"
@@ -1105,7 +1105,7 @@ if [ $INSFREESWITCH -eq 1 ]; then
 	else
 		cd /usr/src
 		if [ "$FSSTABLE" == true ]; then
-			echo "installing stable $FSStableVer of FreeSWITCH"
+			echo "installing $FSStableVer of FreeSWITCH"
 			/usr/bin/time /usr/bin/git clone $FSGIT
 			cd /usr/src/freeswitch
 			/usr/bin/git checkout $FSStableVer
@@ -1115,7 +1115,7 @@ if [ $INSFREESWITCH -eq 1 ]; then
 				exit 1
 			fi
 		else
-			echo "going dev branch.  Hope this works for you."
+			echo "going dev branch."
 			/usr/bin/time /usr/bin/git clone $FSGIT
 			if [ $? -ne 0 ]; then
 				#git had an error
@@ -1274,7 +1274,7 @@ if [ $INSFREESWITCH -eq 1 ]; then
 		#might see about -j cores option to make...
 
 		/bin/echo
-		/bin/echo -ne "Compiling FreeSWITCH. This might take a LONG while [~30 minutes]"
+		/bin/echo -ne "Compiling FreeSWITCH. This might take a while [~30 minutes]"
 		/bin/sleep 1
 		/bin/echo -ne "."
 		/bin/sleep 1
@@ -1527,7 +1527,7 @@ if [ $INSFREESWITCH -eq 1 ]; then
 
 		case "$SETNONAT" in
 			[Yy]*)
-				/bin/sed /etc/default/freeswitch -i -e s,'FREESWITCH_PARAMS="-nc"','FREESWITCH_PARAMS="-nc -nonat"',
+				/bin/sed /etc/default/freeswitch -i -e s,'FREESWITCH_PARAMS="-nc"','FREESWITCH_PARAMS="-nc -nonat -reincarnate"',
 				/bin/echo "init script set to start 'freeswitch -nc -nonat'"
 			;;
 
@@ -2658,7 +2658,7 @@ if [ $UPGFREESWITCH -eq 1 ]; then
 	#------------------------
 	/bin/grep 'made_current' /tmp/install_fusion_status > /dev/null
 	if [ $? -eq 0 ]; then
-		/bin/echo "Modules.conf Already edited"	
+		/bin/echo "Modules.conf Already edited"
 	else
 		/bin/echo
 		/bin/echo ' going to run make curent'
@@ -2684,10 +2684,10 @@ if [ $UPGFREESWITCH -eq 1 ]; then
 		git status |grep "1.2"
 		if [ $? -ne 0 ]; then
 			echo "It appears that you are currently on the FreeSWITCH Git Master branch, or no branch."
-			echo "  We currently recommend that you switch to the 1.2.x branch,"
-			echo "  since 1.4 [master] may not be very stable."
+			echo "  We currently recommend that you switch to the 1.4.x branch,"
+			echo "  since 1.5 [master]."
 			echo
-			read -p "Shall we change to the 1.2.x branch [Y/n]? " YESNO
+			read -p "Shall we change to the 1.4.x release branch [Y/n]? " YESNO
 		else
 			YESNO="no"
 		fi
@@ -2699,13 +2699,13 @@ if [ $UPGFREESWITCH -eq 1 ]; then
 				;;
 
 				*)
-						echo "OK, switching to 1.2.x."
+						echo "OK, switching to 1.4.x."
 						FSSTABLE=true
 				;;
 		esac
 
 		if [ $FSSTABLE == true ]; then
-			echo "OK we'll now use the 1.2.x stable branch"
+			echo "OK we'll now use the 1.4.x release branch"
 			cd /usr/src/freeswitch
 			
 			#odd edge case, I think from a specific version checkout
@@ -2748,7 +2748,7 @@ if [ $UPGFREESWITCH -eq 1 ]; then
 			#fi
 
 		else
-			echo "staying on dev branch.  Hope this works for you."
+			echo "Staying on dev branch."
 		fi
 
 		cd /usr/src/freeswitch
@@ -2856,7 +2856,7 @@ if [ $UPGFUSION -eq 1 ]; then
 	www_permissions
 	cd $WWW_PATH/$GUI_NAME
 	/bin/echo
-	/bin/echo "STOP! Make sure you are logged into fusionpbx as the superadmin (via browser)!!!"
+	/bin/echo "STOP! Make sure you are logged into fusionpbx as the superadmin (via browser)!"
 	read -p "Have you done this yet (y/n)? " YESNO
 	if [ $YESNO == "y" ]; then
 		/bin/echo "Be really sure you are logged in as superadmin."
@@ -2917,7 +2917,7 @@ if [ $UPGFUSION -eq 1 ]; then
 			echo "Done"
 	;;
 	*)
-		echo "OK, don't forget to run it yourself via gui or here with"
+		echo "OK, don't forget to run it yourself via GUI or here with"
 		echo "    /usr/bin/php $WWW_PATH/$GUI_NAME/core/upgrade/upgrade.php"
 	;;
 	esac
