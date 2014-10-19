@@ -104,7 +104,7 @@ grandstream="n" # : phone provisioning tool & templates for grandstream phones
 linksys="n" # : phone provisioning tool & templates for linksys phones
 panasonic="n" # : phone provisioning tool & templates for panasonic phones
 polycom="n" # : phone provisioning tool & templates for polycom phones
-snom phone="n" # : provisioning tool & templates for snom phones
+snom="n" # : provisioning tool & templates for snom phones
 yealink="n" # : phone provisioning tool & templates for yealink phones
 verto="n" # (x86/amd64 Only) (future option on arm)
 minimized_theme="n" # : minimal theme for fusionpbx
@@ -369,7 +369,17 @@ find "$fs_log_dir"/xml_cdr -type d -exec chmod 775 {} +
 
 cat > "/etc/default/freeswitch" << DELIM
 CONFDIR=$fs_conf_dir
-DAEMON_ARGS="-u $fs_usr -g $fs_grp -rp -conf $fs_conf_dir -db $fs_db_dir -log $fs_log_dir -scripts $fs_scripts_dir -run $fs_run_dir -storage $fs_storage_dir -recordings $fs_recordings_dir -nc"
+fs_usr=
+fs_grp=$fs_usr
+fs_conf_dir=
+fs_db_dir=
+fs_log_dir=
+fs_scripts_dir=
+fs_run_dir=
+fs_storage_dir=
+fs_recordings_dir=
+fs_options= -nc
+DAEMON_ARGS="-u $fs_usr -g $fs_grp -rp -conf $fs_conf_dir -db $fs_db_dir -log $fs_log_dir -scripts $fs_scripts_dir -run $fs_run_dir -storage $fs_storage_dir -recordings $fs_recordings_dir fs_options"
 DELIM
 
 service freeswitch restart
@@ -733,9 +743,6 @@ apt-get -y --force-yes install fusionpbx-app-adminer fusionpbx-app-backup fusion
   				fusionpbx-provisioning-template-snom fusionpbx-provisioning-template-yealink fusionpbx-theme-minimized && mkdir -p /etc/fusionpbx/resources/templates/provision && cp -rp /usr/share/examples/fusionpbx/resources/templates/provision/* /etc/fusionpbx/resources/templates/provision/
 fi
 
-#Temp fix with pkgs
-ln -s /usr/share/examples/fusionpbx /usr/share/fusionpbx
-
 #set permissions
 chmod 775 /etc/fusionpbx
 chmod 775 /var/lib/fusionpbx
@@ -745,12 +752,6 @@ mkdir -p /var/lib/fusionpbx/scripts
 chown -R freeswitch:freeswitch /var/lib/fusionpbx/scripts
 find "$fs_scripts_dir" -type d -exec chmod 775 {} +
 find "$fs_scripts_dir" -type f -exec chmod 664 {} +
-
-#Copy fusionpbx sounds into place
-cp -rp /usr/share/fusionpbx/resources/install/sounds/* /usr/share/freeswitch/sounds/
-
-#chown freeswitch conf files
-chown -R freeswitch:freeswitch /usr/share/freeswitch/sounds
 
 #fix permissions for "freeswitch sounds dir " so www-data can write to it
 find /usr/share/freeswitch/sounds -type f -exec chmod 664 {} +
@@ -766,6 +767,23 @@ chown freeswitch:freeswitch "$fs_log_dir"/xml_cdr
 chmod 775 "$fs_log_dir"/xml_cdr
 
 for i in freeswitch nginx php5-fpm ;do service "${i}" restart >/dev/null 2>&1 ; done
+
+cat > "/etc/default/freeswitch" << DELIM
+CONFDIR=$fs_conf_dir
+fs_usr=
+fs_grp=$fs_usr
+fs_conf_dir=
+fs_db_dir=
+fs_log_dir=
+fs_scripts_dir=
+fs_run_dir=
+fs_storage_dir=
+fs_recordings_dir=
+fs_options= -nc
+DAEMON_ARGS="-u $fs_usr -g $fs_grp -rp -conf $fs_conf_dir -db $fs_db_dir -log $fs_log_dir -scripts $fs_scripts_dir -run $fs_run_dir -storage $fs_storage_dir -recordings $fs_recordings_dir fs_options"
+DELIM
+
+service freeswitch restart
 
 # SEE http://wiki.freeswitch.org/wiki/Fail2ban
 #Fail2ban
