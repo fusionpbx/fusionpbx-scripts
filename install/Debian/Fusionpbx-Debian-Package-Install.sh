@@ -369,17 +369,17 @@ find "$fs_log_dir"/xml_cdr -type d -exec chmod 775 {} +
 
 cat > "/etc/default/freeswitch" << DELIM
 CONFDIR=$fs_conf_dir
-fs_usr=
-fs_grp=$fs_usr
-fs_conf_dir=
-fs_db_dir=
-fs_log_dir=
-fs_scripts_dir=
-fs_run_dir=
-fs_storage_dir=
-fs_recordings_dir=
-fs_options= -nc
-DAEMON_ARGS="-u $fs_usr -g $fs_grp -rp -conf $fs_conf_dir -db $fs_db_dir -log $fs_log_dir -scripts $fs_scripts_dir -run $fs_run_dir -storage $fs_storage_dir -recordings $fs_recordings_dir fs_options"
+fs-usr=freeswitch
+fs-grp=$fs_usr
+fs_conf=$fs_conf_dir
+fs_db=$fs_db_dir
+fs_log=$fs_log_dir
+fs_scripts=$fs_scripts_dir
+fs_run=$fs-run_dir
+fs_storage=$fs_storage_dir
+fs_recordings=$fs_recordings_dir
+fs_options= -nc -rp
+DAEMON_ARGS="-u $fs-usr -g $fs-grp -conf $fs_conf -db $fs_db -log $fs_log -scripts $fs_scripts -run $fs-run -storage $fs_storage -recordings $fs_recordings $fs_options"
 DELIM
 
 service freeswitch restart
@@ -770,17 +770,17 @@ for i in freeswitch nginx php5-fpm ;do service "${i}" restart >/dev/null 2>&1 ; 
 
 cat > "/etc/default/freeswitch" << DELIM
 CONFDIR=$fs_conf_dir
-fs_usr=
-fs_grp=$fs_usr
-fs_conf_dir=
-fs_db_dir=
-fs_log_dir=
-fs_scripts_dir=
-fs_run_dir=
-fs_storage_dir=
-fs_recordings_dir=
-fs_options= -nc
-DAEMON_ARGS="-u $fs_usr -g $fs_grp -rp -conf $fs_conf_dir -db $fs_db_dir -log $fs_log_dir -scripts $fs_scripts_dir -run $fs_run_dir -storage $fs_storage_dir -recordings $fs_recordings_dir fs_options"
+fs-usr=freeswitch
+fs-grp=$fs_usr
+fs_conf=
+fs_db=
+fs_log=
+fs_scripts=
+fs_run=
+fs_storage=
+fs_recordings=
+fs_options= -nc -rp
+DAEMON_ARGS="-u $fs-usr -g $fs-grp -conf $fs_conf -db $fs_db -log $fs_log -scripts $fs_scripts -run $fs-run -storage $fs_storage -recordings $fs_recordings $fs_options"
 DELIM
 
 service freeswitch restart
