@@ -218,60 +218,15 @@ else
 fi
 
 apt-get update && apt-get -y upgrade
-
-case $(uname -m) in armv7l)
 apt-get -y update && apt-get -y dist-upgrade
-apt-get -y install acpi-support-base usbmount usbutils
-esac
-
-#adding FusionPBX repo ( contains freeswitch armhf debs, and a few custom scripts debs)
-case $(uname -m) in armv7l)
-if [[ $freeswitch_repo == "stable" ]]; then
-echo 'installing armhf stable repo'
-/bin/cat > "/etc/apt/sources.list.d/voyagepbx.list" <<DELIM
-deb http://91.121.162.77/deb-stable/debian/ wheezy main
-DELIM
-
-elif [[ $freeswitch_repo == "beta" ]]; then
-echo 'installing armhf beta repo'
-/bin/cat > "/etc/apt/sources.list.d/voyagepbx.list" <<DELIM
-deb http://91.121.162.77/deb-beta/debian/ wheezy main
-DELIM
-
-elif [[ $freeswitch_repo == "head" ]]; then
-echo 'installing armhf head repo'
-/bin/cat > "/etc/apt/sources.list.d/voyagepbx.list" <<DELIM
-deb http://91.121.162.77/deb-head/debian/ wheezy main
-DELIM
-fi
-esac
-
-#freeswitch repo for x86 x86-64 bit pkgs
-case $(uname -m) in x86_64|i[4-6]86)
-# install curl to fetch repo key
-echo ' installing curl '
-apt-get update && apt-get -y install curl
+apt-get -y install acpi-support-base curl usbmount usbutils
 
 #adding in freeswitch reop to /etc/apt/sources.list.d/freeswitch.lists
-
-if [[ $freeswitch_repo == "stable" ]]; then
+if [[ $freeswitch_repo == "release" ]]; then
 echo ' installing stable repo '
 /bin/cat > "/etc/apt/sources.list.d/freeswitch.list" <<DELIM
 deb http://files.freeswitch.org/repo/deb/debian/ wheezy main
 DELIM
-
-elif [[ $freeswitch_repo == "beta" ]]; then
-echo 'installing beta repo'
-/bin/cat > "/etc/apt/sources.list.d/freeswitch.list" <<DELIM
-deb http://files.freeswitch.org/repo/deb-beta/debian/ wheezy main
-DELIM
-
-elif [[ $freeswitch_repo == "master" ]]; then
-echo 'install master repo'
-/bin/cat > "/etc/apt/sources.list.d/freeswitch.list" <<DELIM
-deb http://files.freeswitch.org/repo/deb-master/debian/ wheezy main
-DELIM
-fi
 
 #adding key for freeswitch repo
 echo 'fetcing repo key'
@@ -286,30 +241,26 @@ echo 'installing fusionpbx release repo'
 deb http://repo.fusionpbx.com/deb/debian/ wheezy main
 DELIM
 
-elif [[ $fusionpbx_repo == "devel" ]]; then
-echo 'installing fusionpbx devel repo'
-/bin/cat > "/etc/apt/sources.list.d/fusionpbx.list" <<DELIM
-deb http://repo.fusionpbx.com/deb-dev/debian/ wheezy main
-DELIM
-fi
-
 #postgresql 9.3 repo for x86 x86-64 bit pkgs
 case $(uname -m) in x86_64|i[4-6]86)
 #add in pgsql 9.3
 cat > "/etc/apt/sources.list.d/pgsql-pgdg.list" << DELIM
 deb http://apt.postgresql.org/pub/repos/apt/ wheezy-pgdg main
 DELIM
+
 #add pgsql repo key
 wget --quiet -O - http://apt.postgresql.org/pub/repos/apt/ACCC4CF8.asc | apt-key add -
 esac
 
+#running update after adding new repos to read them in
 apt-get update
+
+#installing ntpd to auto correct system time & restarting the service
 apt-get -y install ntp
 service ntp restart
-apt-get upgrade
 
 #install Freeswitch Deps
-apt-get -y install curl unixodbc uuid memcached libtiff5 libtiff-tools 
+apt-get -y install uuid memcached libtiff5 libtiff-tools 
 
 # install freeswitch
 apt-get -y install --force-yes freeswitch freeswitch-init freeswitch-lang-en freeswitch-meta-codecs freeswitch-mod-commands freeswitch-mod-curl \
@@ -353,9 +304,19 @@ find "/var/lib/freeswitch/storage" -type d -exec chmod 775 {} +
 #fix permissions on the freeswitch xml_cdr dir so fusionpbx can read from it
 find "$fs_log_dir"/xml_cdr -type d -exec chmod 775 {} +
 
-cat > "/etc/default/freeswitch" << DELIM
-CONFDIR=$fs_conf_dir
-DAEMON_ARGS="-u $fs_usr -g $fs_grp -rp -conf $fs_conf_dir -db $fs_db_dir -log $fs_log_dir -scripts $fs_scripts_dir -run $fs_run_dir -storage $fs_storage_dir -recordings $fs_recordings_dir -nc"
+cat > '/etc/default/freeswitch' << DELIM
+CONFDIR="/etc/freeswitch"
+fs_conf="/etc/freeswitch"
+fs_db="/var/lib/freeswitch/db"
+fs_log="/var/log/freeswitch"
+fs_recordings="/var/lib/freeswitch/recordings"
+fs_run="/var/run/freeswitch"
+fs_scripts="/var/lib/fusionpbx/scripts"
+fs_storage="/var/lib/freeswitch/storage"
+fs_usr=freeswitch
+fs_grp=\$fs_usr
+fs_options="-nc -rp"
+DAEMON_ARGS="-u \$fs_usr -g \$fs_grp -conf \$fs_conf -db \$fs_db -log \$fs_log -scripts \$fs_scripts -run \$fs_run -storage \$fs_storage -recordings \$fs_recordings \$fs_options"
 DELIM
 
 service freeswitch restart
@@ -364,7 +325,7 @@ service freeswitch restart
 #Install and configure  PHP + Nginx + sqlite3 for use with the fusionpbx gui.
 
 apt-get -y install sqlite3 ssl-cert nginx php5-cli php5-common php-apc php5-gd php-db \
-				php5-fpm php5-memcache php5-odbc php-pear php5-sqlite
+				php5-fpm php5-memcache php-pear php5-sqlite
 				
 # Changing file upload size from 2M to 15M
 /bin/sed -i $php_ini -e 's#"upload_max_filesize = 2M"#"upload_max_filesize = 15M"#'
@@ -623,6 +584,22 @@ apt-get -y --force-yes install fusionpbx-core fusionpbx-app-calls fusionpbx-app-
 		fusionpbx-sounds fusionpbx-app-xml-cdr fusionpbx-app-vars fusionpbx-app-voicemails fusionpbx-app-voicemail-greetings \
 		fusionpbx-conf fusionpbx-scripts fusionpbx-sqldb fusionpbx-theme-enhanced
 
+#future use
+#cat > '/etc/default/freeswitch' << DELIM
+#CONFDIR="/etc/freeswitch"
+#fs_conf="/etc/freeswitch"
+#fs_db="/var/lib/freeswitch/db"
+#fs_log="/var/log/freeswitch"
+#fs_recordings="/var/lib/freeswitch/recordings"
+#fs_run="/var/run/freeswitch"
+#fs_scripts="/var/lib/fusionpbx/scripts"
+#fs_storage="/var/lib/freeswitch/storage"
+#fs_usr=freeswitch
+#fs_grp=\$fs_usr
+#fs_options="-nc -rp"
+#DAEMON_ARGS="-u \$fs_usr -g \$fs_grp -conf \$fs_conf -db \$fs_db -log \$fs_log -scripts \$fs_scripts -run \$fs_run -storage \$fs_storage -recordings \$fs_recordings \$fs_options"
+#DELIM
+
 #Temp fix with pkgs
 ln -s /usr/share/examples/fusionpbx /usr/share/fusionpbx
 
@@ -845,6 +822,10 @@ DELIM
 
 chmod 664 /etc/cron.daily/freeswitch_log_rotation
 
+#DigiDaz Tested and approved
+/bin/sed -i /usr/share/examples/fusionpbx/resources/templates/conf/autoload_configs/logfile.conf.xml -e 's#<map name="all" value="debug,info,notice,warning,err,crit,alert"/>#<map name="all" value="warning,err,crit,alert"/>#'
+/bin/sed -i "$WWW_PATH"/"$wui_name"/app/vars/app_defaults.php -e 's#{"var_name":"xml_cdr_archive","var_value":"dir","var_cat":"Defaults","var_enabled":"true","var_description":""}#{"var_name":"xml_cdr_archive","var_value":"none","var_cat":"Defaults","var_enabled":"true","var_description":""}#'
+
 # restarting services
 for i in php5-fpm niginx monit fail2ban freeswitch ;do service "${i}" restart  >/dev/null 2>&1 ; done
 
@@ -943,11 +924,6 @@ fi
 
 apt-get install -y --force-yes custom-scripts
 
-#DigiDaz Tested and approved
-case $(uname -m) in armv7l)
-/bin/sed -i /usr/share/examples/fusionpbx/resources/templates/conf/autoload_configs/logfile.conf.xml -e 's#<map name="all" value="debug,info,notice,warning,err,crit,alert"/>#<map name="all" value="warning,err,crit,alert"/>#'
-/bin/sed -i "$WWW_PATH"/"$wui_name"/app/vars/app_defaults.php -e 's#{"var_name":"xml_cdr_archive","var_value":"dir","var_cat":"Defaults","var_enabled":"true","var_description":""}#{"var_name":"xml_cdr_archive","var_value":"none","var_cat":"Defaults","var_enabled":"true","var_description":""}#'
-esac
 
 #Install openvpn openvpn-scripts 
 if [[ $install_openvpn == "y" ]]; then

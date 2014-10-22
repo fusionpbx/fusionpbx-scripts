@@ -131,6 +131,12 @@ db_user_name=fusionpbx
 db_user_passwd=
 
 #-------Postgresql-End--------------
+# disbale generation of xml_cdr files and only store in cdr in the database
+xml_cdr_files="n"
+
+# disable  extra logging and on show warnings/errors. shrinks the size of 
+# logfiles and whats displayed in the logging page
+logging_level="n"
 
 #Extra Option's
 #Install openvpn scripts
@@ -246,16 +252,11 @@ else
 fi
 
 apt-get update && apt-get -y upgrade
-apt-get -y install acpi-support-base usbmount usbutils
-
-#freeswitch repo for x86 x86-64 bit pkgs
-# install curl to fetch repo key
-echo ' installing curl '
-apt-get update && apt-get -y install curl
+apt-get -y install acpi-support-base curl usbmount usbutils
 
 #adding in freeswitch reop to /etc/apt/sources.list.d/freeswitch.lists
 echo ' installing stable repo '
-/bin/cat > "/etc/apt/sources.list.d/freeswitch.list" <<DELIM
+cat > "/etc/apt/sources.list.d/freeswitch.list" <<DELIM
 deb http://files.freeswitch.org/repo/deb/debian/ wheezy main
 DELIM
 
@@ -265,8 +266,8 @@ curl http://files.freeswitch.org/repo/deb/debian/freeswitch_archive_g0.pub | apt
 
 #adding FusionPBX repo
 echo 'installing fusionpbx release repo'
-/bin/cat > "/etc/apt/sources.list.d/fusionpbx.list" <<DELIM
-deb http://repo.fusionpbx.com/deb/debian/ wheezy main
+cat > "/etc/apt/sources.list.d/fusionpbx.list" <<DELIM
+deb http://repo.fusionpbx.com/release/debian/ wheezy main
 DELIM
 
 #postgresql 9.3 repo for x86 x86-64 bit pkgs
@@ -293,15 +294,7 @@ apt-get -y install --force-yes freeswitch freeswitch-init freeswitch-lang-en fre
 		freeswitch-mod-event-multicast freeswitch-mod-event-socket freeswitch-mod-event-test freeswitch-mod-local-stream freeswitch-mod-native-file \
 		freeswitch-mod-sndfile freeswitch-mod-tone-stream freeswitch-mod-lua freeswitch-mod-console freeswitch-mod-logfile freeswitch-mod-syslog \
 		freeswitch-mod-say-en freeswitch-mod-posix-timer freeswitch-mod-timerfd freeswitch-mod-v8 freeswitch-mod-xml-cdr freeswitch-mod-xml-curl \
-		freeswitch-mod-xml-rpc freeswitch-sounds freeswitch-music freeswitch-conf-vanilla
-
-case $(uname -m) in x86_64|i[4-6]86)
-apt-get -y install freeswitch-mod-shout
-esac
-
-case $(uname -m) in armv7l)
-apt-get -y install freeswitch-mod-vlc
-esac
+		freeswitch-mod-xml-rpc freeswitch-sounds freeswitch-music freeswitch-conf-vanilla freeswitch-mod-shout
 
 #make the conf dir
 mkdir -p "$fs_conf_dir"
@@ -351,7 +344,7 @@ service freeswitch restart
 #Install and configure  PHP + Nginx + sqlite3 for use with the fusionpbx gui.
 
 apt-get -y install sqlite3 ssl-cert nginx php5-cli php5-common php-apc php5-gd \
-		php-db php5-fpm php5-memcache php5-odbc php-pear php5-sqlite
+		php-db php5-fpm php5-memcache php-pear php5-sqlite
 
 # Changing file upload size from 2M to 15M
 /bin/sed -i $php_ini -e 's#"upload_max_filesize = 2M"#"upload_max_filesize = 15M"#'
@@ -740,7 +733,7 @@ for i in freeswitch nginx php5-fpm ;do service "${i}" restart >/dev/null 2>&1 ; 
 #fs_recordings="/var/lib/fusionpbx/recordings"
 #fs_run="/var/run/freeswitch"
 #fs_scripts="/var/lib/fusionpbx/scripts"
-#fs_storage="/var/lib/freeswitch/storage"
+#fs_storage="/var/lib/fusionpbx/storage"
 #fs_usr=freeswitch
 #fs_grp=\$fs_usr
 #fs_options="-nc -rp"
@@ -938,6 +931,16 @@ DELIM
 
 chmod 664 /etc/cron.daily/freeswitch_log_rotation
 
+#option to disable xml_cdr files
+if [[ $xml_cdr_files == "y" ]]; then
+/bin/sed -i "$WWW_PATH"/"$wui_name"/app/vars/app_defaults.php -e 's#{"var_name":"xml_cdr_archive","var_value":"dir","var_cat":"Defaults","var_enabled":"true","var_description":""}#{"var_name":"xml_cdr_archive","var_value":"none","var_cat":"Defaults","var_enabled":"true","var_description":""}#'
+fi
+
+#option to disable some loging execpt for 
+if [[ $logging_level == "y" ]]; then
+/bin/sed -i /usr/share/examples/fusionpbx/resources/templates/conf/autoload_configs/logfile.conf.xml -e 's#<map name="all" value="debug,info,notice,warning,err,crit,alert"/>#<map name="all" value="warning,err,crit,alert"/>#'
+fi
+
 # restarting services
 for i in php5-fpm niginx monit fail2ban freeswitch ;do service "${i}" restart  >/dev/null 2>&1 ; done
 
@@ -960,18 +963,9 @@ iptables -I INPUT -j DROP -p udp --dport 5080 -m string --string "friendly-scann
 
 #Install postgresql-client
 if [[ $postgresql_client == "y" ]]; then
-	clear
-	case $(uname -m) in x86_64|i[4-6]86)
 	for i in postgresql-client-9.3 php5-pgsql ;do apt-get -y install "${i}"; done
-	esac
-
-	case $(uname -m) in armv7l)
-	echo "no are deb pkgs for pgsql postgresql-client-9.3"
-	echo "postgresql-client-9.1 is being installed"
-	for i in postgresql-client-9.1 php5-pgsql ;do apt-get -y install "${i}"; done
-	esac
-
 	service php5-fpm restart
+	clear
 	echo
 	printf '	Please open a web-browser to http://'; ip -f inet addr show dev $net_iface | sed -n 's/^ *inet *\([.0-9]*\).*/\1/p'
 cat << DELIM
@@ -992,23 +986,13 @@ fi
 
 #install & configure basic postgresql-server
 if [[ $postgresql_server == "y" ]]; then
-	clear
-	case $(uname -m) in x86_64|i[4-6]86)
 	for i in postgresql-9.3 php5-pgsql ;do apt-get -y install "${i}"; done
-	esac
-
-	case $(uname -m) in armv7l)
-	echo "no are deb pkgs for pgsql postgresql-client-9.3"
-	echo "postgresql-9.1 is being installed"
-	for i in postgresql-9.1 php5-pgsql ;do apt-get -y install "${i}"; done
-	esac
-
 	service php5-fpm restart
 
 	#Adding a SuperUser and Password for Postgresql database.
 	su -l postgres -c "/usr/bin/psql -c \"create role $pgsql_admin with superuser login password '$pgsql_admin_passwd'\""
 	clear
-echo ''
+	echo
 	printf '	Please open a web browser to http://'; ip -f inet addr show dev $net_iface | sed -n 's/^ *inet *\([.0-9]*\).*/\1/p'   
 cat << DELIM
 	Or the Doamin name asigned to the machine like http://"$(hostname).$(dnsdomainname)".
