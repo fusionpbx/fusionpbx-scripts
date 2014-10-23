@@ -745,7 +745,7 @@ DAEMON_ARGS="-u \$fs_usr -g \$fs_grp -conf \$fs_conf -db \$fs_db -log \$fs_log -
 DELIM
 
 #restarting freeswitch after path changes
-service freeswitch restart
+#service freeswitch restart
 
 # SEE http://wiki.freeswitch.org/wiki/Fail2ban
 #Fail2ban
