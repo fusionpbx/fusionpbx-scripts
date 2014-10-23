@@ -145,24 +145,31 @@ install_openvpn="n"
 #Install Ajenti Optional Admin Portal
 install_ajenti="n"
 
-#-------- Edit only if necessary---------
-#Custom Dir Layout
+#<------Stop Edit Here-------->
+################################################################################
+# Hard Set Varitables (Do Not EDIT)
+#Freeswitch default runtime Dir Layout
 fs_conf_dir="/etc/freeswitch"
 fs_dflt_conf_dir="/usr/share/freeswitch/conf"
-fs_db_dir="/var/lib/freeswitch/db"
+#fs_db_dir="/var/lib/freeswitch/db"
 fs_log_dir="/var/log/freeswitch"
 #fs_mod_dir="/usr/lib/freeswitch/mod" (not currently used)
-fs_recordings_dir="/var/lib/freeswitch/recordings"
-fs_run_dir="/var/run/freeswitch"
-fs_scripts_dir="/var/lib/fusionpbx/scripts"
-fs_sounds_dir="/usr/share/freeswitch/sounds"
-fs_music_dir="$fs_sounds_dir/music"
+#fs_recordings_dir="/var/lib/freeswitch/recordings"
+#fs_run_dir="/var/run/freeswitch"
+fs_scripts_dir="/var/lib/freeswitch/scripts"
+#fs_sounds_dir="/usr/share/freeswitch/sounds"
 fs_storage_dir="/var/lib/freeswitch/storage"
 #fs_temp_dir="/tmp"
-fs_usr=freeswitch
-fs_grp=$fs_usr
 
-#<------Stop Edit Here-------->
+#Fusionpbx freeswitch runtime Dir Layout
+#fs_conf="/etc/fusionpbx/switch/conf"
+#fs_db="/var/lib/freeswitch/db"
+#fs_log="/var/log/freeswitch"
+#fs_recordings="/var/lib/fusionpbx/recordings"
+#fs_run="/var/run/freeswitch"
+#fs_scripts="/var/lib/fusionpbx/scripts"
+#fs_storage="/var/lib/fusionpbx/storage"
+
 
 ################################################################################
 # Hard Set Varitables (Do Not EDIT)
@@ -327,7 +334,7 @@ fs_db="/var/lib/freeswitch/db"
 fs_log="/var/log/freeswitch"
 fs_recordings="/var/lib/freeswitch/recordings"
 fs_run="/var/run/freeswitch"
-fs_scripts="/var/lib/fusionpbx/scripts"
+fs_scripts="/var/lib/freeswitch/scripts"
 fs_storage="/var/lib/freeswitch/storage"
 fs_usr=freeswitch
 fs_grp=\$fs_usr
@@ -721,7 +728,7 @@ chmod 775 "$fs_log_dir"/xml_cdr
 
 for i in freeswitch nginx php5-fpm ;do service "${i}" restart >/dev/null 2>&1 ; done
 
-#For Future Use
+#Freeswitch layout for FHS
 cat > '/etc/default/freeswitch' << DELIM
 CONFDIR="/etc/fusionpbx/switch/conf"
 fs_conf="/etc/fusionpbx/switch/conf"
