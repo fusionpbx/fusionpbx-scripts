@@ -1,5 +1,5 @@
 #!/bin/bash
-#Date Oct 19 2014 14:15 CDT
+#Date Oct 23 2014 09:55 CDT
 ################################################################################
 # The MIT License (MIT)
 #
@@ -290,7 +290,7 @@ apt-get -y install ntp
 service ntp restart
 
 #install Freeswitch Deps
-apt-get -y install curl unixodbc uuid memcached libtiff5 libtiff-tools
+apt-get -y install unixodbc uuid memcached libtiff5 libtiff-tools time bison htop screen
 
 # install freeswitch
 apt-get -y install --force-yes freeswitch freeswitch-init freeswitch-lang-en freeswitch-meta-codecs freeswitch-mod-commands freeswitch-mod-curl \
@@ -604,7 +604,7 @@ apt-get -y --force-yes install fusionpbx-core fusionpbx-app-calls fusionpbx-app-
 	fusionpbx-app-ivr-menu fusionpbx-app-login fusionpbx-app-log-viewer fusionpbx-app-modules fusionpbx-app-music-on-hold \
 	fusionpbx-app-recordings fusionpbx-app-registrations fusionpbx-app-ring-groups fusionpbx-app-settings \
 	fusionpbx-app-sip-profiles fusionpbx-app-sip-status fusionpbx-app-system fusionpbx-app-time-conditions \
-	fusionpbx-sounds fusionpbx-app-xml-cdr fusionpbx-app-vars fusionpbx-app-voicemails fusionpbx-app-voicemail-greetings \
+	fusionpbx-app-xml-cdr fusionpbx-app-vars fusionpbx-app-voicemails fusionpbx-app-voicemail-greetings \
 	fusionpbx-conf fusionpbx-scripts fusionpbx-sqldb fusionpbx-theme-enhanced
 
 #Optional APP PKGS
@@ -971,6 +971,11 @@ if [[ $postgresql_client == "y" ]]; then
 	service php5-fpm restart
 	clear
 	echo
+	echo
+	echo " The install $wui_name install has finished...  "
+	echo
+	echo " Now Waiting on you to finish the installation via web browser "
+	echo	
 	printf '	Please open a web-browser to http://'; ip -f inet addr show dev $net_iface | sed -n 's/^ *inet *\([.0-9]*\).*/\1/p'
 cat << DELIM
 	Or the Doamin name assigned to the machine like http://"$(hostname).$(dnsdomainname)".
@@ -997,6 +1002,10 @@ if [[ $postgresql_server == "y" ]]; then
 	su -l postgres -c "/usr/bin/psql -c \"create role $pgsql_admin with superuser login password '$pgsql_admin_passwd'\""
 	clear
 	echo
+	echo " The install $wui_name install has finished...  "
+	echo
+	echo " Now Waiting on you to finish the installation via web browser "
+	echo
 	printf '	Please open a web browser to http://'; ip -f inet addr show dev $net_iface | sed -n 's/^ *inet *\([.0-9]*\).*/\1/p'   
 cat << DELIM
 	Or the Doamin name asigned to the machine like http://"$(hostname).$(dnsdomainname)".
@@ -1012,8 +1021,12 @@ cat << DELIM
 DELIM
 else
 clear
-echo ''
-	printf '	Please open a web-browser to http://'; ip -f inet addr show dev $net_iface | sed -n 's/^ *inet *\([.0-9]*\).*/\1/p'
+echo
+echo " The install $wui_name install has finished...  "
+echo
+echo " Now Waiting on you to finish the installation via web browser "
+echo
+printf '	Please open a web-browser to http://'; ip -f inet addr show dev $net_iface | sed -n 's/^ *inet *\([.0-9]*\).*/\1/p'
 cat << DELIM
 	or the Doamin name asigned to the machine like http://"$(hostname).$(dnsdomainname)".
 	On the First Configuration page of the web user interface "$wui_name".
@@ -1022,6 +1035,35 @@ cat << DELIM
 	Now you can configure FreeSWITCH using the FusionPBX web user interface
 DELIM
 fi
+
+echo -ne " The Install will clean up the last bit of permissions when "
+echo 
+echo " you finish entering the required information and return here. "
+echo
+echo " Waiting on /etc/$GUI_NAME/config.php "
+while [ ! -e /etc/$GUI_NAME/config.php ]
+do
+	echo -ne '.'
+	sleep 1
+done
+echo
+echo " /etc/$GUI_NAME/config.php Found!"
+echo
+echo "   Waiting 10 more seconds to be sure. "
+SLEEPTIME=0
+while [ "$SLEEPTIME" -lt 10 ]
+do
+	echo -ne '.'
+	sleep 1
+	let "SLEEPTIME = $SLEEPTIME + 1"
+done
+echo "   Fixing..."
+find /usr/local/freeswitch -type f -exec /bin/chmod g+w {} \;
+find /usr/local/freeswitch -type d -exec /bin/chmod g+w {} \;
+echo "   FIXED"
+
+echo " Restarting freeswitch for changes to take effect...."
+service freeswitch restart
 
 #reboot Kernel Panic
 cat > /etc/sysctl.conf << DELIM
@@ -1045,4 +1087,4 @@ wget http://repo.ajenti.org/debian/key -O- | apt-key add -
 apt-get update &> /dev/null && apt-get -y install ajenti
 fi
 
-echo " The install $wui_name minimal install has finished...  "
+echo " The install is now complete and your system is ready for use....."
