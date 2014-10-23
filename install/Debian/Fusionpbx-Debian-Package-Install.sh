@@ -849,8 +849,6 @@ cat > "/etc/fail2ban/filter.d/fusionpbx-inbound.conf" <<DELIM
 #[hostname] variable doesn't seem to work in every case. Do this instead:
 failregex = 404 not found <HOST>
 
-#EXECUTE sofia/external/9999421150@cgrates.directvoip.co.uk log([inbound routes] 404 not found 82.68.115.62)
-
 # Option:  ignoreregex
 # Notes.:  regex to ignore. If this regex matches, the line is ignored.
 # Values:  TEXT
@@ -868,7 +866,7 @@ protocol = udp
 filter   = fusionpbx-inbound
 logpath  = /var/log/freeswitch/freeswitch.log
 action   = iptables-allports[name=fusionpbx-inbound, protocol=all]
-#      	sendmail-whois[name=fusionpbx-inbound, dest=root, sender=fail2ban@example.org] #no smtp server installed
+#sendmail-whois[name=fusionpbx-inbound, dest=root, sender=fail2ban@example.org] #no smtp server installed
 maxretry = 5
 findtime = 300
 bantime  = 3600
