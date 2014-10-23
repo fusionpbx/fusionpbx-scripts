@@ -1005,18 +1005,18 @@ if [[ $postgresql_server == "y" ]]; then
 	echo
 	echo " Now Waiting on you to finish the installation via web browser "
 	echo
-	printf '	Please open a web browser to http://'; ip -f inet addr show dev $net_iface | sed -n 's/^ *inet *\([.0-9]*\).*/\1/p'   
+	printf 'Please open a web browser to http://'; ip -f inet addr show dev $net_iface | sed -n 's/^ *inet *\([.0-9]*\).*/\1/p'   
 cat << DELIM
-	Or the Doamin name asigned to the machine like http://"$(hostname).$(dnsdomainname)".
-	On the First configuration page of the web user interface
-	Please Select the PostgreSQL option in the pull-down menu as your Database
-	Also Please fill in the SuperUser Name and Password fields.
-	On the Second Configuration Page of the web user interface please fill in the following fields:
-	Database Name: "$db_name"
-	Database Username: "$db_user_name"
-	Database Password: "$db_user_passwd"
-	Create Database Username: "$pgsql_admin"
-	Create Database Password: "$pgsql_admin_passwd"
+ Or the Doamin name asigned to the machine like http://"$(hostname).$(dnsdomainname)".
+ On the First configuration page of the web user interface
+ Please Select the PostgreSQL option in the pull-down menu as your Database
+ Also Please fill in the SuperUser Name and Password fields.
+ On the Second Configuration Page of the web user interface please fill in the following fields:
+ Database Name: "$db_name"
+ Database Username: "$db_user_name"
+ Database Password: "$db_user_passwd"
+ Create Database Username: "$pgsql_admin"
+ Create Database Password: "$pgsql_admin_passwd"
 DELIM
 else
 clear
@@ -1025,13 +1025,13 @@ echo " The $wui_name install has finished...  "
 echo
 echo " Now Waiting on you to finish the installation via web browser "
 echo
-printf '	Please open a web-browser to http://'; ip -f inet addr show dev $net_iface | sed -n 's/^ *inet *\([.0-9]*\).*/\1/p'
+printf ' Please open a web-browser to http://'; ip -f inet addr show dev $net_iface | sed -n 's/^ *inet *\([.0-9]*\).*/\1/p'
 cat << DELIM
-	or the Doamin name asigned to the machine like http://"$(hostname).$(dnsdomainname)".
-	On the First Configuration page of the web user interface "$wui_name".
-	Also Please fill in the SuperUser Name and Password fields.
-	Freeswitch & FusionPBX Web User Interface Installation Completed
-	Now you can configure FreeSWITCH using the FusionPBX web user interface
+ or the Doamin name asigned to the machine like http://"$(hostname).$(dnsdomainname)".
+ On the First Configuration page of the web user interface "$wui_name".
+ Also Please fill in the SuperUser Name and Password fields.
+ Freeswitch & FusionPBX Web User Interface Installation Completed
+ Now you can configure FreeSWITCH using the FusionPBX web user interface
 DELIM
 fi
 
@@ -1056,10 +1056,6 @@ do
 	sleep 1
 	let "SLEEPTIME = $SLEEPTIME + 1"
 done
-echo "   Fixing..."
-find /usr/local/freeswitch -type f -exec /bin/chmod g+w {} \;
-find /usr/local/freeswitch -type d -exec /bin/chmod g+w {} \;
-echo "   FIXED"
 
 echo " Restarting freeswitch for changes to take effect...."
 service freeswitch restart
