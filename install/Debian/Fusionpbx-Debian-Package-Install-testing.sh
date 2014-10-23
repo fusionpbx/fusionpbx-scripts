@@ -744,9 +744,6 @@ fs_options="-nc -rp"
 DAEMON_ARGS="-u \$fs_usr -g \$fs_grp -conf \$fs_conf -db \$fs_db -log \$fs_log -scripts \$fs_scripts -run \$fs_run -storage \$fs_storage -recordings \$fs_recordings \$fs_options"
 DELIM
 
-#restarting freeswitch after path changes
-#service freeswitch restart
-
 # SEE http://wiki.freeswitch.org/wiki/Fail2ban
 #Fail2ban
 for i in fail2ban monit ;do apt-get -y install "${i}" ; done
