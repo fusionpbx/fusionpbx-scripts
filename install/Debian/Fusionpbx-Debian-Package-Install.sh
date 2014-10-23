@@ -1080,4 +1080,4 @@ fi
 
 echo " The install is now complete and your system is ready for use....."
 echo
-echo" Please send any feed back to r.neese@gmail.com "
+echo " Please send any feed back to r.neese@gmail.com "
