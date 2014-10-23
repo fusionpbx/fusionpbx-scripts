@@ -265,9 +265,9 @@ echo 'fetcing repo key'
 curl http://files.freeswitch.org/repo/deb/debian/freeswitch_archive_g0.pub | apt-key add -
 
 #adding FusionPBX repo
-echo 'installing fusionpbx release repo'
+echo 'installing fusionpbx head repo'
 cat > "/etc/apt/sources.list.d/fusionpbx.list" <<DELIM
-deb http://repo.fusionpbx.com/release/debian/ wheezy main
+deb http://repo.fusionpbx.com/head/debian/ wheezy main
 DELIM
 
 #postgresql 9.3 repo for x86 x86-64 bit pkgs
@@ -316,9 +316,6 @@ find "$fs_conf_dir" -type d -exec chmod 775 {} +
 #fix permissions for "$fs_storage_dir" so www-data can write to it
 find "$fs_storage_dir" -type f -exec chmod 664 {} +
 find "$fs_storage_dir" -type d -exec chmod 775 {} +
-
-#fix permissions for "$fs_music_dir" so www-data can write to it
-find "$fs_music_dir" -type d -exec chmod 775 {} +
 
 #fix permissions on the freeswitch xml_cdr dir so fusionpbx can read from it
 find "$fs_log_dir"/xml_cdr -type d -exec chmod 775 {} +
