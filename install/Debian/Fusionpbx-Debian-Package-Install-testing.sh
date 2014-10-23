@@ -1036,14 +1036,14 @@ echo -ne " The Install will clean up the last bit of permissions when "
 echo 
 echo " you finish entering the required information and return here. "
 echo
-echo " Waiting on /etc/$GUI_NAME/config.php "
+echo " Waiting on /etc/$wui_name/config.php "
 while [ ! -e /etc/$GUI_NAME/config.php ]
 do
 	echo -ne '.'
 	sleep 1
 done
 echo
-echo " /etc/$GUI_NAME/config.php Found!"
+echo " /etc/$wui_name/config.php Found!"
 echo
 echo "   Waiting 10 more seconds to be sure. "
 SLEEPTIME=0
