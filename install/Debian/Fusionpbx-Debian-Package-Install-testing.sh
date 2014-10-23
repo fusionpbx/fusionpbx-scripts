@@ -728,22 +728,6 @@ chmod 775 "$fs_log_dir"/xml_cdr
 
 for i in freeswitch nginx php5-fpm ;do service "${i}" restart >/dev/null 2>&1 ; done
 
-#Freeswitch layout for FHS
-cat > '/etc/default/freeswitch' << DELIM
-CONFDIR="/etc/fusionpbx/switch/conf"
-fs_conf="/etc/fusionpbx/switch/conf"
-fs_db="/var/lib/freeswitch/db"
-fs_log="/var/log/freeswitch"
-fs_recordings="/var/lib/fusionpbx/recordings"
-fs_run="/var/run/freeswitch"
-fs_scripts="/var/lib/fusionpbx/scripts"
-fs_storage="/var/lib/fusionpbx/storage"
-fs_usr=freeswitch
-fs_grp=\$fs_usr
-fs_options="-nc -rp"
-DAEMON_ARGS="-u \$fs_usr -g \$fs_grp -conf \$fs_conf -db \$fs_db -log \$fs_log -scripts \$fs_scripts -run \$fs_run -storage \$fs_storage -recordings \$fs_recordings \$fs_options"
-DELIM
-
 # SEE http://wiki.freeswitch.org/wiki/Fail2ban
 #Fail2ban
 for i in fail2ban monit ;do apt-get -y install "${i}" ; done
@@ -1037,7 +1021,7 @@ echo
 echo " you finish entering the required information and return here. "
 echo
 echo " Waiting on /etc/$wui_name/config.php "
-while [ ! -e /etc/$GUI_NAME/config.php ]
+while [ ! -e /etc/$wui_name/config.php ]
 do
 	echo -ne '.'
 	sleep 1
@@ -1053,6 +1037,23 @@ do
 	sleep 1
 	let "SLEEPTIME = $SLEEPTIME + 1"
 done
+
+#configuring freeswitch to start with new layout.
+#Freeswitch layout for FHS
+cat > '/etc/default/freeswitch' << DELIM
+CONFDIR="/etc/fusionpbx/switch/conf"
+fs_conf="/etc/fusionpbx/switch/conf"
+fs_db="/var/lib/freeswitch/db"
+fs_log="/var/log/freeswitch"
+fs_recordings="/var/lib/fusionpbx/recordings"
+fs_run="/var/run/freeswitch"
+fs_scripts="/var/lib/fusionpbx/scripts"
+fs_storage="/var/lib/fusionpbx/storage"
+fs_usr=freeswitch
+fs_grp=\$fs_usr
+fs_options="-nc -rp"
+DAEMON_ARGS="-u \$fs_usr -g \$fs_grp -conf \$fs_conf -db \$fs_db -log \$fs_log -scripts \$fs_scripts -run \$fs_run -storage \$fs_storage -recordings \$fs_recordings \$fs_options"
+DELIM
 
 echo " Restarting freeswitch for changes to take effect...."
 service freeswitch restart
