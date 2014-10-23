@@ -1029,9 +1029,9 @@ done
 echo
 echo " /etc/$wui_name/config.php Found!"
 echo
-echo "   Waiting 10 more seconds to be sure. "
+echo "   Waiting 60 more seconds to be sure. "
 SLEEPTIME=0
-while [ "$SLEEPTIME" -lt 10 ]
+while [ "$SLEEPTIME" -lt 60 ]
 do
 	echo -ne '.'
 	sleep 1
