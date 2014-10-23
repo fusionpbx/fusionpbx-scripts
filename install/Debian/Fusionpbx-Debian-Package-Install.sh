@@ -85,6 +85,7 @@ sql_query="n" # : allows you to interactively submit SQL queries to the database
 traffic_graph="n" # : php graph for monitoing the network interface traffic
 xmpp="n" # : Configure XMPP to work with Google talk or other jabber servers
 aastra="n" # : phone provisioning tool &  templates for aastra phones
+atcom="n" # : phone provisioning tool &  templates for atcom phones
 cisco="n" # : phone provisioning tool & templates for cisco phones
 grandstream="n" # : phone provisioning tool & templates for grandstream phones
 linksys="n" # : phone provisioning tool & templates for linksys phones
@@ -93,6 +94,9 @@ polycom="n" # : phone provisioning tool & templates for polycom phones
 snom="n" # : provisioning tool & templates for snom phones
 yealink="n" # : phone provisioning tool & templates for yealink phones
 verto="n" # (x86/amd64 Only) (future option on arm)
+accessible_theme="n" # : accessible theme for fusionpbx
+classic_theme="n" # : classic theme for fusionpbx
+default_theme="n" # : default theme for fusionpbx
 minimized_theme="n" # : minimal theme for fusionpbx
 all="n" #: Install all extra modules for fusionpbx and related freeswitch deps
 
@@ -668,6 +672,9 @@ fi
 if [[ $aastra == "y" ]]; then
 apt-get -y --force-yes install fusionpbx-app-devices fusionpbx-app-provision fusionpbx-provisioning-template-aastra  && mkdir -p /etc/fusionpbx/resources/templates/provision && cp -rp /usr/share/examples/fusionpbx/resources/templates/provision/aastra /etc/fusionpbx/resources/templates/provision/
 fi
+ [[ $aastra == "y" ]]; then
+apt-get -y --force-yes install fusionpbx-app-devices fusionpbx-app-provision fusionpbx-provisioning-template-atcom  && mkdir -p /etc/fusionpbx/resources/templates/provision && cp -rp /usr/share/examples/fusionpbx/resources/templates/provision/atcom /etc/fusionpbx/resources/templates/provision/
+fi
 if [[ $cisco == "y" ]]; then
 apt-get -y --force-yes install fusionpbx-app-devices fusionpbx-app-provision fusionpbx-provisioning-template-cisco && mkdir -p /etc/fusionpbx/resources/templates/provision && cp -rp /usr/share/examples/fusionpbx/resources/templates/provision/cisco /etc/fusionpbx/resources/templates/provision/
 fi
@@ -692,15 +699,25 @@ fi
 if [[ $verto == "y" ]]; then
 apt-get -y --force-yes install freeswitch-mod-verto
 fi
+if [[ $accessible_theme == "y" ]]; then
+apt-get -y --force-yes install freeswitch-theme-accessible
+fi
+if [[ $classic_theme == "y" ]]; then
+apt-get -y --force-yes install freeswitch-theme-classic
+fi
+if [[ $default_theme == "y" ]]; then
+apt-get -y --force-yes install freeswitch-theme-default
+fi
 if [[ $minimized_theme == "y" ]]; then
 apt-get -y --force-yes install freeswitch-theme-minimized
 fi
 if [[ $all == "y" ]]; then
-apt-get -y --force-yes install fusionpbx-app-adminer fusionpbx-app-backup fusionpbx-app-call-broadcast freeswitch-mod-callcenter fusionpbx-app-call-center fusionpbx-app-call-center-active fusionpbx-app-call-flows freeswitch-mod-conference fusionpbx-app-conference-centers \
-  				fusionpbx-app-conferences-active fusionpbx-app-meetings fusionpbx-app-conferences fusionpbx-app-content fusionpbx-app-edit fusionpbx-app-exec freeswitch-mod-fifo fusionpbx-app-fifo fusionpbx-app-fifo-list fusionpbx-app-hot-desking fusionpbx-app-schemas \
-  				fusionpbx-app-services fusionpbx-app-sipml5 freeswitch-mod-rtmp fusionpbx-app-sql-query fusionpbx-app-traffic-graph freeswitch-mod-dingaling fusionpbx-app-xmpp fusionpbx-app-devices fusionpbx-app-provision fusionpbx-provisioning-template-aastra \
-  				fusionpbx-provisioning-template-cisco fusionpbx-provisioning-template-grandstream fusionpbx-provisioning-template-linksys fusionpbx-provisioning-template-panasonic fusionpbx-app-provision fusionpbx-provisioning-template-polycom fusionpbx-app-provision \
-  				fusionpbx-provisioning-template-snom fusionpbx-provisioning-template-yealink fusionpbx-theme-minimized && mkdir -p /etc/fusionpbx/resources/templates/provision && cp -rp /usr/share/examples/fusionpbx/resources/templates/provision/* /etc/fusionpbx/resources/templates/provision/
+apt-get -y --force-yes install fusionpbx-app-adminer fusionpbx-app-backup fusionpbx-app-call-broadcast freeswitch-mod-callcenter fusionpbx-app-call-center fusionpbx-app-call-center-active fusionpbx-app-call-flows freeswitch-mod-conference \
+		fusionpbx-app-conference-centers fusionpbx-app-conferences-active fusionpbx-app-meetings fusionpbx-app-conferences fusionpbx-app-content fusionpbx-app-edit fusionpbx-app-exec freeswitch-mod-fifo fusionpbx-app-fifo fusionpbx-app-fifo-list \
+		fusionpbx-app-hot-desking fusionpbx-app-schemas fusionpbx-app-services fusionpbx-app-sipml5 freeswitch-mod-rtmp fusionpbx-app-sql-query fusionpbx-app-traffic-graph freeswitch-mod-dingaling fusionpbx-app-xmpp fusionpbx-app-devices \
+		fusionpbx-app-provision fusionpbx-provisioning-template-aastra fusionpbx-provisioning-template-atcom fusionpbx-provisioning-template-cisco fusionpbx-provisioning-template-grandstream fusionpbx-provisioning-template-linksys \
+		fusionpbx-provisioning-template-panasonic fusionpbx-app-provision fusionpbx-provisioning-template-polycom fusionpbx-app-provision fusionpbx-provisioning-template-snom fusionpbx-provisioning-template-yealink fusionpbx-theme-accessible \
+		fusionpbx-theme-classic fusionpbx-theme-default fusionpbx-theme-minimized && mkdir -p /etc/fusionpbx/resources/templates/provision && cp -rp /usr/share/examples/fusionpbx/resources/templates/provision/* /etc/fusionpbx/resources/templates/provision/
 fi
 
 #set permissions
