@@ -127,7 +127,7 @@ db_user_name=fusionpbx
 
 # Set FusionPBX database admin password .(used by fusionpbx to access
 # the database table in the postgresql server).
-# Please set a ver secure passwd
+# Please set a very secure passwd
 db_user_passwd=
 
 #-------Postgresql-End--------------
@@ -971,8 +971,7 @@ if [[ $postgresql_client == "y" ]]; then
 	service php5-fpm restart
 	clear
 	echo
-	echo
-	echo " The install $wui_name install has finished...  "
+	echo " The $wui_name install has finished...  "
 	echo
 	echo " Now Waiting on you to finish the installation via web browser "
 	echo	
@@ -1002,7 +1001,7 @@ if [[ $postgresql_server == "y" ]]; then
 	su -l postgres -c "/usr/bin/psql -c \"create role $pgsql_admin with superuser login password '$pgsql_admin_passwd'\""
 	clear
 	echo
-	echo " The install $wui_name install has finished...  "
+	echo " The $wui_name install has finished...  "
 	echo
 	echo " Now Waiting on you to finish the installation via web browser "
 	echo
@@ -1022,7 +1021,7 @@ DELIM
 else
 clear
 echo
-echo " The install $wui_name install has finished...  "
+echo " The $wui_name install has finished...  "
 echo
 echo " Now Waiting on you to finish the installation via web browser "
 echo
