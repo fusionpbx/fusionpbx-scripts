@@ -63,6 +63,9 @@ net_iface=eth0
 #Set how long to keep freeswitch/fusionpbx log files 1 to 30 days (Default:5)
 keep_logs=5
 
+#Set a Nginx of Apache y=Nginx n=Apache
+#use_ngingx="y"
+
 #----Optional Fusionpbx Apps/Modules----
 
 adminer="n" # : integrated for an administrator in the superadmin group to enable easy database access
@@ -348,11 +351,12 @@ DELIM
 
 service freeswitch restart
 
+#if [[ $use_nginx == "y" ]]; then
 #Start of FusionPBX / nginx / php5 install
 #Install and configure  PHP + Nginx + sqlite3 for use with the fusionpbx gui.
 
 apt-get -y install sqlite3 ssl-cert nginx php5-cli php5-common php-apc php5-gd \
-		php-db php5-fpm php5-memcache php-pear php5-sqlite
+		php-db php5-fpm php5-memcache php5-sqlite
 
 # Changing file upload size from 2M to 15M
 /bin/sed -i $php_ini -e 's#"upload_max_filesize = 2M"#"upload_max_filesize = 15M"#'
@@ -672,7 +676,7 @@ fi
 if [[ $aastra == "y" ]]; then
 apt-get -y --force-yes install fusionpbx-app-devices fusionpbx-app-provision fusionpbx-provisioning-template-aastra  && mkdir -p /etc/fusionpbx/resources/templates/provision && cp -rp /usr/share/examples/fusionpbx/resources/templates/provision/aastra /etc/fusionpbx/resources/templates/provision/
 fi
- [[ $aastra == "y" ]]; then
+if [[ $aastra == "y" ]]; then
 apt-get -y --force-yes install fusionpbx-app-devices fusionpbx-app-provision fusionpbx-provisioning-template-atcom  && mkdir -p /etc/fusionpbx/resources/templates/provision && cp -rp /usr/share/examples/fusionpbx/resources/templates/provision/atcom /etc/fusionpbx/resources/templates/provision/
 fi
 if [[ $cisco == "y" ]]; then
