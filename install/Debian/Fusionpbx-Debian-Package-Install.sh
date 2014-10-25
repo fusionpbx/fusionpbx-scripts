@@ -58,7 +58,7 @@ fi
 #Set how long to keep freeswitch/fusionpbx log files 1 to 30 days (Default:5)
 keep_logs=5
 
-# Set what language and sound files to use.
+# Set what language lang/say pkgs and language sound files to use.
 # en-english (default) fr=french pt=Portuguese ru=russian sv=swedish zh=chinese
 use_lang="en"
 
