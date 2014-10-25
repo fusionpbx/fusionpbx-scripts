@@ -380,7 +380,7 @@ wget http://files.freeswitch.org/freeswitch-sounds-zh-cn-sinmei-16000-1.0.51.tar
 cd ~
 fi
 
-if [[ $use_default_music == "zh" ]]; then
+if [[ $use_default_music == "y" ]]; then
 apt-get -y install --force-yes freeswitch-music
 fi
 
