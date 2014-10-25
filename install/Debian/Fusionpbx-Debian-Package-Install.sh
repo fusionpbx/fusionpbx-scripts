@@ -343,8 +343,8 @@ fi
 if [[ $use_lang == "fr" ]]; then
 apt-get -y install --force-yes freeswitch-lang-fr freeswitch-mod-say-fr
 mkdir fr-sounds && cd fr-sounds
-wget http://files.freeswitch.org/freeswitch-sounds-fr-ca-june-8000-1.0.15.tar.gz && tar xzvf freeswitch-sounds-fr-ca-june-8000-1.0.15.tar.gz -C /usr/share/freeswitch/sounds
-wget http://files.freeswitch.org/freeswitch-sounds-fr-ca-june-16000-1.0.15.tar.gz && tar xzvf freeswitch-sounds-fr-ca-june-16000-1.0.15.tar.gz -C /usr/share/freeswitch/sounds
+wget http://files.freeswitch.org/freeswitch-sounds-fr-ca-june-8000-1.0.51.tar.gz && tar xzvf freeswitch-sounds-fr-ca-june-8000-1.0.51.tar.gz -C /usr/share/freeswitch/sounds
+wget http://files.freeswitch.org/freeswitch-sounds-fr-ca-june-16000-1.0.51.tar.gz && tar xzvf freeswitch-sounds-fr-ca-june-16000-1.0.51.tar.gz -C /usr/share/freeswitch/sounds
 cd~
 fi
 
@@ -359,16 +359,16 @@ fi
 if [[ $use_lang == "ru" ]]; then
 apt-get -y install --force-yes freeswitch-lang-ru freeswitch-mod-say-ru
 mkdir fr-sounds && cd ru-sounds
-wget http://files.freeswitch.org/freeswitch-sounds-ru-RU-elena-8000-1.0.12.tar.gz && tar xzvf freeswitch-sounds-ru-RU-elena-8000-1.0.12.tar.gz -C /usr/share/freeswitch/sounds
-wget http://files.freeswitch.org/freeswitch-sounds-ru-RU-elena-16000-1.0.12.tar.gz && tar xzvf freeswitch-sounds-ru-RU-elena-16000-1.0.12.tar.gz -C /usr/share/freeswitch/sounds
+wget http://files.freeswitch.org/freeswitch-sounds-ru-RU-elena-8000-1.0.12.tar.gz && tar xzvf freeswitch-sounds-ru-RU-elena-8000-1.0.51.tar.gz -C /usr/share/freeswitch/sounds
+wget http://files.freeswitch.org/freeswitch-sounds-ru-RU-elena-16000-1.0.12.tar.gz && tar xzvf freeswitch-sounds-ru-RU-elena-16000-1.0.51.tar.gz -C /usr/share/freeswitch/sounds
 cd~
 fi
 
 if [[ $use_lang == "sv" ]]; then
 apt-get -y install --force-yes freeswitch-lang-sv freeswitch-mod-say-sv
 mkdir fr-sounds && cd sv-sounds
-wget http://files.freeswitch.org/freeswitch-sounds-sv-se-jakob-8000-1.0.0.tar.gz && tar xzvf freeswitch-sounds-sv-se-jakob-8000-1.0.0.tar.gz -C /usr/share/freeswitch/sounds
-wget http://files.freeswitch.org/freeswitch-sounds-sv-se-jakob-16000-1.0.0.tar.gz && tar xzvf freeswitch-sounds-sv-se-jakob-16000-1.0.0.tar.gz -C /usr/share/freeswitch/sounds
+wget http://files.freeswitch.org/freeswitch-sounds-sv-se-jakob-8000-1.0.50.tar.gz && tar xzvf freeswitch-sounds-sv-se-jakob-8000-1.0.50.tar.gz -C /usr/share/freeswitch/sounds
+wget http://files.freeswitch.org/freeswitch-sounds-sv-se-jakob-16000-1.0.50.tar.gz && tar xzvf freeswitch-sounds-sv-se-jakob-16000-1.0.50.tar.gz -C /usr/share/freeswitch/sounds
 cd ~
 fi
 
