@@ -56,10 +56,6 @@ fi
 
 #<------Start Edit HERE--------->
 
-#Network Interface selection
-#Default = eth0
-net_iface=eth0
-
 #Set how long to keep freeswitch/fusionpbx log files 1 to 30 days (Default:5)
 keep_logs=5
 
@@ -187,11 +183,13 @@ wui_name="fusionpbx"
 #Php ini config file
 php_ini="/etc/php5/fpm/php.ini"
 #################################################################################
-#Start installation
+
+#-----Start installation------
 
 #Testing for internet connection. Pulled from and modified
 #http://www.linuxscrew.com/2009/04/02/tiny-bash-scripts-check-internet-connection-availability/
-#test internet connection..
+
+#-----test internet connection-------
 echo "This Script Currently Requires a internet connection "
 wget -q --tries=10 --timeout=5 http://www.google.com -O /tmp/index.google &> /dev/null
 
@@ -204,11 +202,12 @@ else
 	/bin/rm /tmp/index.google
 fi
 
-# OS ENVIRONMENT CHECKS
+#--- end internet test------
+
+#----OS ENVIRONMENT CHECKS-------
 #check to confirm running as root
 #
 # First, we need to be root...
-#
 
 if [ "$(id -u)" -ne "0" ]; then
   sudo -p "$(basename "$0") must be run as root, please enter your sudo password : " "$0" "$@"
@@ -265,8 +264,20 @@ else
         fi
 fi
 
+#-----end os checking----
+
+#----- upgrading base install-----
+
 apt-get update && apt-get -y upgrade
+
+#---end base update----
+
+#----- install pre deps------
 apt-get -y install acpi-support-base curl usbmount usbutils
+
+#-----end pre-deps install---
+
+#--------adding in custom repos-------
 
 #adding in freeswitch reop to /etc/apt/sources.list.d/freeswitch.lists
 echo ' installing stable repo '
@@ -292,14 +303,18 @@ DELIM
 #add pgsql repo key
 wget --quiet -O - http://apt.postgresql.org/pub/repos/apt/ACCC4CF8.asc | apt-key add -
 
+#------end of installing repos-----
+
+#install ntpd time daemon
 for i in update upgrade ;do apt-get -y "${i}" ; done
 apt-get -y install ntp
 service ntp restart
 
-#install Freeswitch Deps
+
+#------install Freeswitch Deps----------
 apt-get -y install unixodbc uuid memcached libtiff5 libtiff-tools time bison htop screen
 
-# install freeswitch
+#-----Start Install of freeswitch-----------
 apt-get -y install --force-yes freeswitch freeswitch-init freeswitch-lang-en freeswitch-meta-codecs freeswitch-mod-commands freeswitch-mod-curl \
 		freeswitch-mod-db freeswitch-mod-distributor freeswitch-mod-dptools freeswitch-mod-enum freeswitch-mod-esf freeswitch-mod-esl \
 		freeswitch-mod-expr freeswitch-mod-fsv freeswitch-mod-hash freeswitch-mod-memcache freeswitch-mod-portaudio freeswitch-mod-portaudio-stream \
@@ -315,52 +330,17 @@ mkdir -p "$fs_conf_dir"
 
 #cp the default configugs into place.
 cp -rp "$fs_dflt_conf_dir"/vanilla/* "$fs_conf_dir"
-#remove un needed default extension xml files
-rm "$fs_conf_dir"/directory/default/*
-#rm un used default dialplan xml files
-rm "$fs_conf_dir"/dialplan/default/*
 
-#fix ownership of files for freeswitch and fusion to have access with no conflicts
+#fix ownership of files for freeswitch 
 chown -R freeswitch:freeswitch "$fs_conf_dir"
 
-#fix permissions for "$fs_conf_dir" so www-data can write to it
-find "$fs_conf_dir" -type f -exec chmod 664 {} +
-find "$fs_conf_dir" -type d -exec chmod 775 {} +
-
-#fix permissions for "$fs_storage_dir" so www-data can write to it
-find "$fs_storage_dir" -type f -exec chmod 664 {} +
-find "$fs_storage_dir" -type d -exec chmod 775 {} +
-
-#fix permissions on the freeswitch xml_cdr dir so fusionpbx can read from it
-find "$fs_log_dir"/xml_cdr -type d -exec chmod 775 {} +
-
-cat > '/etc/default/freeswitch' << DELIM
-CONFDIR="/etc/freeswitch"
-fs_conf="/etc/freeswitch"
-fs_db="/var/lib/freeswitch/db"
-fs_log="/var/log/freeswitch"
-fs_recordings="/var/lib/freeswitch/recordings"
-fs_run="/var/run/freeswitch"
-fs_scripts="/var/lib/freeswitch/scripts"
-fs_storage="/var/lib/freeswitch/storage"
-fs_usr=freeswitch
-fs_grp=\$fs_usr
-fs_options="-nc -rp"
-DAEMON_ARGS="-u \$fs_usr -g \$fs_grp -conf \$fs_conf -db \$fs_db -log \$fs_log -scripts \$fs_scripts -run \$fs_run -storage \$fs_storage -recordings \$fs_recordings \$fs_options"
-DELIM
-
+#Restarting freeswitch 
 service freeswitch restart
 
-#linking some dir
-#
-#Linking moh dir so freeswitch can read in the moh files
-ln -s /var/lib/fusionpbx/sounds/music /usr/share/freeswitch/sounds/music/fusionpbx
+#-------end of freeswitch install---------
 
-
-#if [[ $use_nginx == "y" ]]; then
-#Start of FusionPBX / nginx / php5 install
+#---Start of nginx / php5 install --------
 #Install and configure  PHP + Nginx + sqlite3 for use with the fusionpbx gui.
-
 apt-get -y install sqlite3 ssl-cert nginx php5-cli php5-common php-apc php5-gd \
 		php-db php5-fpm php5-memcache php5-sqlite
 
@@ -512,6 +492,7 @@ server{
 }
 DELIM
 
+# set nginx worker level limit for performance
 cat > "/etc/nginx/nginx.conf"  << DELIM
 user www-data;
 worker_processes 2;
@@ -607,11 +588,14 @@ rm -rf /etc/nginx/sites-enabled/default
 #Restarting Nginx and PHP FPM
 for i in nginx php5-fpm ;do service "${i}" restart > /dev/null 2>&1 ; done
 
-#Adding users to needed groups
+#---- end f nginx / php5 install------
+
+#Adding users to needed groups 
 adduser www-data freeswitch
 adduser freeswitch www-data
 
-# Install FusionPBX Web User Interface
+# ---Start--Install FusionPBX Web User Interface ( very basic install)-----
+
 apt-get -y --force-yes install fusionpbx-core fusionpbx-app-calls fusionpbx-app-calls-active fusionpbx-app-call-block \
 	fusionpbx-app-contacts fusionpbx-app-destinations fusionpbx-app-dialplan fusionpbx-app-dialplan-inbound \
 	fusionpbx-app-dialplan-outbound fusionpbx-app-extensions fusionpbx-app-follow-me fusionpbx-app-gateways \
@@ -621,11 +605,11 @@ apt-get -y --force-yes install fusionpbx-core fusionpbx-app-calls fusionpbx-app-
 	fusionpbx-app-xml-cdr fusionpbx-app-vars fusionpbx-app-voicemails fusionpbx-app-voicemail-greetings \
 	fusionpbx-conf fusionpbx-scripts fusionpbx-sqldb fusionpbx-theme-enhanced
 
-#set permissions
+#set permissions on dir
 find "/var/lib/fusionpbx" -type d -exec chmod 775 {} +
 find "/var/lib/fusionpbx" -type f -exec chmod 664 {} +
 
-#Optional APP PKGS
+#Optional APP PKGS installs
 if [[ $adminer == "y" ]]; then
 apt-get -y --force-yes install fusionpbx-app-adminer
 fi
@@ -734,9 +718,12 @@ apt-get -y --force-yes install fusionpbx-app-adminer fusionpbx-app-backup fusion
 		fusionpbx-theme-classic fusionpbx-theme-default fusionpbx-theme-minimized && mkdir -p /etc/fusionpbx/resources/templates/provision && cp -rp /usr/share/examples/fusionpbx/resources/templates/provision/* /etc/fusionpbx/resources/templates/provision/
 fi
 
+#----end of fusion pbx pkgs install----
+
+#restart of freeswitch/nginx/php for fusionpbx first time setup
 for i in freeswitch nginx php5-fpm ;do service "${i}" restart >/dev/null 2>&1 ; done
 
-#Install postgresql-client
+#Install postgresql-client option
 if [[ $postgresql_client == "y" ]]; then
 	for i in postgresql-client-9.3 php5-pgsql ;do apt-get -y install "${i}"; done
 	service php5-fpm restart
@@ -763,7 +750,7 @@ cat << DELIM
 DELIM
 fi
 
-#install & configure basic postgresql-server
+#-----install & configure basic postgresql-server
 if [[ $postgresql_server == "y" ]]; then
 	for i in postgresql-9.3 php5-pgsql ;do apt-get -y install "${i}"; done
 	service php5-fpm restart
@@ -829,7 +816,7 @@ do
 done
 
 #configuring freeswitch to start with new layout.
-#Freeswitch layout for FHS
+#Freeswitch layout for FHS with fusionpbx
 cat > '/etc/default/freeswitch' << DELIM
 CONFDIR="/etc/fusionpbx/switch/conf"
 fs_conf="/etc/fusionpbx/switch/conf"
@@ -845,6 +832,7 @@ fs_options="-nc -rp"
 DAEMON_ARGS="-u \$fs_usr -g \$fs_grp -conf \$fs_conf -db \$fs_db -log \$fs_log -scripts \$fs_scripts -run \$fs_run -storage \$fs_storage -recordings \$fs_recordings \$fs_options"
 DELIM
 
+#restartng services with thefusionpbx freeswitch fhs dir layoout
 echo " Restarting freeswitch for changes to take effect...."
 service freeswitch restart
 
@@ -852,6 +840,12 @@ service freeswitch restart
 find "/var/lib/fusionpbx/db" -type d -exec chmod 777 {} +
 find "/var/lib/fusionpbx/db" -type f -exec chmod 666 {} +
 
+#Linking moh dir so freeswitch can read in the moh files
+ln -s /var/lib/fusionpbx/sounds/music /usr/share/freeswitch/sounds/music/fusionpbx
+
+#------end of fusionpbx install and configuration-----
+
+#-----Installing Fail2Ban/monit Protection services------
 # SEE http://wiki.freeswitch.org/wiki/Fail2ban
 #Fail2ban
 for i in fail2ban monit ;do apt-get -y install "${i}" ; done
@@ -1038,6 +1032,11 @@ DELIM
 
 chmod 664 /etc/cron.daily/freeswitch_log_rotation
 
+# restarting services after fail2ban/monit services install
+for i in php5-fpm niginx monit fail2ban freeswitch ;do service "${i}" restart  >/dev/null 2>&1 ; done
+
+#----End of fail2ban/monit services install--------
+
 #option to disable xml_cdr files
 if [[ $xml_cdr_files == "y" ]]; then
 /bin/sed -i "$WWW_PATH"/"$wui_name"/app/vars/app_defaults.php -e 's#{"var_name":"xml_cdr_archive","var_value":"dir","var_cat":"Defaults","var_enabled":"true","var_description":""}#{"var_name":"xml_cdr_archive","var_value":"none","var_cat":"Defaults","var_enabled":"true","var_description":""}#'
@@ -1048,12 +1047,11 @@ if [[ $logging_level == "y" ]]; then
 /bin/sed -i /usr/share/examples/fusionpbx/resources/templates/conf/autoload_configs/logfile.conf.xml -e 's#<map name="all" value="debug,info,notice,warning,err,crit,alert"/>#<map name="all" value="warning,err,crit,alert"/>#'
 fi
 
-# restarting services
-for i in php5-fpm niginx monit fail2ban freeswitch ;do service "${i}" restart  >/dev/null 2>&1 ; done
+
 
 #end of fusionpbx install
 
-#scanner blocking
+#---Setup scanner blocking service in iptables----------
 echo "blocking scanners via iptables"
 iptables -I INPUT -j DROP -p udp --dport 5060 -m string --string "friendly-scanner" --algo bm
 iptables -I INPUT -j DROP -p udp --dport 5061 -m string --string "friendly-scanner" --algo bm
@@ -1072,7 +1070,7 @@ cat > /etc/sysctl.conf << DELIM
 kernel.panic = 10
 DELIM
 
-#Install openvpn openvpn-scripts
+#Install optional openvpn-scripts
 if [[ $install_openvpn == "y" ]]; then
 echo "Installing Open-vpn configuration scripts"
 apt-get install openvpn openvpn-scripts
