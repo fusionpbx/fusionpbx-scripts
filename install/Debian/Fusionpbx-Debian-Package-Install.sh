@@ -351,6 +351,12 @@ DELIM
 
 service freeswitch restart
 
+#linking some dir
+#
+#Linking moh dir so freeswitch can read in the moh files
+ln -s /var/lib/fusionpbx/sounds/music /usr/share/freeswitch/sounds/music/fusionpbx
+
+
 #if [[ $use_nginx == "y" ]]; then
 #Start of FusionPBX / nginx / php5 install
 #Install and configure  PHP + Nginx + sqlite3 for use with the fusionpbx gui.
