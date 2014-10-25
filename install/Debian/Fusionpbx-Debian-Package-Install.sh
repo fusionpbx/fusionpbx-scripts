@@ -166,7 +166,7 @@ fs_scripts_dir="/var/lib/freeswitch/scripts"
 #fs_sounds_dir="/usr/share/freeswitch/sounds"
 fs_storage_dir="/var/lib/freeswitch/storage"
 #fs_temp_dir="/tmp"
-
+##
 #Fusionpbx freeswitch runtime Dir Layout
 #fs_conf="/etc/fusionpbx/switch/conf"
 #fs_db="/var/lib/freeswitch/db"
@@ -175,8 +175,6 @@ fs_storage_dir="/var/lib/freeswitch/storage"
 #fs_run="/var/run/freeswitch"
 #fs_scripts="/var/lib/fusionpbx/scripts"
 #fs_storage="/var/lib/fusionpbx/storage"
-
-
 ################################################################################
 # Hard Set Varitables (Do Not EDIT)
 #Nginx default www dir
@@ -308,17 +306,16 @@ wget --quiet -O - http://apt.postgresql.org/pub/repos/apt/ACCC4CF8.asc | apt-key
 
 #------end of installing repos-----
 
-#install ntpd time daemon
+#----install ntpd time daemon-----
 for i in update upgrade ;do apt-get -y "${i}" ; done
 apt-get -y install ntp
 service ntp restart
-
 
 #------install Freeswitch Deps----------
 apt-get -y install unixodbc uuid memcached libtiff5 libtiff-tools time bison htop screen
 
 #-----Start Install of freeswitch-----------
-apt-get -y install --force-yes freeswitch freeswitch-init freeswitch-lang-en freeswitch-meta-codecs freeswitch-mod-commands freeswitch-mod-curl \
+apt-get -y install --force-yes freeswitch freeswitch-init freeswitch-meta-codecs freeswitch-mod-commands freeswitch-mod-curl \
 		freeswitch-mod-db freeswitch-mod-distributor freeswitch-mod-dptools freeswitch-mod-enum freeswitch-mod-esf freeswitch-mod-esl \
 		freeswitch-mod-expr freeswitch-mod-fsv freeswitch-mod-hash freeswitch-mod-memcache freeswitch-mod-portaudio freeswitch-mod-portaudio-stream \
 		freeswitch-mod-random freeswitch-mod-spandsp freeswitch-mod-spy freeswitch-mod-translate freeswitch-mod-valet-parking freeswitch-mod-flite \
@@ -330,32 +327,47 @@ apt-get -y install --force-yes freeswitch freeswitch-init freeswitch-lang-en fre
 
 #setup language / sound files for use
 if [[ $use_lang == "en" ]]; then
-apt-get -y install --force-yes freeswitch-mod-say-en freeswitch-sounds
+apt-get -y install --force-yes freeswitch-lang-en freeswitch-mod-say-en freeswitch-sounds 
 fi
 
 if [[ $use_lang == "fr" ]]; then
-apt-get -y install --force-yes freeswitch-mod-say-fr
-wget http://files.freeswitch.org/freeswitch-sounds-fr-ca-june-8000-1.0.15.tar.gz
+apt-get -y install --force-yes freeswitch-lang-fr freeswitch-mod-say-fr
+mkdir fr-sounds && cd fr-sounds
+wget http://files.freeswitch.org/freeswitch-sounds-fr-ca-june-8000-1.0.15.tar.gz && tar xzvf freeswitch-sounds-fr-ca-june-8000-1.0.15.tar.gz -C /usr/share/freeswitch/sounds
+wget http://files.freeswitch.org/freeswitch-sounds-fr-ca-june-16000-1.0.15.tar.gz && tar xzvf freeswitch-sounds-fr-ca-june-16000-1.0.15.tar.gz -C /usr/share/freeswitch/sounds
+cd~
 fi
 
 if [[ $use_lang == "pt" ]]; then
-apt-get -y install --force-yes freeswitch-mod-say-pl
-wget http://files.freeswitch.org/freeswitch-sounds-pt-BR-karina-8000-1.0.51.tar.gz
+apt-get -y install --force-yes freeswitch-lang-pt freeswitch-mod-say-pl
+mkdir fr-sounds && cd pt-sounds
+wget http://files.freeswitch.org/freeswitch-sounds-pt-BR-karina-8000-1.0.51.tar.gz && tar xzvf freeswitch-sounds-pt-BR-karina-8000-1.0.51.tar.gz -C /usr/share/freeswitch/sounds
+wget http://files.freeswitch.org/freeswitch-sounds-pt-BR-karina-16000-1.0.51.tar.gz && tar xzvf freeswitch-sounds-pt-BR-karina-16000-1.0.51.tar.gz -C /usr/share/freeswitch/sounds
+cd ~
 fi
 
 if [[ $use_lang == "ru" ]]; then
-apt-get -y install --force-yes freeswitch-mod-say-ru
-wget http://files.freeswitch.org/freeswitch-sounds-ru-RU-elena-8000-1.0.12.tar.gz
+apt-get -y install --force-yes freeswitch-lang-ru freeswitch-mod-say-ru
+mkdir fr-sounds && cd ru-sounds
+wget http://files.freeswitch.org/freeswitch-sounds-ru-RU-elena-8000-1.0.12.tar.gz && tar xzvf freeswitch-sounds-ru-RU-elena-8000-1.0.12.tar.gz -C /usr/share/freeswitch/sounds
+wget http://files.freeswitch.org/freeswitch-sounds-ru-RU-elena-16000-1.0.12.tar.gz && tar xzvf freeswitch-sounds-ru-RU-elena-16000-1.0.12.tar.gz -C /usr/share/freeswitch/sounds
+cd~
 fi
 
 if [[ $use_lang == "sv" ]]; then
-apt-get -y install --force-yes freeswitch-mod-say-sv
-wget http://files.freeswitch.org/freeswitch-sounds-sv-se-jakob-8000-1.0.0.tar.gz
+apt-get -y install --force-yes freeswitch-lang-sv freeswitch-mod-say-sv
+mkdir fr-sounds && cd sv-sounds
+wget http://files.freeswitch.org/freeswitch-sounds-sv-se-jakob-8000-1.0.0.tar.gz && tar xzvf freeswitch-sounds-sv-se-jakob-8000-1.0.0.tar.gz -C /usr/share/freeswitch/sounds
+wget http://files.freeswitch.org/freeswitch-sounds-sv-se-jakob-16000-1.0.0.tar.gz && tar xzvf freeswitch-sounds-sv-se-jakob-16000-1.0.0.tar.gz -C /usr/share/freeswitch/sounds
+cd ~
 fi
 
 if [[ $use_lang == "zh" ]]; then
-apt-get -y install --force-yes freeswitch-mod-say-zh
-wget http://files.freeswitch.org/freeswitch-sounds-zh-cn-sinmei-8000-1.0.51.tar.gz
+apt-get -y install --force-yes freeswitch-lang-zh freeswitch-mod-say-zh
+mkdir fr-sounds && cd zh-sounds
+wget http://files.freeswitch.org/freeswitch-sounds-zh-cn-sinmei-8000-1.0.51.tar.gz && tar xzvf freeswitch-sounds-zh-cn-sinmei-8000-1.0.51.tar.gz -C /usr/share/freeswitch/sounds
+wget http://files.freeswitch.org/freeswitch-sounds-zh-cn-sinmei-16000-1.0.51.tar.gz && tar xzvf freeswitch-sounds-zh-cn-sinmei-16000-1.0.51.tar.gz -C /usr/share/freeswitch/sounds
+cd ~
 fi
 
 #make the conf dir
