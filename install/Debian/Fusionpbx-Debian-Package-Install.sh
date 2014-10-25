@@ -59,8 +59,11 @@ fi
 keep_logs=5
 
 # Set what language lang/say pkgs and language sound files to use.
-# en=english (default) fr=french pt=Portuguese ru=russian sv=swedish zh=chinese
+# en-pkg=deb sounds pkg en=english tarballs (default) fr=french pt=Portuguese ru=russian sv=swedish zh=chinese
 use_lang="en"
+
+#Install / Use freeswitch default music on hold
+use_default_moh="y"
 
 #Set a Nginx of Apache y=Nginx n=Apache
 #use_nginx="y"
@@ -326,8 +329,15 @@ apt-get -y install --force-yes freeswitch freeswitch-init freeswitch-meta-codecs
 		freeswitch-mod-xml-rpc freeswitch-music freeswitch-conf-vanilla freeswitch-mod-shout
 
 #setup language / sound files for use
-if [[ $use_lang == "en" ]]; then
-apt-get -y install --force-yes freeswitch-lang-en freeswitch-mod-say-en freeswitch-sounds 
+if [[ $use_lang == "en-pkg" ]]; then
+apt-get -y install --force-yes freeswitch-lang-en freeswitch-mod-say-en freeswitch-sounds
+fi
+
+if [[ $use_lang == "en-pkg" ]]; then
+apt-get -y install --force-yes freeswitch-lang-en freeswitch-mod-say-en 
+wget http://files.freeswitch.org/freeswitch-sounds-en-us-callie-8000-1.0.51.tar.gz && tar xzvf freeswitch-sounds-en-us-callie-8000-1.0.51.tar.gz -C /usr/share/freeswitch/sounds
+wget http://files.freeswitch.org/freeswitch-sounds-en-us-callie-16000-1.0.51.tar.gz && tar xzvf freeswitch-sounds-en-us-callie-16000-1.0.51.tar.gz -C /usr/share/freeswitch/sounds
+cd ~
 fi
 
 if [[ $use_lang == "fr" ]]; then
@@ -368,6 +378,10 @@ mkdir fr-sounds && cd zh-sounds
 wget http://files.freeswitch.org/freeswitch-sounds-zh-cn-sinmei-8000-1.0.51.tar.gz && tar xzvf freeswitch-sounds-zh-cn-sinmei-8000-1.0.51.tar.gz -C /usr/share/freeswitch/sounds
 wget http://files.freeswitch.org/freeswitch-sounds-zh-cn-sinmei-16000-1.0.51.tar.gz && tar xzvf freeswitch-sounds-zh-cn-sinmei-16000-1.0.51.tar.gz -C /usr/share/freeswitch/sounds
 cd ~
+fi
+
+if [[ $use_lang == "zh" ]]; then
+apt-get -y install --force-yes freeswitch-music
 fi
 
 #make the conf dir
