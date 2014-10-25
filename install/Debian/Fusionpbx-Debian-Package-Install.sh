@@ -1047,8 +1047,6 @@ if [[ $logging_level == "y" ]]; then
 /bin/sed -i /usr/share/examples/fusionpbx/resources/templates/conf/autoload_configs/logfile.conf.xml -e 's#<map name="all" value="debug,info,notice,warning,err,crit,alert"/>#<map name="all" value="warning,err,crit,alert"/>#'
 fi
 
-
-
 #end of fusionpbx install
 
 #---Setup scanner blocking service in iptables----------
