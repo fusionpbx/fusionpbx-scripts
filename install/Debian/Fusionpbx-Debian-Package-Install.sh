@@ -851,7 +851,7 @@ done
 echo
 echo " /etc/$wui_name/config.php Found!"
 echo
-echo "   Waiting 60 more seconds to be sure. "
+echo "   Waiting 60 more seconds to be sure the database is fully populated..... "
 SLEEPTIME=0
 while [ "$SLEEPTIME" -lt 60 ]
 do
