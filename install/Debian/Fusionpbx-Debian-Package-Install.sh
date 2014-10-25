@@ -1,5 +1,5 @@
 #!/bin/bash
-#Date Oct 23 2014 09:55 CDT
+#Date Oct 25 2014 11:40 CDT
 ################################################################################
 # The MIT License (MIT)
 #
@@ -621,6 +621,10 @@ apt-get -y --force-yes install fusionpbx-core fusionpbx-app-calls fusionpbx-app-
 	fusionpbx-app-xml-cdr fusionpbx-app-vars fusionpbx-app-voicemails fusionpbx-app-voicemail-greetings \
 	fusionpbx-conf fusionpbx-scripts fusionpbx-sqldb fusionpbx-theme-enhanced
 
+#set permissions
+find "/var/lib/fusionpbx" -type d -exec chmod 775 {} +
+find "/var/lib/fusionpbx" -type f -exec chmod 664 {} +
+
 #Optional APP PKGS
 if [[ $adminer == "y" ]]; then
 apt-get -y --force-yes install fusionpbx-app-adminer
@@ -730,30 +734,123 @@ apt-get -y --force-yes install fusionpbx-app-adminer fusionpbx-app-backup fusion
 		fusionpbx-theme-classic fusionpbx-theme-default fusionpbx-theme-minimized && mkdir -p /etc/fusionpbx/resources/templates/provision && cp -rp /usr/share/examples/fusionpbx/resources/templates/provision/* /etc/fusionpbx/resources/templates/provision/
 fi
 
-#set permissions
-chmod 775 /etc/fusionpbx
-chmod 775 /var/lib/fusionpbx
-chmod 777 /var/lib/fusionpbx/db
-
-mkdir -p /var/lib/fusionpbx/scripts
-chown -R freeswitch:freeswitch /var/lib/fusionpbx/scripts
-find "$fs_scripts_dir" -type d -exec chmod 775 {} +
-find "$fs_scripts_dir" -type f -exec chmod 664 {} +
-
-#fix permissions for "freeswitch sounds dir " so www-data can write to it
-find /usr/share/freeswitch/sounds -type f -exec chmod 664 {} +
-find /usr/share/freeswitch/sounds -type d -exec chmod 775 {} +
-
-#create xml_cdr dir and chown it properly if the module is installed
-mkdir -p "$fs_log_dir"/xml_cdr
-
-#chown the xml_cdr dir
-chown freeswitch:freeswitch "$fs_log_dir"/xml_cdr
-
-#fix permissions on the freeswitch xml_cdr dir so fusionpbx can read from it
-chmod 775 "$fs_log_dir"/xml_cdr
-
 for i in freeswitch nginx php5-fpm ;do service "${i}" restart >/dev/null 2>&1 ; done
+
+#Install postgresql-client
+if [[ $postgresql_client == "y" ]]; then
+	for i in postgresql-client-9.3 php5-pgsql ;do apt-get -y install "${i}"; done
+	service php5-fpm restart
+	clear
+	echo
+	echo " The $wui_name install has finished...  "
+	echo
+	echo " Now Waiting on you to finish the installation via web browser "
+	echo	
+	printf '	Please open a web-browser to http://'; ip -f inet addr show dev $net_iface | sed -n 's/^ *inet *\([.0-9]*\).*/\1/p'
+cat << DELIM
+	Or the Doamin name assigned to the machine like http://"$(hostname).$(dnsdomainname)".
+	On the First configuration page of the web user interface.
+	Please Select the PostgreSQL option in the pull-down menu as your Database
+	Also Please fill in the SuperUser Name and Password fields.
+	On the Second Configuration Page of the web user intercae please fill in the following fields:
+	Server: Use the IP or Doamin name assigned to the remote postgresql database server machine
+	Port: use the port for the remote postgresql server
+	Database Name: "$db_name"
+	Database Username: "$db_user_name"
+	Database Password: "$db_user_passwd"
+	Create Database Username: Database_Superuser_Name of the remote postgresql server
+	Create Database Password: Database_Superuser_password of the remote postgresql server
+DELIM
+fi
+
+#install & configure basic postgresql-server
+if [[ $postgresql_server == "y" ]]; then
+	for i in postgresql-9.3 php5-pgsql ;do apt-get -y install "${i}"; done
+	service php5-fpm restart
+
+	#Adding a SuperUser and Password for Postgresql database.
+	su -l postgres -c "/usr/bin/psql -c \"create role $pgsql_admin with superuser login password '$pgsql_admin_passwd'\""
+	clear
+	echo
+	echo " The $wui_name install has finished...  "
+	echo
+	echo " Now Waiting on you to finish the installation via web browser "
+	echo
+	printf 'Please open a web browser to http://'; ip -f inet addr show dev $net_iface | sed -n 's/^ *inet *\([.0-9]*\).*/\1/p'   
+cat << DELIM
+ Or the Doamin name asigned to the machine like http://"$(hostname).$(dnsdomainname)".
+ On the First configuration page of the web user interface
+ Please Select the PostgreSQL option in the pull-down menu as your Database
+ Also Please fill in the SuperUser Name and Password fields.
+ On the Second Configuration Page of the web user interface please fill in the following fields:
+ Database Name: "$db_name"
+ Database Username: "$db_user_name"
+ Database Password: "$db_user_passwd"
+ Create Database Username: "$pgsql_admin"
+ Create Database Password: "$pgsql_admin_passwd"
+DELIM
+else
+clear
+echo
+echo " The $wui_name install has finished...  "
+echo
+echo " Now Waiting on you to finish the installation via web browser "
+echo
+printf ' Please open a web-browser to http://'; ip -f inet addr show dev $net_iface | sed -n 's/^ *inet *\([.0-9]*\).*/\1/p'
+cat << DELIM
+ or the Doamin name asigned to the machine like http://"$(hostname).$(dnsdomainname)".
+ On the First Configuration page of the web user interface "$wui_name".
+ Also Please fill in the SuperUser Name and Password fields.
+ Freeswitch & FusionPBX Web User Interface Installation Completed
+ Now you can configure FreeSWITCH using the FusionPBX web user interface
+DELIM
+fi
+
+echo -ne " The Install will clean up the last bit of permissions when "
+echo 
+echo " you finish entering the required information and return here. "
+echo
+echo " Waiting on /etc/$wui_name/config.php "
+while [ ! -e /etc/$wui_name/config.php ]
+do
+	echo -ne '.'
+	sleep 1
+done
+echo
+echo " /etc/$wui_name/config.php Found!"
+echo
+echo "   Waiting 60 more seconds to be sure. "
+SLEEPTIME=0
+while [ "$SLEEPTIME" -lt 60 ]
+do
+	echo -ne '.'
+	sleep 1
+	let "SLEEPTIME = $SLEEPTIME + 1"
+done
+
+#configuring freeswitch to start with new layout.
+#Freeswitch layout for FHS
+cat > '/etc/default/freeswitch' << DELIM
+CONFDIR="/etc/fusionpbx/switch/conf"
+fs_conf="/etc/fusionpbx/switch/conf"
+fs_db="/var/lib/freeswitch/db"
+fs_log="/var/log/freeswitch"
+fs_recordings="/var/lib/fusionpbx/recordings"
+fs_run="/var/run/freeswitch"
+fs_scripts="/var/lib/fusionpbx/scripts"
+fs_storage="/var/lib/fusionpbx/storage"
+fs_usr=freeswitch
+fs_grp=\$fs_usr
+fs_options="-nc -rp"
+DAEMON_ARGS="-u \$fs_usr -g \$fs_grp -conf \$fs_conf -db \$fs_db -log \$fs_log -scripts \$fs_scripts -run \$fs_run -storage \$fs_storage -recordings \$fs_recordings \$fs_options"
+DELIM
+
+echo " Restarting freeswitch for changes to take effect...."
+service freeswitch restart
+
+#fixing permissions for sqlite db 
+find "/var/lib/fusionpbx/db" -type d -exec chmod 777 {} +
+find "/var/lib/fusionpbx/db" -type f -exec chmod 666 {} +
 
 # SEE http://wiki.freeswitch.org/wiki/Fail2ban
 #Fail2ban
@@ -957,7 +1054,7 @@ for i in php5-fpm niginx monit fail2ban freeswitch ;do service "${i}" restart  >
 #end of fusionpbx install
 
 #scanner blocking
-echo "blocking scanners"
+echo "blocking scanners via iptables"
 iptables -I INPUT -j DROP -p udp --dport 5060 -m string --string "friendly-scanner" --algo bm
 iptables -I INPUT -j DROP -p udp --dport 5061 -m string --string "friendly-scanner" --algo bm
 iptables -I INPUT -j DROP -p udp --dport 5062 -m string --string "friendly-scanner" --algo bm
@@ -970,119 +1067,6 @@ iptables -I INPUT -j DROP -p udp --dport 5068 -m string --string "friendly-scann
 iptables -I INPUT -j DROP -p udp --dport 5069 -m string --string "friendly-scanner" --algo bm
 iptables -I INPUT -j DROP -p udp --dport 5080 -m string --string "friendly-scanner" --algo bm
 
-
-#Install postgresql-client
-if [[ $postgresql_client == "y" ]]; then
-	for i in postgresql-client-9.3 php5-pgsql ;do apt-get -y install "${i}"; done
-	service php5-fpm restart
-	clear
-	echo
-	echo " The $wui_name install has finished...  "
-	echo
-	echo " Now Waiting on you to finish the installation via web browser "
-	echo	
-	printf '	Please open a web-browser to http://'; ip -f inet addr show dev $net_iface | sed -n 's/^ *inet *\([.0-9]*\).*/\1/p'
-cat << DELIM
-	Or the Doamin name assigned to the machine like http://"$(hostname).$(dnsdomainname)".
-	On the First configuration page of the web user interface.
-	Please Select the PostgreSQL option in the pull-down menu as your Database
-	Also Please fill in the SuperUser Name and Password fields.
-	On the Second Configuration Page of the web user intercae please fill in the following fields:
-	Server: Use the IP or Doamin name assigned to the remote postgresql database server machine
-	Port: use the port for the remote postgresql server
-	Database Name: "$db_name"
-	Database Username: "$db_user_name"
-	Database Password: "$db_user_passwd"
-	Create Database Username: Database_Superuser_Name of the remote postgresql server
-	Create Database Password: Database_Superuser_password of the remote postgresql server
-DELIM
-fi
-
-#install & configure basic postgresql-server
-if [[ $postgresql_server == "y" ]]; then
-	for i in postgresql-9.3 php5-pgsql ;do apt-get -y install "${i}"; done
-	service php5-fpm restart
-
-	#Adding a SuperUser and Password for Postgresql database.
-	su -l postgres -c "/usr/bin/psql -c \"create role $pgsql_admin with superuser login password '$pgsql_admin_passwd'\""
-	clear
-	echo
-	echo " The $wui_name install has finished...  "
-	echo
-	echo " Now Waiting on you to finish the installation via web browser "
-	echo
-	printf 'Please open a web browser to http://'; ip -f inet addr show dev $net_iface | sed -n 's/^ *inet *\([.0-9]*\).*/\1/p'   
-cat << DELIM
- Or the Doamin name asigned to the machine like http://"$(hostname).$(dnsdomainname)".
- On the First configuration page of the web user interface
- Please Select the PostgreSQL option in the pull-down menu as your Database
- Also Please fill in the SuperUser Name and Password fields.
- On the Second Configuration Page of the web user interface please fill in the following fields:
- Database Name: "$db_name"
- Database Username: "$db_user_name"
- Database Password: "$db_user_passwd"
- Create Database Username: "$pgsql_admin"
- Create Database Password: "$pgsql_admin_passwd"
-DELIM
-else
-clear
-echo
-echo " The $wui_name install has finished...  "
-echo
-echo " Now Waiting on you to finish the installation via web browser "
-echo
-printf ' Please open a web-browser to http://'; ip -f inet addr show dev $net_iface | sed -n 's/^ *inet *\([.0-9]*\).*/\1/p'
-cat << DELIM
- or the Doamin name asigned to the machine like http://"$(hostname).$(dnsdomainname)".
- On the First Configuration page of the web user interface "$wui_name".
- Also Please fill in the SuperUser Name and Password fields.
- Freeswitch & FusionPBX Web User Interface Installation Completed
- Now you can configure FreeSWITCH using the FusionPBX web user interface
-DELIM
-fi
-
-echo -ne " The Install will clean up the last bit of permissions when "
-echo 
-echo " you finish entering the required information and return here. "
-echo
-echo " Waiting on /etc/$wui_name/config.php "
-while [ ! -e /etc/$wui_name/config.php ]
-do
-	echo -ne '.'
-	sleep 1
-done
-echo
-echo " /etc/$wui_name/config.php Found!"
-echo
-echo "   Waiting 60 more seconds to be sure. "
-SLEEPTIME=0
-while [ "$SLEEPTIME" -lt 60 ]
-do
-	echo -ne '.'
-	sleep 1
-	let "SLEEPTIME = $SLEEPTIME + 1"
-done
-
-#configuring freeswitch to start with new layout.
-#Freeswitch layout for FHS
-cat > '/etc/default/freeswitch' << DELIM
-CONFDIR="/etc/fusionpbx/switch/conf"
-fs_conf="/etc/fusionpbx/switch/conf"
-fs_db="/var/lib/freeswitch/db"
-fs_log="/var/log/freeswitch"
-fs_recordings="/var/lib/fusionpbx/recordings"
-fs_run="/var/run/freeswitch"
-fs_scripts="/var/lib/fusionpbx/scripts"
-fs_storage="/var/lib/fusionpbx/storage"
-fs_usr=freeswitch
-fs_grp=\$fs_usr
-fs_options="-nc -rp"
-DAEMON_ARGS="-u \$fs_usr -g \$fs_grp -conf \$fs_conf -db \$fs_db -log \$fs_log -scripts \$fs_scripts -run \$fs_run -storage \$fs_storage -recordings \$fs_recordings \$fs_options"
-DELIM
-
-echo " Restarting freeswitch for changes to take effect...."
-service freeswitch restart
-
 #reboot Kernel Panic
 cat > /etc/sysctl.conf << DELIM
 kernel.panic = 10
@@ -1090,12 +1074,14 @@ DELIM
 
 #Install openvpn openvpn-scripts
 if [[ $install_openvpn == "y" ]]; then
+echo "Installing Open-vpn configuration scripts"
 apt-get install openvpn openvpn-scripts
 fi
 
 #Ajenti admin portal. Makes maintaining the system easier.
 #ADD Ajenti repo & ajenti
 if [[ $install_ajenti == "y" ]]; then
+echo "Installing Ajenti Admin Portal"
 /bin/cat > "/etc/apt/sources.list.d/ajenti.list" <<DELIM
 deb http://repo.ajenti.org/debian main main debian
 DELIM
