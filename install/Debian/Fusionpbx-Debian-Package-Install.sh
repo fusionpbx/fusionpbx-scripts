@@ -63,7 +63,7 @@ keep_logs=5
 use_lang="en"
 
 #Set a Nginx of Apache y=Nginx n=Apache
-#use_ngingx="y"
+#use_nginx="y"
 
 #----Optional Fusionpbx Apps/Modules----
 
