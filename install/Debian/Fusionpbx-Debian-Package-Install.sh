@@ -59,7 +59,7 @@ fi
 keep_logs=5
 
 # Set what language and sound files to use.
-# en-english (default) fr=french pt= ru=russian sv=swedish zh=chinese
+# en-english (default) fr=french pt=Portuguese ru=russian sv=swedish zh=chinese
 use_lang="en"
 
 #Set a Nginx of Apache y=Nginx n=Apache
