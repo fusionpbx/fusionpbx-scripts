@@ -326,7 +326,7 @@ apt-get -y install --force-yes freeswitch freeswitch-init freeswitch-meta-codecs
 		freeswitch-mod-event-multicast freeswitch-mod-event-socket freeswitch-mod-event-test freeswitch-mod-local-stream freeswitch-mod-native-file \
 		freeswitch-mod-sndfile freeswitch-mod-tone-stream freeswitch-mod-lua freeswitch-mod-console freeswitch-mod-logfile freeswitch-mod-syslog \
 		freeswitch-mod-say-en freeswitch-mod-posix-timer freeswitch-mod-timerfd freeswitch-mod-v8 freeswitch-mod-xml-cdr freeswitch-mod-xml-curl \
-		freeswitch-mod-xml-rpc freeswitch-music freeswitch-conf-vanilla freeswitch-mod-shout
+		freeswitch-mod-xml-rpc freeswitch-conf-vanilla freeswitch-mod-shout
 
 #setup language / sound files for use
 if [[ $use_lang == "en-pkg" ]]; then
@@ -380,7 +380,7 @@ wget http://files.freeswitch.org/freeswitch-sounds-zh-cn-sinmei-16000-1.0.51.tar
 cd ~
 fi
 
-if [[ $use_lang == "zh" ]]; then
+if [[ $use_default_music == "zh" ]]; then
 apt-get -y install --force-yes freeswitch-music
 fi
 
