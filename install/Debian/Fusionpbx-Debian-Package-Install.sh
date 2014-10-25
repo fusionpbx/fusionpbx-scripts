@@ -55,9 +55,12 @@ fi
 ################################################################################
 
 #<------Start Edit HERE--------->
-
 #Set how long to keep freeswitch/fusionpbx log files 1 to 30 days (Default:5)
 keep_logs=5
+
+# Set what language and sound files to use.
+# en-english (default) fr=french pt= ru=russian sv=swedish zh=chinese
+use_lang="en"
 
 #Set a Nginx of Apache y=Nginx n=Apache
 #use_ngingx="y"
@@ -323,7 +326,37 @@ apt-get -y install --force-yes freeswitch freeswitch-init freeswitch-lang-en fre
 		freeswitch-mod-event-multicast freeswitch-mod-event-socket freeswitch-mod-event-test freeswitch-mod-local-stream freeswitch-mod-native-file \
 		freeswitch-mod-sndfile freeswitch-mod-tone-stream freeswitch-mod-lua freeswitch-mod-console freeswitch-mod-logfile freeswitch-mod-syslog \
 		freeswitch-mod-say-en freeswitch-mod-posix-timer freeswitch-mod-timerfd freeswitch-mod-v8 freeswitch-mod-xml-cdr freeswitch-mod-xml-curl \
-		freeswitch-mod-xml-rpc freeswitch-sounds freeswitch-music freeswitch-conf-vanilla freeswitch-mod-shout
+		freeswitch-mod-xml-rpc freeswitch-music freeswitch-conf-vanilla freeswitch-mod-shout
+
+#setup language / sound files for use
+if [[ $use_lang == "en" ]]; then
+apt-get -y install --force-yes freeswitch-mod-say-en freeswitch-sounds
+fi
+
+if [[ $use_lang == "fr" ]]; then
+apt-get -y install --force-yes freeswitch-mod-say-fr
+wget http://files.freeswitch.org/freeswitch-sounds-fr-ca-june-8000-1.0.15.tar.gz
+fi
+
+if [[ $use_lang == "pt" ]]; then
+apt-get -y install --force-yes freeswitch-mod-say-pl
+wget http://files.freeswitch.org/freeswitch-sounds-pt-BR-karina-8000-1.0.51.tar.gz
+fi
+
+if [[ $use_lang == "ru" ]]; then
+apt-get -y install --force-yes freeswitch-mod-say-ru
+wget http://files.freeswitch.org/freeswitch-sounds-ru-RU-elena-8000-1.0.12.tar.gz
+fi
+
+if [[ $use_lang == "sv" ]]; then
+apt-get -y install --force-yes freeswitch-mod-say-sv
+wget http://files.freeswitch.org/freeswitch-sounds-sv-se-jakob-8000-1.0.0.tar.gz
+fi
+
+if [[ $use_lang == "zh" ]]; then
+apt-get -y install --force-yes freeswitch-mod-say-zh
+wget http://files.freeswitch.org/freeswitch-sounds-zh-cn-sinmei-8000-1.0.51.tar.gz
+fi
 
 #make the conf dir
 mkdir -p "$fs_conf_dir"
@@ -842,7 +875,7 @@ find "/var/lib/fusionpbx/db" -type f -exec chmod 666 {} +
 
 #Linking moh dir so freeswitch can read in the moh files
 ln -s /var/lib/fusionpbx/sounds/music /usr/share/freeswitch/sounds/music/fusionpbx
-
+ln -s /var/lib/fusionpbx/sounds/recordings /usr/share/freeswitch/sounds/
 #------end of fusionpbx install and configuration-----
 
 #-----Installing Fail2Ban/monit Protection services------
