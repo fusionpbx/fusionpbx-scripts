@@ -63,7 +63,7 @@ keep_logs=5
 use_lang="en-us"
 
 #Install / Use freeswitch default music on hold
-use_default_music="y"
+use_default_music="n"
 
 #Set a Nginx of Apache y=Nginx n=Apache
 #use_nginx="y"
