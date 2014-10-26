@@ -901,6 +901,7 @@ find "/var/lib/fusionpbx/db" -type d -exec chmod 777 {} +
 find "/var/lib/fusionpbx/db" -type f -exec chmod 666 {} +
 
 #Linking moh dir so freeswitch can read in the moh files
+mkdir /usr/share/freeswitch/sounds/music
 ln -s /var/lib/fusionpbx/sounds/music /usr/share/freeswitch/sounds/music/fusionpbx
 ln -s /var/lib/fusionpbx/sounds/recordings /usr/share/freeswitch/sounds/
 #------end of fusionpbx install and configuration-----
