@@ -472,7 +472,7 @@ server{
 		}
 
         access_log /var/log/nginx/access.log;
-        error_log /var/log/nginx/.error.log;
+        error_log /var/log/nginx/error.log;
 
         client_max_body_size 15M;
         client_body_buffer_size 128k;
@@ -524,7 +524,7 @@ server{
 		rewrite "^.*/provision/([A-Fa-f0-9]{12})(\.(xml|cfg))?$" /app/provision/index.php?mac=$1 last;
 
         access_log /var/log/nginx/access.log;
-        error_log /var/log/nginx/.error.log;
+        error_log /var/log/nginx/error.log;
 
         client_max_body_size 15M;
         client_body_buffer_size 128k;
