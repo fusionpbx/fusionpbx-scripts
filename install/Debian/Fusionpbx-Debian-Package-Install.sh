@@ -59,8 +59,8 @@ fi
 keep_logs=5
 
 # Set what language lang/say pkgs and language sound files to use.
-# en=english (default) fr=french pt=Portuguese ru=russian sv=swedish zh=chinese
-use_lang="en"
+# en-us=English/US (default) fr-ca=French/Canadian pt-br=Portuguese/Brazill ru-ru=Russian/Russia sv-se=Swedish/Sweden zh-cn=chinese/Mandarin zh-hk=chinese/HongKong 
+use_lang="en-us"
 
 #Install / Use freeswitch default music on hold
 use_default_music="y"
@@ -329,11 +329,11 @@ apt-get -y install --force-yes freeswitch freeswitch-init freeswitch-meta-codecs
 		freeswitch-mod-xml-rpc freeswitch-conf-vanilla freeswitch-mod-shout
 
 #setup language / sound files for use
-if [[ $use_lang == "en" ]]; then
+if [[ $use_lang == "en-us" ]]; then
 apt-get -y install --force-yes freeswitch-lang-en freeswitch-mod-say-en freeswitch-sounds
 fi
 
-if [[ $use_lang == "fr" ]]; then
+if [[ $use_lang == "fr-ca" ]]; then
 apt-get -y install --force-yes freeswitch-lang-fr freeswitch-mod-say-fr
 mkdir fr-sounds && cd fr-sounds
 wget http://files.freeswitch.org/freeswitch-sounds-fr-ca-june-8000-1.0.51.tar.gz && tar xzvf freeswitch-sounds-fr-ca-june-8000-1.0.51.tar.gz -C /usr/share/freeswitch/sounds
@@ -341,7 +341,7 @@ wget http://files.freeswitch.org/freeswitch-sounds-fr-ca-june-16000-1.0.51.tar.g
 cd~
 fi
 
-if [[ $use_lang == "pt" ]]; then
+if [[ $use_lang == "pt-br" ]]; then
 apt-get -y install --force-yes freeswitch-lang-pt freeswitch-mod-say-pl
 mkdir fr-sounds && cd pt-sounds
 wget http://files.freeswitch.org/freeswitch-sounds-pt-BR-karina-8000-1.0.51.tar.gz && tar xzvf freeswitch-sounds-pt-BR-karina-8000-1.0.51.tar.gz -C /usr/share/freeswitch/sounds
@@ -349,7 +349,7 @@ wget http://files.freeswitch.org/freeswitch-sounds-pt-BR-karina-16000-1.0.51.tar
 cd ~
 fi
 
-if [[ $use_lang == "ru" ]]; then
+if [[ $use_lang == "ru-ru" ]]; then
 apt-get -y install --force-yes freeswitch-lang-ru freeswitch-mod-say-ru
 mkdir fr-sounds && cd ru-sounds
 wget http://files.freeswitch.org/freeswitch-sounds-ru-RU-elena-8000-1.0.12.tar.gz && tar xzvf freeswitch-sounds-ru-RU-elena-8000-1.0.51.tar.gz -C /usr/share/freeswitch/sounds
@@ -357,7 +357,7 @@ wget http://files.freeswitch.org/freeswitch-sounds-ru-RU-elena-16000-1.0.12.tar.
 cd~
 fi
 
-if [[ $use_lang == "sv" ]]; then
+if [[ $use_lang == "sv-se" ]]; then
 apt-get -y install --force-yes freeswitch-lang-sv freeswitch-mod-say-sv
 mkdir fr-sounds && cd sv-sounds
 wget http://files.freeswitch.org/freeswitch-sounds-sv-se-jakob-8000-1.0.50.tar.gz && tar xzvf freeswitch-sounds-sv-se-jakob-8000-1.0.50.tar.gz -C /usr/share/freeswitch/sounds
@@ -365,11 +365,19 @@ wget http://files.freeswitch.org/freeswitch-sounds-sv-se-jakob-16000-1.0.50.tar.
 cd ~
 fi
 
-if [[ $use_lang == "zh" ]]; then
+if [[ $use_lang == "zh-cn" ]]; then
 apt-get -y install --force-yes freeswitch-mod-say-zh
-mkdir fr-sounds && cd zh-sounds
+mkdir fr-sounds && cd zh-cn-sounds
 wget http://files.freeswitch.org/freeswitch-sounds-zh-cn-sinmei-8000-1.0.51.tar.gz && tar xzvf freeswitch-sounds-zh-cn-sinmei-8000-1.0.51.tar.gz -C /usr/share/freeswitch/sounds
 wget http://files.freeswitch.org/freeswitch-sounds-zh-cn-sinmei-16000-1.0.51.tar.gz && tar xzvf freeswitch-sounds-zh-cn-sinmei-16000-1.0.51.tar.gz -C /usr/share/freeswitch/sounds
+cd ~
+fi
+
+if [[ $use_lang == "zh-hk" ]]; then
+apt-get -y install --force-yes freeswitch-mod-say-zh
+mkdir fr-sounds && cd zh-hk-sounds
+wget http://files.freeswitch.org/freeswitch-sounds-zh-hk-sinmei-8000-1.0.51.tar.gz && tar xzvf freeswitch-sounds-zh-cn-sinmei-8000-1.0.51.tar.gz -C /usr/share/freeswitch/sounds
+wget http://files.freeswitch.org/freeswitch-sounds-zh-hk-sinmei-16000-1.0.51.tar.gz && tar xzvf freeswitch-sounds-zh-cn-sinmei-16000-1.0.51.tar.gz -C /usr/share/freeswitch/sounds
 cd ~
 fi
 
