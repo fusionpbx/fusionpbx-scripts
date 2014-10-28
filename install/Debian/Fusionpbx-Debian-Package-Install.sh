@@ -54,6 +54,17 @@ exit
 fi
 ################################################################################
 
+# Pre-Install Information:
+
+# This script uses Sqlite by default for the fusionpbx database.
+
+# If you wish to use postgresql locally or on a remote server.
+
+# You need to edit the script and enable the pgsql-client or pgsql option 
+
+# and fill in the required information.
+
+################################################################################
 #<------Start Edit HERE--------->
 #Set how long to keep freeswitch/fusionpbx log files 1 to 30 days (Default:5)
 keep_logs=5
