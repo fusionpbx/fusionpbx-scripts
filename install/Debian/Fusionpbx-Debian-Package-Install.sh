@@ -417,8 +417,11 @@ service freeswitch restart
 apt-get -y install sqlite3 ssl-cert nginx php5-cli php5-common php-apc php5-gd \
 		php-db php5-fpm php5-memcache php5-sqlite
 
-# Changing file upload size from 2M to 15M
-/bin/sed -i $php_ini -e 's#"upload_max_filesize = 2M"#"upload_max_filesize = 15M"#'
+# Changing file upload size from 2M to 10M
+sed -i "$php_ini" -e 's#"upload_max_filesize = 2M"#"upload_max_filesize = 10M"#'
+
+# Changing post_max_size limit from 8M to 15M
+sed -i "$php_ini" -e 's#"post_max_size = 8M"#""post_max_size = 15M"#'
 
 #Nginx config Copied from Debian nginx pkg (nginx on debian wheezy uses sockets by default not ports)
 cat > "/etc/nginx/sites-available/fusionpbx"  << DELIM
@@ -428,7 +431,7 @@ server{
         access_log /var/log/nginx/access.log;
         error_log /var/log/nginx/error.log;
 
-        client_max_body_size 10M;
+        client_max_body_size 15M;
         client_body_buffer_size 128k;
 
         location / {
@@ -520,6 +523,7 @@ server{
         ssl_certificate         /etc/ssl/certs/ssl-cert-snakeoil.pem;
         ssl_certificate_key     /etc/ssl/private/ssl-cert-snakeoil.key;
         ssl_protocols           SSLv3 TLSv1;
+        ssl_session_timeout		5m;
         ssl_ciphers     HIGH:!ADH:!MD5;
 
 		#grandstream
@@ -601,7 +605,7 @@ http {
 	open_file_cache_min_uses 2;
 	open_file_cache_errors off;
 
-	fastcgi_cache_path /var/cache/nginx levels=1:2 keys_zone=microcache:10m max_size=1000m inactive=60m;
+	fastcgi_cache_path /var/cache/nginx levels=1:2 keys_zone=microcache:15M max_size=1000m inactive=60m;
 
 	##
 	# Logging Settings
