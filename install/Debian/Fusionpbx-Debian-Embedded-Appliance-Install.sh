@@ -417,6 +417,9 @@ apt-get -y install sqlite3 ssl-cert nginx php5-cli php5-common php-apc php5-gd \
 # Changing file upload size from 2M to 15M
 /bin/sed -i $php_ini -e 's#"upload_max_filesize = 2M"#"upload_max_filesize = 15M"#'
 
+# Changing post_max_size limit from 8M to 15M
+sed -i "$php_ini" -e 's#"post_max_size = 8M"#""post_max_size = 15M"#'
+
 #Nginx config Copied from Debian nginx pkg (nginx on debian wheezy uses sockets by default not ports)
 cat > "/etc/nginx/sites-available/fusionpbx"  << DELIM
 server{
