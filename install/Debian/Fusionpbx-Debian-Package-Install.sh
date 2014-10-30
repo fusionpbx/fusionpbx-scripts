@@ -69,6 +69,9 @@ fi
 #Set how long to keep freeswitch/fusionpbx log files 1 to 30 days (Default:5)
 keep_logs=5
 
+#Set mp3/wav file upload/post size limit(Must Have the M on the end)
+upload_size="25M"
+
 # Set what language lang/say pkgs and language sound files to use.
 # en-us=English/US (default) fr-ca=French/Canadian pt-br=Portuguese/Brazill ru-ru=Russian/Russia sv-se=Swedish/Sweden zh-cn=chinese/Mandarin zh-hk=chinese/HongKong 
 use_lang="en-us"
