@@ -434,7 +434,7 @@ server{
         access_log /var/log/nginx/access.log;
         error_log /var/log/nginx/error.log;
 
-        client_max_body_size "$upload_size";
+        client_max_body_size $upload_size;
         client_body_buffer_size 128k;
 
         location / {
@@ -491,7 +491,7 @@ server{
         access_log /var/log/nginx/access.log;
         error_log /var/log/nginx/error.log;
 
-        client_max_body_size "$upload_size";
+        client_max_body_size $upload_size;
         client_body_buffer_size 128k;
 
         location / {
@@ -544,7 +544,7 @@ server{
         access_log /var/log/nginx/access.log;
         error_log /var/log/nginx/error.log;
 
-        client_max_body_size "$upload_size";
+        client_max_body_size $upload_size;
         client_body_buffer_size 128k;
 
         location / {
