@@ -803,7 +803,8 @@ apt-get -y --force-yes install fusionpbx-app-adminer fusionpbx-app-backup fusion
 		fusionpbx-provisioning-template-polycom fusionpbx-app-provision fusionpbx-provisioning-template-snom \
 		fusionpbx-provisioning-template-yealink fusionpbx-theme-accessible fusionpbx-theme-classic fusionpbx-theme-default \
 		fusionpbx-theme-minimized \
-		&& mkdir -p /etc/fusionpbx/resources/templates/provision && cp -rp /usr/share/examples/fusionpbx/resources/templates/provision/* /etc/fusionpbx/resources/templates/provision/
+		&& mkdir -p /etc/fusionpbx/resources/templates/provision && cp -rp /usr/share/examples/fusionpbx/resources/templates/provision/* \
+		/etc/fusionpbx/resources/templates/provision/
 fi
 
 #----end of fusion pbx pkgs install----
