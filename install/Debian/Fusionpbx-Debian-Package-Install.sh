@@ -689,6 +689,8 @@ apt-get -y --force-yes install fusionpbx-core fusionpbx-app-calls fusionpbx-app-
 find "/var/lib/fusionpbx" -type d -exec chmod 775 {} +
 find "/var/lib/fusionpbx" -type f -exec chmod 664 {} +
 
+find "/var/lib/fusionpbx/storage/voicemail" -type d -exec chown www-data:freeswitch {} +
+find "/var/lib/fusionpbx/recordings" -type d -exec chown www-data:freeswitch {} +
 #Optional APP PKGS installs
 if [[ $adminer == "y" ]]; then
 apt-get -y --force-yes install fusionpbx-app-adminer
