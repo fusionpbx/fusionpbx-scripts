@@ -1,5 +1,5 @@
 #!/bin/bash
-#Date Oct 25 2014 11:40 CDT
+#Date Nov 05 2014 11:40 CDT
 ################################################################################
 # The MIT License (MIT)
 #
@@ -786,12 +786,19 @@ if [[ $minimized_theme == "y" ]]; then
 apt-get -y --force-yes install freeswitch-theme-minimized
 fi
 if [[ $all == "y" ]]; then
-apt-get -y --force-yes install fusionpbx-app-adminer fusionpbx-app-backup fusionpbx-app-call-broadcast freeswitch-mod-callcenter fusionpbx-app-call-center fusionpbx-app-call-center-active fusionpbx-app-call-flows freeswitch-mod-conference \
-		fusionpbx-app-conference-centers fusionpbx-app-conferences-active fusionpbx-app-meetings fusionpbx-app-conferences fusionpbx-app-content fusionpbx-app-edit fusionpbx-app-exec freeswitch-mod-fifo fusionpbx-app-fifo fusionpbx-app-fifo-list \
-		fusionpbx-app-hot-desking fusionpbx-app-schemas fusionpbx-app-services fusionpbx-app-sipml5 freeswitch-mod-rtmp fusionpbx-app-sql-query fusionpbx-app-traffic-graph freeswitch-mod-dingaling fusionpbx-app-xmpp fusionpbx-app-devices \
-		fusionpbx-app-provision fusionpbx-provisioning-template-aastra fusionpbx-provisioning-template-atcom fusionpbx-provisioning-template-cisco fusionpbx-provisioning-template-grandstream fusionpbx-provisioning-template-linksys \
-		fusionpbx-provisioning-template-panasonic fusionpbx-app-provision fusionpbx-provisioning-template-polycom fusionpbx-app-provision fusionpbx-provisioning-template-snom fusionpbx-provisioning-template-yealink fusionpbx-theme-accessible \
-		fusionpbx-theme-classic fusionpbx-theme-default fusionpbx-theme-minimized && mkdir -p /etc/fusionpbx/resources/templates/provision && cp -rp /usr/share/examples/fusionpbx/resources/templates/provision/* /etc/fusionpbx/resources/templates/provision/
+apt-get -y --force-yes install fusionpbx-app-adminer fusionpbx-app-backup fusionpbx-app-call-broadcast freeswitch-mod-callcenter \
+	fusionpbx-app-call-center fusionpbx-app-call-center-active fusionpbx-app-call-flows freeswitch-mod-conference \
+	fusionpbx-app-conference-centers fusionpbx-app-conferences-active fusionpbx-app-meetings fusionpbx-app-conferences \
+	fusionpbx-app-content fusionpbx-app-edit fusionpbx-app-exec freeswitch-mod-fifo fusionpbx-app-fifo fusionpbx-app-fifo-list \
+	ghostscript libreoffice-common fusionpbx-app-fax fusionpbx-app-hot-desking fusionpbx-app-schemas fusionpbx-app-services \
+	fusionpbx-app-sipml5 freeswitch-mod-rtmp fusionpbx-app-sql-query fusionpbx-app-traffic-graph freeswitch-mod-dingaling \
+	fusionpbx-app-xmpp fusionpbx-app-devices fusionpbx-app-provision fusionpbx-provisioning-template-aastra \
+	fusionpbx-provisioning-template-atcom fusionpbx-provisioning-template-cisco fusionpbx-provisioning-template-grandstream \
+	fusionpbx-provisioning-template-linksys fusionpbx-provisioning-template-panasonic fusionpbx-app-provision \
+	fusionpbx-provisioning-template-polycom fusionpbx-app-provision fusionpbx-provisioning-template-snom \
+	fusionpbx-provisioning-template-yealink fusionpbx-theme-accessible fusionpbx-theme-classic fusionpbx-theme-default \
+	fusionpbx-theme-minimized && mkdir -p /etc/fusionpbx/resources/templates/provision \
+	&& cp -rp /usr/share/examples/fusionpbx/resources/templates/provision/* /etc/fusionpbx/resources/templates/provision/
 fi
 
 #----end of fusion pbx pkgs install----
