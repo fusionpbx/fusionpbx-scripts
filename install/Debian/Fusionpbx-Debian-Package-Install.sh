@@ -931,7 +931,7 @@ find "/var/lib/fusionpbx/db" -type f -exec chmod 666 {} +
 
 #Linking moh dir so freeswitch can read in the moh files
 ln -s /var/lib/fusionpbx/sounds/music /usr/share/freeswitch/sounds/music/fusionpbx
-ln -s /var/lib/fusionpbx/sounds/recordings /usr/share/freeswitch/sounds/
+ln -s /var/lib/fusionpbx/sounds/custom /usr/share/freeswitch/sounds/
 #------end of fusionpbx install and configuration-----
 
 #-----Installing Fail2Ban/monit Protection services------
