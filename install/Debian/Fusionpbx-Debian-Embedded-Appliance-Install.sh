@@ -41,16 +41,16 @@ DELIM
 case $(uname -m) in armv7l)
 cat << DELIM
     Note:
-        It is suggested you only use sqlite and or postgresql client for best 
+        It is suggested you only use sqlite and or postgresql client for best
 
-        preformance on armhf when using a sd or emmc or nand. For those arm 
-        
+        preformance on armhf when using a sd or emmc or nand. For those arm
+
         units supporting sata and usb3 harddrives you can opt for Postgrsql
-        
-        if you wish. Currently only Postgresql 9.1 is supported in the armhf 
-        
-        pkgs. I have not found a arm repo with 9.3 pkgs. I will update the 
-        
+
+        if you wish. Currently only Postgresql 9.1 is supported in the armhf
+
+        pkgs. I have not found a arm repo with 9.3 pkgs. I will update the
+
         script when I do.
 DELIM
 esac
@@ -71,9 +71,6 @@ use_lang="en-us"
 
 #Install / Use freeswitch default music on hold
 use_default_music="n"
-
-#Set a Nginx of Apache y=Nginx n=Apache
-#use_nginx="y"
 
 #----Optional Fusionpbx Apps/Modules----
 
@@ -149,10 +146,10 @@ logging_level="n"
 
 #Extra Option's
 #Install Optional shell admin menu scripts (currently broken ) 
-install_scripts="n"
+#install_scripts="n"
 
 #Install openvpn scripts
-install_openvpn="n"
+#install_openvpn="n"
 
 #Install Ajenti Optional Admin Portal
 install_ajenti="n"
@@ -333,14 +330,14 @@ apt-get -y install unixodbc uuid memcached libtiff5 libtiff-tools time bison hto
 
 #-----Start Install of freeswitch-----------
 apt-get -y install --force-yes freeswitch freeswitch-init freeswitch-meta-codecs freeswitch-mod-commands freeswitch-mod-curl \
-		freeswitch-mod-db freeswitch-mod-distributor freeswitch-mod-dptools freeswitch-mod-enum freeswitch-mod-esf freeswitch-mod-esl \
-		freeswitch-mod-expr freeswitch-mod-fsv freeswitch-mod-hash freeswitch-mod-memcache freeswitch-mod-portaudio freeswitch-mod-portaudio-stream \
-		freeswitch-mod-random freeswitch-mod-spandsp freeswitch-mod-spy freeswitch-mod-translate freeswitch-mod-valet-parking freeswitch-mod-flite \
-		freeswitch-mod-pocketsphinx freeswitch-mod-tts-commandline freeswitch-mod-dialplan-xml freeswitch-mod-loopback freeswitch-mod-sofia \
-		freeswitch-mod-event-multicast freeswitch-mod-event-socket freeswitch-mod-event-test freeswitch-mod-local-stream freeswitch-mod-native-file \
-		freeswitch-mod-sndfile freeswitch-mod-tone-stream freeswitch-mod-lua freeswitch-mod-console freeswitch-mod-logfile freeswitch-mod-syslog \
-		freeswitch-mod-say-en freeswitch-mod-posix-timer freeswitch-mod-timerfd freeswitch-mod-v8 freeswitch-mod-xml-cdr freeswitch-mod-xml-curl \
-		freeswitch-mod-xml-rpc freeswitch-conf-vanilla 
+	freeswitch-mod-db freeswitch-mod-distributor freeswitch-mod-dptools freeswitch-mod-enum freeswitch-mod-esf freeswitch-mod-esl \
+	freeswitch-mod-expr freeswitch-mod-fsv freeswitch-mod-hash freeswitch-mod-memcache freeswitch-mod-portaudio freeswitch-mod-portaudio-stream \
+	freeswitch-mod-random freeswitch-mod-spandsp freeswitch-mod-spy freeswitch-mod-translate freeswitch-mod-valet-parking freeswitch-mod-flite \
+	freeswitch-mod-pocketsphinx freeswitch-mod-tts-commandline freeswitch-mod-dialplan-xml freeswitch-mod-loopback freeswitch-mod-sofia \
+	freeswitch-mod-event-multicast freeswitch-mod-event-socket freeswitch-mod-event-test freeswitch-mod-local-stream freeswitch-mod-native-file \
+	freeswitch-mod-sndfile freeswitch-mod-tone-stream freeswitch-mod-lua freeswitch-mod-console freeswitch-mod-logfile freeswitch-mod-syslog \
+	freeswitch-mod-say-en freeswitch-mod-posix-timer freeswitch-mod-timerfd freeswitch-mod-v8 freeswitch-mod-xml-cdr freeswitch-mod-xml-curl \
+	freeswitch-mod-xml-rpc freeswitch-conf-vanilla 
 
 case $(uname -m) in x86_64|i[4-6]86)
 apt-get -y install --force-yes freeswitch-mod-shout
@@ -415,18 +412,18 @@ mkdir -p "$fs_conf_dir"
 #cp the default configugs into place.
 cp -rp "$fs_dflt_conf_dir"/vanilla/* "$fs_conf_dir"
 
-#fix ownership of files for freeswitch 
+#fix ownership of files for freeswitch
 chown -R freeswitch:freeswitch "$fs_conf_dir"
 
-#Restarting freeswitch 
+#Restarting freeswitch
 service freeswitch restart
 
 #-------end of freeswitch install---------
 
 #---Start of nginx / php5 install --------
 #Install and configure  PHP + Nginx + sqlite3 for use with the fusionpbx gui.
-apt-get -y install sqlite3 ssl-cert nginx php5-cli php5-common php-apc php5-gd \
-		php-db php5-fpm php5-memcache php5-sqlite
+apt-get -y install sqlite3 ssl-cert nginx php5-cli php5-common php-apc \
+	php5-gd php-db php5-fpm php5-memcache php5-sqlite
 
 # Changing file upload size from 2M to upload_size
 sed -i "$php_ini" -e "s#upload_max_filesize = 2M#upload_max_filesize = $upload_size#"
@@ -692,10 +689,6 @@ apt-get -y --force-yes install fusionpbx-core fusionpbx-app-calls fusionpbx-app-
 	fusionpbx-app-xml-cdr fusionpbx-app-vars fusionpbx-app-voicemails fusionpbx-app-voicemail-greetings \
 	fusionpbx-conf fusionpbx-scripts fusionpbx-sqldb fusionpbx-theme-enhanced
 
-#set permissions on dir
-find "/var/lib/fusionpbx" -type d -exec chmod 775 {} +
-find "/var/lib/fusionpbx" -type f -exec chmod 664 {} +
-
 #Optional APP PKGS installs
 if [[ $adminer == "y" ]]; then
 apt-get -y --force-yes install fusionpbx-app-adminer
@@ -823,19 +816,19 @@ if [[ $postgresql_client == "y" ]]; then
 	case $(uname -m) in x86_64|i[4-6]86)
 	for i in postgresql-client-9.3 php5-pgsql ;do apt-get -y install "${i}"; done
 	esac
-	
+
 	case $(uname -m) in armv7l)
 	echo "no arm deb pkgs for pgsql postgresql-client-9.3"
 	echo "postgresql-client-9.1 is being installed"
 	for i in postgresql-client-9.1 php5-pgsql ;do apt-get -y install "${i}"; done
-	esac	
+	esac
 
 	service php5-fpm restart
 	clear
 	echo
 	echo " The $wui_name install has finished...  "
 	echo " Now Waiting on you to finish the installation via web browser "
-	echo	
+	echo
 	printf '	Please open a web-browser to http://'; ip -f inet addr show dev $net_iface | sed -n 's/^ *inet *\([.0-9]*\).*/\1/p '
 cat << DELIM
 	Or the Doamin name assigned to the machine like http://"$(hostname).$(dnsdomainname)".
@@ -908,13 +901,14 @@ DELIM
 echo " Restarting freeswitch for changes to take effect...."
 service freeswitch restart
 
-#fixing permissions for sqlite db 
+#fixing permissions for sqlite db
 find "/var/lib/fusionpbx/db" -type d -exec chmod 777 {} +
 find "/var/lib/fusionpbx/db" -type f -exec chmod 666 {} +
 
 #Linking moh dir so freeswitch can read in the moh files
 ln -s /var/lib/fusionpbx/sounds/music /usr/share/freeswitch/sounds/music/fusionpbx
-ln -s /var/lib/fusionpbx/sounds/recordings /usr/share/freeswitch/sounds/
+ln -s /var/lib/fusionpbx/sounds/custom /usr/share/freeswitch/sounds/
+
 #------end of fusionpbx install and configuration-----
 
 #-----Installing Fail2Ban/monit Protection services------
@@ -1109,12 +1103,12 @@ for i in php5-fpm niginx monit fail2ban freeswitch ;do service "${i}" restart  >
 
 #----End of fail2ban/monit services install--------
 
-#option to disable xml_cdr files 
+#option to disable xml_cdr files
 if [[ $xml_cdr_files == "y" ]]; then
 /bin/sed -i "$WWW_PATH"/"$wui_name"/app/vars/app_defaults.php -e 's#{"var_name":"xml_cdr_archive","var_value":"dir","var_cat":"Defaults","var_enabled":"true","var_description":""}#{"var_name":"xml_cdr_archive","var_value":"none","var_cat":"Defaults","var_enabled":"true","var_description":""}#'
 fi
 
-#option to disable some loging execpt for 
+#option to disable some loging execpt for
 if [[ $logging_level == "y" ]]; then
 /bin/sed -i /usr/share/examples/fusionpbx/resources/templates/conf/autoload_configs/logfile.conf.xml -e 's#<map name="all" value="debug,info,notice,warning,err,crit,alert"/>#<map name="all" value="warning,err,crit,alert"/>#'
 fi
@@ -1169,15 +1163,15 @@ DELIM
 fi
 
 #Install optional custom-scripts
-if [[ $install_scripts == "y" ]]; then
-apt-get install -y --force-yes custom-scripts
-fi
+#if [[ $install_scripts == "y" ]]; then
+#apt-get install -y --force-yes custom-scripts
+#fi
 
 #Install optional openvpn-scripts
-if [[ $install_openvpn == "y" ]]; then
-echo "Installing Open-vpn configuration scripts"
-apt-get install openvpn openvpn-scripts
-fi
+#if [[ $install_openvpn == "y" ]]; then
+#echo "Installing Open-vpn configuration scripts"
+#apt-get install openvpn openvpn-scripts
+#fi
 
 #Ajenti admin portal. Makes maintaining the system easier.
 #ADD Ajenti repo & ajenti
