@@ -285,7 +285,7 @@ apt-get -y install acpi-support-base curl usbmount usbutils
 #-----end pre-deps install---
 
 #--------adding in custom repos-------
-
+case $(uname -m) in x86_64|i[4-6]86)
 #adding in freeswitch reop to /etc/apt/sources.list.d/freeswitch.lists
 echo ' installing stable repo '
 cat > "/etc/apt/sources.list.d/freeswitch.list" <<DELIM
@@ -295,13 +295,17 @@ DELIM
 #adding key for freeswitch repo
 echo 'fetcing repo key'
 curl http://files.freeswitch.org/repo/deb/debian/freeswitch_archive_g0.pub | apt-key add -
+esac
 
+case $(uname -m) in armv7l)
 #adding FusionPBX repo
 echo 'installing fusionpbx head repo'
 cat > "/etc/apt/sources.list.d/fusionpbx.list" <<DELIM
 deb http://repo.fusionpbx.com/head/debian/ wheezy main
 DELIM
+case $(uname -m) in armv7l)
 
+case $(uname -m) in x86_64|i[4-6]86)
 #postgresql 9.3 repo for x86 x86-64 bit pkgs
 #add in pgsql 9.3
 cat > "/etc/apt/sources.list.d/pgsql-pgdg.list" << DELIM
@@ -309,6 +313,7 @@ deb http://apt.postgresql.org/pub/repos/apt/ wheezy-pgdg main
 DELIM
 #add pgsql repo key
 wget --quiet -O - http://apt.postgresql.org/pub/repos/apt/ACCC4CF8.asc | apt-key add -
+esac
 
 #------end of installing repos-----
 
