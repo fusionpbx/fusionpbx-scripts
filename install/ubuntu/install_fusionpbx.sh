@@ -84,7 +84,8 @@ FPBXBRANCH="http://fusionpbx.googlecode.com/svn/branches/dev/fusionpbx"
 #modules_comp_default=( `/bin/grep -v ^$ /usr/src/freeswitch/modules.conf |/bin/grep -v ^# | /usr/bin/tr '\n' ' '` )
 
 #staying with default repository, feel free to change this to github. Some report faster downloads.
-FSGIT=https://stash.freeswitch.org/scm/fs/freeswitch.git
+FSGIT=https://freeswitch.org/stash/scm/fs/freeswitch.git
+#FSGIT=https://stash.freeswitch.org/scm/fs/freeswitch.git
 #FSGIT=git://github.com/FreeSWITCH/FreeSWITCH.git
 FSSTABLE=true
 FSStableVer="v1.4"
