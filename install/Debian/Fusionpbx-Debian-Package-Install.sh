@@ -1,5 +1,5 @@
 #!/bin/bash
-#Date Oct 25 2014 11:40 CDT
+#Date Nov 9 2014 17:18 CST
 ################################################################################
 # The MIT License (MIT)
 #
@@ -1158,10 +1158,10 @@ kernel.panic = 10
 DELIM
 
 #Install optional openvpn-scripts
-if [[ $install_openvpn == "y" ]]; then
-echo "Installing Open-vpn configuration scripts"
-apt-get install openvpn openvpn-scripts
-fi
+#if [[ $install_openvpn == "y" ]]; then
+#echo "Installing Open-vpn configuration scripts"
+#apt-get install openvpn openvpn-scripts
+#fi
 
 #Ajenti admin portal. Makes maintaining the system easier.
 #ADD Ajenti repo & ajenti
