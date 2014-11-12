@@ -24,6 +24,22 @@
 # THE SOFTWARE.
 #
 ################################################################################
+#DO a OS Check
+case $(uname -m) in armv[4-6]l)
+echo
+echo " Sorry Armel boards are not supported by this script. "
+echo " ArmHF arm v7 and up is requires. "
+echo
+exit 1
+esac
+
+case $(uname -m) in x86_64|i[4-6]86|armv[7-8]l)
+echo
+echo " Intel / Amd / ARMHF boards Spported"
+echo
+esac
+
+################################################################################
 cat  <<  DELIM
 
         This Is A One Time Install Script. (((( Not Ment For Lamp Installs ))))
