@@ -357,7 +357,7 @@ cd~
 fi
 
 if [[ $use_lang == "pt-br" ]]; then
-apt-get -y install --force-yes freeswitch-lang-pt freeswitch-mod-say-pl
+apt-get -y install --force-yes freeswitch-lang-pt freeswitch-mod-say-pt
 mkdir pt-sounds && cd pt-sounds
 wget http://files.freeswitch.org/freeswitch-sounds-pt-BR-karina-8000-1.0.51.tar.gz && tar xzvf freeswitch-sounds-pt-BR-karina-8000-1.0.51.tar.gz -C /usr/share/freeswitch/sounds
 wget http://files.freeswitch.org/freeswitch-sounds-pt-BR-karina-16000-1.0.51.tar.gz && tar xzvf freeswitch-sounds-pt-BR-karina-16000-1.0.51.tar.gz -C /usr/share/freeswitch/sounds
