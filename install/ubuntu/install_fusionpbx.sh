@@ -438,7 +438,7 @@ function www_permissions {
 	#/etc/init.d/freeswitch stop
 	/usr/sbin/adduser www-data audio
 	/usr/sbin/adduser www-data dialout
-	/bin/echo "setting FreeSWITCH owned by www-dat.www-data"
+	/bin/echo "setting FreeSWITCH owned by www-data.www-data"
 	/bin/chown -R www-data.www-data /usr/local/freeswitch
 	#remove 'other' permissions on freeswitch
 	/bin/chmod -R o-rwx /usr/local/freeswitch/
