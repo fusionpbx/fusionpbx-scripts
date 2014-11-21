@@ -1,0 +1,1 @@
+sed "/etc/fusionpbx/switch/conf/autoload_configs/local_stream.conf.xml -i -e s,'<directory name="default" path="$${sounds_dir}/music/8000">','<directory name="default" path="$${sounds_dir}/music/fusionpbx/8000">',g
