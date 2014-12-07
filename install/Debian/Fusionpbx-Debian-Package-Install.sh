@@ -26,7 +26,7 @@
 ################################################################################
 cat  <<  DELIM
 
-        This Is A One Time Install Script. ( Not Ment For Lamp Installs )
+        This Is A One Time Install Script. ( Not Ment For L.A.M.P Installs )
 
         This Script Is Ment To Be Run On A Fresh Install Of Debian 7 (Wheezy).
 
@@ -75,9 +75,6 @@ upload_size="25M"
 # Set what language lang/say pkgs and language sound files to use.
 # en-us=English/US (default) fr-ca=French/Canadian pt-br=Portuguese/Brazill ru-ru=Russian/Russia sv-se=Swedish/Sweden zh-cn=chinese/Mandarin zh-hk=chinese/HongKong 
 use_lang="en-us"
-
-#Install / Use freeswitch default music on hold
-use_default_music="n"
 
 #----Optional Fusionpbx Apps/Modules----
 
@@ -391,12 +388,6 @@ mkdir zh-hk-sounds && cd zh-hk-sounds
 wget http://files.freeswitch.org/freeswitch-sounds-zh-hk-sinmei-8000-1.0.51.tar.gz && tar xzvf freeswitch-sounds-zh-hk-sinmei-8000-1.0.51.tar.gz -C /usr/share/freeswitch/sounds
 wget http://files.freeswitch.org/freeswitch-sounds-zh-hk-sinmei-16000-1.0.51.tar.gz && tar xzvf freeswitch-sounds-zh-hk-sinmei-16000-1.0.51.tar.gz -C /usr/share/freeswitch/sounds
 cd ~
-fi
-
-if [[ $use_default_music == "y" ]]; then
-apt-get -y install --force-yes freeswitch-music
-else
-mkdir /usr/share/freeswitch/sounds/music
 fi
 
 #make the conf dir
