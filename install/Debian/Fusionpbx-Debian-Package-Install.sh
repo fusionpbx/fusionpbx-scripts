@@ -148,6 +148,7 @@ db_user_name=fusionpbx
 db_user_passwd=
 
 #-------Postgresql-End--------------
+
 # disbale generation of xml_cdr files and only store in cdr in the database
 xml_cdr_files="n"
 
