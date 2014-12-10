@@ -157,13 +157,6 @@ xml_cdr_files="n"
 # logfiles and whats displayed in the logging page
 logging_level="n"
 
-#Extra Option's
-#Install Optional shell admin menu scripts (currently broken ) 
-#install_scripts="n"
-
-#Install openvpn scripts
-#install_openvpn="n"
-
 #Install Ajenti Optional Admin Portal
 install_ajenti="n"
 
@@ -1150,10 +1143,13 @@ DELIM
 
 #DigiDaz Tested and approved
 #set fs to run in atempfs ramdrive
+#set Logs to be rotated hourly 
+#put tmp file dir into tmpfs
 cat >> /etc/fstab << DELIM
 tmpfs	/tmp	tmpfs	defaults	0	0
 tmpfs	/var/lib/freeswitch/db	tmpfs	defaults	0	0
 tmpfs   /var/tmp	tmpfs	defaults	0	0
+tmpfs   /var/log	tmpfs	defaults	0	0
 DELIM
 
 #DigiDaz Tested and approved
@@ -1176,22 +1172,11 @@ fi
 DELIM
 fi
 
-#Install optional custom-scripts
-#if [[ $install_scripts == "y" ]]; then
-#apt-get install -y --force-yes custom-scripts
-#fi
-
-#Install optional openvpn-scripts
-#if [[ $install_openvpn == "y" ]]; then
-#echo "Installing Open-vpn configuration scripts"
-#apt-get install openvpn openvpn-scripts
-#fi
-
 #Ajenti admin portal. Makes maintaining the system easier.
 #ADD Ajenti repo & ajenti
 if [[ $install_ajenti == "y" ]]; then
 echo "Installing Ajenti Admin Portal"
-/bin/cat > "/etc/apt/sources.list.d/ajenti.list" <<DELIM
+cat > "/etc/apt/sources.list.d/ajenti.list" <<DELIM
 deb http://repo.ajenti.org/debian main main debian
 DELIM
 wget http://repo.ajenti.org/debian/key -O- | apt-key add -
