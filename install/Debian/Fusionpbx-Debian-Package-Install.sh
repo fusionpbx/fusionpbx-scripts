@@ -804,7 +804,7 @@ for i in freeswitch nginx php5-fpm ;do service "${i}" restart >/dev/null 2>&1 ; 
 
 #Install postgresql-client option
 if [[ $postgresql_client == "y" ]]; then
-	for i in postgresql-client-9.3 php5-pgsql ;do apt-get -y install "${i}"; done
+	for i in postgresql-client-9.4 php5-pgsql ;do apt-get -y install "${i}"; done
 	service php5-fpm restart
 	clear
 	echo
@@ -831,7 +831,7 @@ fi
 
 #-----install & configure basic postgresql-server
 if [[ $postgresql_server == "y" ]]; then
-	for i in postgresql-9.3 php5-pgsql ;do apt-get -y install "${i}"; done
+	for i in postgresql-9.4 php5-pgsql ;do apt-get -y install "${i}"; done
 	service php5-fpm restart
 
 	#Adding a SuperUser and Password for Postgresql database.
