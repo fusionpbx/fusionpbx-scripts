@@ -288,17 +288,6 @@ apt-get -y install acpi-support-base curl usbmount usbutils
 #-----end pre-deps install---
 
 #--------adding in custom repos-------
-case $(uname -m) in x86_64|i[4-6]86)
-#adding in freeswitch reop to /etc/apt/sources.list.d/freeswitch.lists
-echo ' installing stable repo '
-cat > "/etc/apt/sources.list.d/freeswitch.list" <<DELIM
-deb http://files.freeswitch.org/repo/deb/debian/ wheezy main
-DELIM
-
-#adding key for freeswitch repo
-echo 'fetcing repo key'
-curl http://files.freeswitch.org/repo/deb/debian/freeswitch_archive_g0.pub | apt-key add -
-esac
 
 case $(uname -m) in armv7l)
 #adding Freeswitch ARMHF repo to /etc/apt/sources.list.d/freeswitch.lists
@@ -311,18 +300,8 @@ esac
 #adding Freeswitch/FusionPBX ARMHF repo
 echo 'installing FusionPBX head repo'
 cat > "/etc/apt/sources.list.d/fusionpbx.list" <<DELIM
-deb http://repo.fusionpbx.com/head/debian/ wheezy main
+deb http://repo.fusionpbx.com/freeswitch-armhf/head/debian/ wheezy main
 DELIM
-
-case $(uname -m) in x86_64|i[4-6]86)
-#postgresql 9.3 repo for x86 x86-64 bit pkgs
-#add in pgsql 9.3
-cat > "/etc/apt/sources.list.d/pgsql-pgdg.list" << DELIM
-deb http://apt.postgresql.org/pub/repos/apt/ wheezy-pgdg main
-DELIM
-#add pgsql repo key
-wget --quiet -O - http://apt.postgresql.org/pub/repos/apt/ACCC4CF8.asc | apt-key add -
-esac
 
 #------end of installing repos-----
 
@@ -345,65 +324,39 @@ apt-get -y install --force-yes freeswitch freeswitch-init freeswitch-meta-codecs
 	freeswitch-mod-say-en freeswitch-mod-posix-timer freeswitch-mod-timerfd freeswitch-mod-v8 freeswitch-mod-xml-cdr freeswitch-mod-xml-curl \
 	freeswitch-mod-xml-rpc freeswitch-conf-vanilla 
 
-case $(uname -m) in x86_64|i[4-6]86)
-apt-get -y install --force-yes freeswitch-mod-shout
-esac
-
-case $(uname -m) in armv7l)
 apt-get -y install --force-yes freeswitch-mod-vlc
-esac
 
 #setup language / sound files for use
+if [[ $use_lang == "en-ca" ]]; then
+apt-get -y install --force-yes freeswitch-lang-en freeswitch-mod-say-en freeswitch-sounds-en-ca-june
+fi
+
 if [[ $use_lang == "en-us" ]]; then
-apt-get -y install --force-yes freeswitch-lang-en freeswitch-mod-say-en freeswitch-sounds
+apt-get -y install --force-yes freeswitch-lang-en freeswitch-mod-say-en freeswitch-sounds-en-us-callie
 fi
 
 if [[ $use_lang == "fr-ca" ]]; then
-apt-get -y install --force-yes freeswitch-lang-fr freeswitch-mod-say-fr
-mkdir fr-sounds && cd fr-sounds
-wget http://files.freeswitch.org/freeswitch-sounds-fr-ca-june-8000-1.0.51.tar.gz && tar xzvf freeswitch-sounds-fr-ca-june-8000-1.0.51.tar.gz -C /usr/share/freeswitch/sounds
-wget http://files.freeswitch.org/freeswitch-sounds-fr-ca-june-16000-1.0.51.tar.gz && tar xzvf freeswitch-sounds-fr-ca-june-16000-1.0.51.tar.gz -C /usr/share/freeswitch/sounds
-cd~
+apt-get -y install --force-yes freeswitch-lang-fr freeswitch-mod-say-fr freeswitch-sounds-fr-ca-june
 fi
 
 if [[ $use_lang == "pt-br" ]]; then
-apt-get -y install --force-yes freeswitch-lang-pt freeswitch-mod-say-pl
-mkdir fr-sounds && cd pt-sounds
-wget http://files.freeswitch.org/freeswitch-sounds-pt-BR-karina-8000-1.0.51.tar.gz && tar xzvf freeswitch-sounds-pt-BR-karina-8000-1.0.51.tar.gz -C /usr/share/freeswitch/sounds
-wget http://files.freeswitch.org/freeswitch-sounds-pt-BR-karina-16000-1.0.51.tar.gz && tar xzvf freeswitch-sounds-pt-BR-karina-16000-1.0.51.tar.gz -C /usr/share/freeswitch/sounds
-cd ~
+apt-get -y install --force-yes freeswitch-lang-pt freeswitch-mod-say-pt freeswitch-sounds-pt-br-karina
 fi
 
 if [[ $use_lang == "ru-ru" ]]; then
-apt-get -y install --force-yes freeswitch-lang-ru freeswitch-mod-say-ru
-mkdir fr-sounds && cd ru-sounds
-wget http://files.freeswitch.org/freeswitch-sounds-ru-RU-elena-8000-1.0.12.tar.gz && tar xzvf freeswitch-sounds-ru-RU-elena-8000-1.0.51.tar.gz -C /usr/share/freeswitch/sounds
-wget http://files.freeswitch.org/freeswitch-sounds-ru-RU-elena-16000-1.0.12.tar.gz && tar xzvf freeswitch-sounds-ru-RU-elena-16000-1.0.51.tar.gz -C /usr/share/freeswitch/sounds
-cd~
+apt-get -y install --force-yes freeswitch-lang-ru freeswitch-mod-say-ru freeswitch-sounds-ru-ru-elena
 fi
 
 if [[ $use_lang == "sv-se" ]]; then
-apt-get -y install --force-yes freeswitch-lang-sv freeswitch-mod-say-sv
-mkdir fr-sounds && cd sv-sounds
-wget http://files.freeswitch.org/freeswitch-sounds-sv-se-jakob-8000-1.0.50.tar.gz && tar xzvf freeswitch-sounds-sv-se-jakob-8000-1.0.50.tar.gz -C /usr/share/freeswitch/sounds
-wget http://files.freeswitch.org/freeswitch-sounds-sv-se-jakob-16000-1.0.50.tar.gz && tar xzvf freeswitch-sounds-sv-se-jakob-16000-1.0.50.tar.gz -C /usr/share/freeswitch/sounds
-cd ~
+apt-get -y install --force-yes freeswitch-lang-sv freeswitch-mod-say-sv freeswitch-sounds-sv-se-jakob
 fi
 
 if [[ $use_lang == "zh-cn" ]]; then
-apt-get -y install --force-yes freeswitch-mod-say-zh
-mkdir fr-sounds && cd zh-cn-sounds
-wget http://files.freeswitch.org/freeswitch-sounds-zh-cn-sinmei-8000-1.0.51.tar.gz && tar xzvf freeswitch-sounds-zh-cn-sinmei-8000-1.0.51.tar.gz -C /usr/share/freeswitch/sounds
-wget http://files.freeswitch.org/freeswitch-sounds-zh-cn-sinmei-16000-1.0.51.tar.gz && tar xzvf freeswitch-sounds-zh-cn-sinmei-16000-1.0.51.tar.gz -C /usr/share/freeswitch/sounds
-cd ~
+apt-get -y install --force-yes freeswitch-mod-say-zh freeswitch-sounds-zh-cn-sinmei
 fi
 
 if [[ $use_lang == "zh-hk" ]]; then
-apt-get -y install --force-yes freeswitch-mod-say-zh
-mkdir fr-sounds && cd zh-hk-sounds
-wget http://files.freeswitch.org/freeswitch-sounds-zh-hk-sinmei-8000-1.0.51.tar.gz && tar xzvf freeswitch-sounds-zh-hk-sinmei-8000-1.0.51.tar.gz -C /usr/share/freeswitch/sounds
-wget http://files.freeswitch.org/freeswitch-sounds-zh-hk-sinmei-16000-1.0.51.tar.gz && tar xzvf freeswitch-sounds-zh-hk-sinmei-16000-1.0.51.tar.gz -C /usr/share/freeswitch/sounds
-cd ~
+apt-get -y install --force-yes freeswitch-mod-say-zh freeswitch-sounds-zh-hk-sinmei
 fi
 
 if [[ $use_default_music == "y" ]]; then
