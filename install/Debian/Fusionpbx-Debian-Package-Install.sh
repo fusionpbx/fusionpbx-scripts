@@ -296,7 +296,7 @@ apt-get -y install acpi-support-base curl usbmount usbutils
 #adding in freeswitch reop to /etc/apt/sources.list.d/freeswitch.lists
 echo ' installing freeswitch head repo '
 cat > "/etc/apt/sources.list.d/freeswitch.list" <<DELIM
-deb http://repo.fusionpbx.com/repo/freeswitch-heaad/debian/ wheezy main
+deb http://repo.fusionpbx.com/repo/freeswitch/head/debian/ wheezy main
 DELIM
 
 #adding FusionPBX repo
