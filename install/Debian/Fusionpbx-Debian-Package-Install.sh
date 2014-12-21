@@ -73,7 +73,7 @@ keep_logs=5
 upload_size="25M"
 
 # Set what language lang/say pkgs and language sound files to use.
-# en-us=English/US (default) fr-ca=French/Canadian pt-br=Portuguese/Brazill ru-ru=Russian/Russia sv-se=Swedish/Sweden zh-cn=chinese/Mandarin zh-hk=chinese/HongKong 
+# en-ca=English Canada en-us=English/US (default) fr-ca=French/Canadian pt-br=Portuguese/Brazill ru-ru=Russian/Russia sv-se=Swedish/Sweden zh-cn=chinese/Mandarin zh-hk=chinese/HongKong 
 use_lang="en-us"
 
 #----Optional Fusionpbx Apps/Modules----
@@ -294,23 +294,19 @@ apt-get -y install acpi-support-base curl usbmount usbutils
 #--------adding in custom repos-------
 
 #adding in freeswitch reop to /etc/apt/sources.list.d/freeswitch.lists
-echo ' installing stable repo '
+echo ' installing freeswitch head repo '
 cat > "/etc/apt/sources.list.d/freeswitch.list" <<DELIM
-deb http://files.freeswitch.org/repo/deb/debian/ wheezy main
+deb http://repo.fusionpbx.com/repo/freeswitch-heaad/debian/ wheezy main
 DELIM
-
-#adding key for freeswitch repo
-echo 'fetcing repo key'
-curl http://files.freeswitch.org/repo/deb/debian/freeswitch_archive_g0.pub | apt-key add -
 
 #adding FusionPBX repo
 echo 'installing fusionpbx head repo'
 cat > "/etc/apt/sources.list.d/fusionpbx.list" <<DELIM
-deb http://repo.fusionpbx.com/head/debian/ wheezy main
+deb http://repo.fusionpbx.com/fusionpbx/head/debian/ wheezy main
 DELIM
 
-#postgresql 9.3 repo for x86 x86-64 bit pkgs
-#add in pgsql 9.3
+#postgresql 9.4 repo for x86 x86-64 bit pkgs
+#add in pgsql 9.4
 cat > "/etc/apt/sources.list.d/pgsql-pgdg.list" << DELIM
 deb http://apt.postgresql.org/pub/repos/apt/ wheezy-pgdg main
 DELIM
@@ -339,56 +335,36 @@ apt-get -y install --force-yes freeswitch freeswitch-init freeswitch-meta-codecs
 		freeswitch-mod-xml-rpc freeswitch-conf-vanilla freeswitch-mod-shout
 
 #setup language / sound files for use
+if [[ $use_lang == "en-ca" ]]; then
+apt-get -y install --force-yes freeswitch-lang-fr freeswitch-mod-say-fr freeswitch-sounds-en-ca-june
+fi
+
 if [[ $use_lang == "en-us" ]]; then
-apt-get -y install --force-yes freeswitch-lang-en freeswitch-mod-say-en freeswitch-sounds
+apt-get -y install --force-yes freeswitch-lang-en freeswitch-mod-say-en freeswitch-sounds-en-us-callie
 fi
 
 if [[ $use_lang == "fr-ca" ]]; then
-apt-get -y install --force-yes freeswitch-lang-fr freeswitch-mod-say-fr
-mkdir fr-sounds && cd fr-sounds
-wget http://files.freeswitch.org/freeswitch-sounds-fr-ca-june-8000-1.0.51.tar.gz && tar xzvf freeswitch-sounds-fr-ca-june-8000-1.0.51.tar.gz -C /usr/share/freeswitch/sounds
-wget http://files.freeswitch.org/freeswitch-sounds-fr-ca-june-16000-1.0.51.tar.gz && tar xzvf freeswitch-sounds-fr-ca-june-16000-1.0.51.tar.gz -C /usr/share/freeswitch/sounds
-cd~
+apt-get -y install --force-yes freeswitch-lang-fr freeswitch-mod-say-fr freeswitch-sounds-fr-ca-june
 fi
 
 if [[ $use_lang == "pt-br" ]]; then
-apt-get -y install --force-yes freeswitch-lang-pt freeswitch-mod-say-pt
-mkdir pt-sounds && cd pt-sounds
-wget http://files.freeswitch.org/freeswitch-sounds-pt-BR-karina-8000-1.0.51.tar.gz && tar xzvf freeswitch-sounds-pt-BR-karina-8000-1.0.51.tar.gz -C /usr/share/freeswitch/sounds
-wget http://files.freeswitch.org/freeswitch-sounds-pt-BR-karina-16000-1.0.51.tar.gz && tar xzvf freeswitch-sounds-pt-BR-karina-16000-1.0.51.tar.gz -C /usr/share/freeswitch/sounds
-cd ~
+apt-get -y install --force-yes freeswitch-lang-pt freeswitch-mod-say-pt freeswitch-sounds-pt-br-karina
 fi
 
 if [[ $use_lang == "ru-ru" ]]; then
-apt-get -y install --force-yes freeswitch-lang-ru freeswitch-mod-say-ru
-mkdir ru-sounds && cd ru-sounds
-wget http://files.freeswitch.org/freeswitch-sounds-ru-RU-elena-8000-1.0.12.tar.gz && tar xzvf freeswitch-sounds-ru-RU-elena-8000-1.0.51.tar.gz -C /usr/share/freeswitch/sounds
-wget http://files.freeswitch.org/freeswitch-sounds-ru-RU-elena-16000-1.0.12.tar.gz && tar xzvf freeswitch-sounds-ru-RU-elena-16000-1.0.51.tar.gz -C /usr/share/freeswitch/sounds
-cd~
+apt-get -y install --force-yes freeswitch-lang-ru freeswitch-mod-say-ru freeswitch-sounds-ru-ru-elena
 fi
 
 if [[ $use_lang == "sv-se" ]]; then
-apt-get -y install --force-yes freeswitch-lang-sv freeswitch-mod-say-sv
-mkdir sv-sounds && cd sv-sounds
-wget http://files.freeswitch.org/freeswitch-sounds-sv-se-jakob-8000-1.0.50.tar.gz && tar xzvf freeswitch-sounds-sv-se-jakob-8000-1.0.50.tar.gz -C /usr/share/freeswitch/sounds
-wget http://files.freeswitch.org/freeswitch-sounds-sv-se-jakob-16000-1.0.50.tar.gz && tar xzvf freeswitch-sounds-sv-se-jakob-16000-1.0.50.tar.gz -C /usr/share/freeswitch/sounds
-cd ~
+apt-get -y install --force-yes freeswitch-lang-sv freeswitch-mod-say-sv freeswitch-sounds-sv-se-jakob
 fi
 
 if [[ $use_lang == "zh-cn" ]]; then
-apt-get -y install --force-yes freeswitch-mod-say-zh
-mkdir zh-cn-sounds && cd zh-cn-sounds
-wget http://files.freeswitch.org/freeswitch-sounds-zh-cn-sinmei-8000-1.0.51.tar.gz && tar xzvf freeswitch-sounds-zh-cn-sinmei-8000-1.0.51.tar.gz -C /usr/share/freeswitch/sounds
-wget http://files.freeswitch.org/freeswitch-sounds-zh-cn-sinmei-16000-1.0.51.tar.gz && tar xzvf freeswitch-sounds-zh-cn-sinmei-16000-1.0.51.tar.gz -C /usr/share/freeswitch/sounds
-cd ~
+apt-get -y install --force-yes freeswitch-mod-say-zh freeswitch-sounds-zh-cn-sinmei
 fi
 
 if [[ $use_lang == "zh-hk" ]]; then
-apt-get -y install --force-yes freeswitch-mod-say-zh
-mkdir zh-hk-sounds && cd zh-hk-sounds
-wget http://files.freeswitch.org/freeswitch-sounds-zh-hk-sinmei-8000-1.0.51.tar.gz && tar xzvf freeswitch-sounds-zh-hk-sinmei-8000-1.0.51.tar.gz -C /usr/share/freeswitch/sounds
-wget http://files.freeswitch.org/freeswitch-sounds-zh-hk-sinmei-16000-1.0.51.tar.gz && tar xzvf freeswitch-sounds-zh-hk-sinmei-16000-1.0.51.tar.gz -C /usr/share/freeswitch/sounds
-cd ~
+apt-get -y install --force-yes freeswitch-mod-say-zh freeswitch-sounds-zh-hk-sinmei
 fi
 
 #make the conf dir
@@ -407,8 +383,8 @@ service freeswitch restart
 
 #---Start of nginx / php5 install --------
 #Install and configure  PHP + Nginx + sqlite3 for use with the fusionpbx gui.
-apt-get -y install sqlite3 ssl-cert nginx php5-cli php5-common php-apc php5-gd \
-		php-db php5-fpm php5-memcache php5-sqlite
+apt-get -y install sqlite3 ssl-cert nginx php5-cli php5-common \
+	php-apc php5-gd php-db php5-fpm php5-memcache php5-sqlite
 
 # Changing file upload size from 2M to upload_size
 sed -i "$php_ini" -e "s#upload_max_filesize = 2M#upload_max_filesize = $upload_size#"
