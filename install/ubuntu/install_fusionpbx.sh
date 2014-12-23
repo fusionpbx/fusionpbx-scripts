@@ -824,7 +824,7 @@ case $DISTRO_DETECT in
 	wheezy)
 		DISTRO=wheezy
 		/bin/echo "OK you're running Debian Wheezy.  This script is known to work"
-		/bin/echo "   with apache/nginx and sqlite|postgres9.3 options"
+		/bin/echo "   with apache/nginx and sqlite|postgres9.4 options"
 		/bin/echo "   Please consider providing feedback on whether or not this works."
 		
 		/bin/echo 
@@ -918,7 +918,7 @@ if [ $INSFREESWITCH -eq 1 ]; then
 	if [ $DISTRO == "precise" ]; then
 		/usr/bin/apt-get -y install ssh vim git-core libjpeg-dev subversion build-essential \
 		autoconf automake devscripts gawk g++ git-core libtool make libncurses5-dev \
-		python-dev pkg-config libtiff4-dev \
+		python-dev pkg-config libtiff4-dev php5-curl php5-imap php5-mcrypt lame \
 		libperl-dev libgdbm-dev gettext libssl-dev \
 		libcurl4-openssl-dev libpcre3-dev libspeex-dev libspeexdsp-dev \
 		libsqlite3-dev libedit-dev libgdbm-dev libmemcached-dev \
@@ -930,7 +930,7 @@ if [ $INSFREESWITCH -eq 1 ]; then
 		python-dev pkg-config libtiff5-dev libldns-dev \
 		libperl-dev libgdbm-dev libdb-dev gettext libcurl4-openssl-dev \
 		libpcre3-dev libspeex-dev libspeexdsp-dev libsqlite3-dev libedit-dev \
-		screen htop pkg-config bzip2 curl ntp \
+		screen htop pkg-config bzip2 curl memcached ntp php5-curl php5-imap php5-mcrypt lame \
 		time bison libssl-dev unixodbc libmyodbc unixodbc-dev libtiff-tools libmemcached-dev
 	else
 		/usr/bin/apt-get -y install ssh vim git-core libjpeg-dev subversion build-essential \
@@ -938,7 +938,7 @@ if [ $INSFREESWITCH -eq 1 ]; then
 		libperl-dev libgdbm-dev libdb-dev gettext libcurl4-openssl-dev \
 		libpcre3-dev libspeex-dev libspeexdsp-dev libsqlite3-dev libedit-dev \
 		autoconf automake devscripts gawk g++ git-core libtool make libncurses5-dev libjpeg62-dev \
-		screen htop pkg-config bzip2 curl ntp \
+		screen htop pkg-config bzip2 curl memcached ntp php5-curl php5-imap php5-mcrypt lame \
 		time bison libssl-dev unixodbc libmyodbc unixodbc-dev libtiff-tools libmemcached-dev
 	fi
 
@@ -988,8 +988,8 @@ if [ $INSFREESWITCH -eq 1 ]; then
 		read -p "  Would you like to install PostgreSQL or stay with Sqlite (p/S)? " SQLITEMYSQL
 		case "$SQLITEMYSQL" in
 		  [pP]*)
-			if [ $DISTRO = "precise" ]; then
-				echo "precise is PostgreSQL 9.1 by default"
+			if [ $DISTRO = "wheezy" ]; then
+				echo "wheezy is PostgreSQL 9.4 by default"
 				POSTGRES9=9
 			else
 				/bin/echo
@@ -1018,18 +1018,18 @@ if [ $INSFREESWITCH -eq 1 ]; then
 				/usr/bin/apt-get -y -t squeeze-backports install postgresql-9.1 libpq-dev 
 			elif [ $DISTRO = "precise" ]; then
 				POSTGRES9=9
-				#update repository for postgres 9.3 ...
+				#update repository for postgres 9.4 ...
 				/bin/echo "deb http://apt.postgresql.org/pub/repos/apt/ precise-pgdg main" > /etc/apt/sources.list.d/pgdg.list
 				wget --quiet -O - http://apt.postgresql.org/pub/repos/apt/ACCC4CF8.asc | sudo apt-key add -
 				/usr/bin/apt-get update
-				/usr/bin/apt-get -y install postgresql-9.3 libpq-dev
+				/usr/bin/apt-get -y install postgresql-9.4 libpq-dev
 			elif [ $DISTRO = "wheezy" ]; then
 				POSTGRES9=9
-				#update repository for postgres 9.3 ...
+				#update repository for postgres 9.4 ...
 				/bin/echo "deb http://apt.postgresql.org/pub/repos/apt/ wheezy-pgdg main" > /etc/apt/sources.list.d/pgdg.list
 				wget --quiet -O - http://apt.postgresql.org/pub/repos/apt/ACCC4CF8.asc | apt-key add -
 				/usr/bin/apt-get update
-				/usr/bin/apt-get -y install postgresql-9.3 libpq-dev php5-pgsql		
+				/usr/bin/apt-get -y install postgresql-9.4 libpq-dev php5-pgsql		
 				
 				service postgresql status |grep down
 				if [ $? -eq 0 ]; then
@@ -1046,7 +1046,7 @@ if [ $INSFREESWITCH -eq 1 ]; then
 				#add the ppa
 				/usr/bin/apt-add-repository ppa:pitti/postgresql
 				/usr/bin/apt-get update
-				/usr/bin/apt-get -y install postgresql-9.1 libpq-dev 
+				/usr/bin/apt-get -y install postgresql-9.3 libpq-dev 
 			fi
 		else
 			/bin/echo " version 8.4"
@@ -1824,7 +1824,7 @@ DELIM
 	#  SOLUTION: Turn off RepeatedMsgReduction in rsyslog.
 	/bin/echo "Turning off RepeatedMsgReduction in /etc/rsyslog.conf"
 	#not sure what the deal is with the single quotes here. Fixed in v4.4.0
-	#/bin/sed -i ‘s/RepeatedMsgReduction\ on/RepeatedMsgReduction\ off/’ /etc/rsyslog.conf
+	#/bin/sed -i ës/RepeatedMsgReduction\ on/RepeatedMsgReduction\ off/í /etc/rsyslog.conf
 	/bin/sed -i 's/RepeatedMsgReduction\ on/RepeatedMsgReduction\ off/' /etc/rsyslog.conf
 	/etc/init.d/rsyslog restart
 
@@ -2415,8 +2415,8 @@ DELIM
 		read -p "  Would you like to install MySQL, PostgreSQL, or stay with Sqlite (m/p/S)? " SQLITEMYSQL
 		case "$SQLITEMYSQL" in
 		  [pP]*)
-			if [ $DISTRO = "precise" ]; then
-				echo "precise is PostgreSQL 9.1 by default"
+			if [ $DISTRO = "wheezy" ]; then
+				echo "precise is PostgreSQL 9.4 by default"
 				POSTGRES9=9
 			else
 				/bin/echo
@@ -2466,7 +2466,7 @@ DELIM
 		/bin/echo -ne "    please set the password."
 		#add php postgres packages
 		if [ $POSTGRES9 == "9" ]; then
-			/bin/echo " version 9.1"
+			/bin/echo " version 9.3"
 			if [ $DISTRO = "squeeze" ]; then
 				#add squeeze repo
 				/bin/echo "Adding debian backports for postgres9.1"
@@ -2478,11 +2478,11 @@ DELIM
 				/usr/bin/apt-get -y install php5-pgsql
 			elif [ $DISTRO = "wheezy" ]; then
                                 POSTGRES9=9
-                                #update repository for postgres 9.3 ...
+                                #update repository for postgres 9.4 ...
                                 /bin/echo "deb http://apt.postgresql.org/pub/repos/apt/ wheezy-pgdg main" > /etc/apt/sources.list.d/pgdg.list
                                 wget --quiet -O - http://apt.postgresql.org/pub/repos/apt/ACCC4CF8.asc | apt-key add -
                                 /usr/bin/apt-get update
-                                /usr/bin/apt-get -y install postgresql-9.3 libpq-dev php5-pgsql
+                                /usr/bin/apt-get -y install postgresql-9.4 libpq-dev php5-pgsql
 			else
 				#add the ppa
 				/usr/bin/apt-add-repository ppa:pitti/postgresql
@@ -2663,7 +2663,7 @@ if [ $UPGFREESWITCH -eq 1 ]; then
 	else
 		/bin/echo
 		/bin/echo ' going to run make curent'
-		/bin/echo "   Make current completely cleans the build environment and rebuilds FreeSWITCH™"
+		/bin/echo "   Make current completely cleans the build environment and rebuilds FreeSWITCHô"
 		/bin/echo "   so it runs a long time. However, it will not overwrite files in a pre-existing"
 		/bin/echo '   "conf" directory. Also, the clean targets leave the "modules.conf" file.'
 		/bin/echo "   This handles the git pull, cleanup, and rebuild in one step"
