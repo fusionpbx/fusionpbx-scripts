@@ -1,5 +1,5 @@
 #!/bin/bash
-#Date Nov 12 2014 12:03 CST
+#Date Dec 28, 2014 07:46 CST
 ################################################################################
 # The MIT License (MIT)
 #
@@ -148,17 +148,6 @@ db_user_name=fusionpbx
 db_user_passwd=
 
 #-------Postgresql-End--------------
-
-# disbale generation of xml_cdr files and only store in cdr in the database
-xml_cdr_files="n"
-
-# disable  extra logging and on show warnings/errors. shrinks the size of 
-# logfiles and whats displayed in the logging page
-logging_level="n"
-
-#Extra Option's
-#Install openvpn scripts
-install_openvpn="n"
 
 #Install Ajenti Optional Admin Portal
 install_ajenti="n"
