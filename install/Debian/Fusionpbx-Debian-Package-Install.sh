@@ -1,5 +1,5 @@
 #!/bin/bash
-#Date Dec 28, 2014 07:46 CST
+#Date Dec 28 2014 08:44 CST
 ################################################################################
 # The MIT License (MIT)
 #
@@ -26,15 +26,17 @@
 ################################################################################
 cat  <<  DELIM
 
-        This Is A One Time Install Script. ( Not Ment For L.A.M.P Installs )
+                  ( Not Ment For L.a.m.p Installs )
 
-        This Script Is Ment To Be Run On A Fresh Install Of Debian 7 (Wheezy).
+                  THIS IS A ONE TIME INSTALL SCRIPT. 
 
-                    It Is Not Intended To Be Run Multi Times
+   This Script Is Ment To Be Run On A Fresh Install Of Debian 7 (Wheezy).
 
-        If It Fails For Any Reason Please Report To r.neese@gmail.com.
+   It Is Not Intended To Be Run Multi Times
 
-        Please Include Any Screen Output You Can To Show Where It Fails.
+   If It Fails For Any Reason Please Report To r.neese@gmail.com.
+
+   Please Include Any Screen Output You Can To Show Where It Fails.
 
 DELIM
 ################################################################################
@@ -42,12 +44,17 @@ DELIM
 if [[ -f /proc/vz ]]; then
 cat << DELIM
 
-    Note: "
+    Note:
+    
         Those of you running this script on openvz. You must run it as root and
-        bash  Fusionpbx-Debian-Pkg-Install-New.sh or it fails the networking check.
+        
+        bash Fusionpbx-Debian-Package-Install.sh or it fails the networking check.
+        
         Please take the time to refer to this document if you have install issues
-        on openvz
-        http://openvz.org/Virtual_Ethernet_device and make sure to setup a eth0 .
+        
+        on openvz http://openvz.org/Virtual_Ethernet_device and make sure to setup 
+        
+        a eth0 for better performance with the script.
 
 DELIM
 exit
@@ -65,19 +72,39 @@ fi
 # and fill in the required information.
 
 ################################################################################
-#<------Start Edit HERE--------->
+
+#<------Start/Begin Edit HERE--------->
+#############################################################################
 #Set how long to keep freeswitch/fusionpbx log files 1 to 30 days (Default:5)
+#############################################################################
 keep_logs=5
 
-#Set mp3/wav file upload/post size limit(Must Have the M on the end)
+#######################################################################
+#Set mp3/wav file upload/post size limit ( Must Have the M on the end )
+#######################################################################
 upload_size="25M"
 
+##################################################################
 # Set what language lang/say pkgs and language sound files to use.
-# en-ca=English Canada en-us=English/US (default) fr-ca=French/Canadian pt-br=Portuguese/Brazill ru-ru=Russian/Russia sv-se=Swedish/Sweden zh-cn=chinese/Mandarin zh-hk=chinese/HongKong 
+#############################################################################################
+# en-ca=English/CA en-us=English/US (default) fr-ca=French/Canadian pt-br=Portuguese/Brazill 
+# ru-ru=Russian/Russia sv-se=Swedish/Sweden zh-cn=chinese/Mandarin zh-hk=chinese/HongKong 
+#############################################################################################
 use_lang="en-us"
 
 #----Optional Fusionpbx Apps/Modules----
+#######################################
+# DO NOT SELECT FROM BOTH !!!!!!!!!!
+#######################################
 
+###################################################################
+# If you wish to install all options use THE ALL OPTION ONLY!!!!!!!
+###################################################################
+all="n" #: Install all extra modules for fusionpbx and related freeswitch deps
+
+########################################
+# Else select options from here........
+########################################
 adminer="n" # : integrated for an administrator in the superadmin group to enable easy database access
 backup="n" # : pbx backup module. backup sqlite db / configs/ logs
 call_broadcast="n" # : Create a recording and select one or more groups to have the system call and play the recording
@@ -111,81 +138,83 @@ accessible_theme="n" # : accessible theme for fusionpbx
 classic_theme="n" # : classic theme for fusionpbx
 default_theme="n" # : default theme for fusionpbx
 minimized_theme="n" # : minimal theme for fusionpbx
-all="n" #: Install all extra modules for fusionpbx and related freeswitch deps
 
 #------Postgresql start-------
+
+#########################
 #Optional (Not Required)
-# Please Select Server or Client not both.
-# Used for connecting to remote postgresql database servers
-# Install postgresql Client 9.3 for connection to remote postgresql servers (y/n)
+#########################
+
+################################################
+# Please Select Server or Client not both !!!!!!
+################################################
+
+#################################################################################
+# Install postgresql Client 9.4 for connection to remote postgresql servers (y/n)
+#################################################################################
 postgresql_client="n"
 
-# Install postgresql server 9.3 (y/n) (client included)(Local Machine)
+#################################################################################
+# Install postgresql server 9.4 (y/n) (client included)(Local Machine)
 # Notice:
 # You should not use postgresql server on a nand/emmc/sd. It cuts the performance
 # life in half due to all the needed reads and writes. This cuts the life of
 # your pbx emmc/sd in half.
+#################################################################################
 postgresql_server="n"
 
+##########################################################
 # Set Postgresql Server Admin username ( Lower case only )
-pgsql_admin=
+##########################################################
+pgsql_admin=pgsqladmin
 
+######################################
 # Set Postgresql Server Admin password
-pgsql_admin_passwd=
+######################################
+pgsql_admin_passwd=pgsqladmin2015
 
-# Set Database Name used for fusionpbx in the postgresql server
-# (Default: fusionpbx)
+####################################################################################
+# Set Database Name used for fusionpbx in the postgresql server (Default: fusionpbx)
+####################################################################################
 db_name=fusionpbx
 
-# Set FusionPBX database admin name.(used by fusionpbx to access
-# the database table in the postgresql server.
-# (Default: fusionpbx)
-db_user_name=fusionpbx
+####################################################################################
+# Set FusionPBX database admin name.(used by fusionpbx to access the database table 
+# in the postgresql server (Default: fusionpbx)
+####################################################################################
+db_user_name=fusionpbxadmin
 
-# Set FusionPBX database admin password .(used by fusionpbx to access
-# the database table in the postgresql server).
-# Please set a very secure passwd
-db_user_passwd=
+###################################################################################
+# Set FusionPBX database admin password .(used by fusionpbx to access the database 
+# table in the postgresql server). Please set a very secure password !!!!!!
+###################################################################################
+db_user_passwd=fusionpbx2015
 
 #-------Postgresql-End--------------
 
-#Install Ajenti Optional Admin Portal
+################################################################
+#Install Ajenti Optional Admin Portal  Optional (Not Required)
+################################################################
 install_ajenti="n"
 
-#<------Stop Edit Here-------->
-################################################################################
-# Hard Set Varitables (Do Not EDIT)
-#Freeswitch default runtime Dir Layout
+#<------Stop/End Edit Here-------->
+
+######################################################
+# Hard Set Varitables (Do Not EDIT) Freeswitch default
+###################################################### 
 fs_conf_dir="/etc/freeswitch"
 fs_dflt_conf_dir="/usr/share/freeswitch/conf"
-#fs_db_dir="/var/lib/freeswitch/db"
 fs_log_dir="/var/log/freeswitch"
-#fs_mod_dir="/usr/lib/freeswitch/mod" (not currently used)
-#fs_recordings_dir="/var/lib/freeswitch/recordings"
-#fs_run_dir="/var/run/freeswitch"
 fs_scripts_dir="/var/lib/freeswitch/scripts"
-#fs_sounds_dir="/usr/share/freeswitch/sounds"
 fs_storage_dir="/var/lib/freeswitch/storage"
-#fs_temp_dir="/tmp"
-##
-#Fusionpbx freeswitch runtime Dir Layout
-#fs_conf="/etc/fusionpbx/switch/conf"
-#fs_db="/var/lib/freeswitch/db"
-#fs_log="/var/log/freeswitch"
-#fs_recordings="/var/lib/fusionpbx/recordings"
-#fs_run="/var/run/freeswitch"
-#fs_scripts="/var/lib/fusionpbx/scripts"
-#fs_storage="/var/lib/fusionpbx/storage"
-##
-################################################################################
-# Hard Set Varitables (Do Not EDIT)
+######################################################
 #Nginx default www dir
 WWW_PATH="/var/www" #debian nginx default dir
 #set Web User Interface Dir Name
 wui_name="fusionpbx"
 #Php ini config file
 php_ini="/etc/php5/fpm/php.ini"
-#################################################################################
+######################################################
 
 #-----Start installation------
 
@@ -208,8 +237,7 @@ fi
 #--- end internet test------
 
 #----OS ENVIRONMENT CHECKS-------
-#check to confirm running as root
-#
+# check to confirm running as root
 # First, we need to be root...
 
 if [ "$(id -u)" -ne "0" ]; then
@@ -283,9 +311,9 @@ apt-get -y install acpi-support-base curl usbmount usbutils
 #--------adding in custom repos-------
 
 #adding in freeswitch reop to /etc/apt/sources.list.d/freeswitch.lists
-echo ' installing freeswitch head repo '
+echo ' installing Release/Stable repo '
 cat > "/etc/apt/sources.list.d/freeswitch.list" <<DELIM
-deb http://repo.fusionpbx.com/repo/freeswitch/head/debian/ wheezy main
+deb http://repo.fusionpbx.com/freeswitch/head/debian/ wheezy main
 DELIM
 
 #adding FusionPBX repo
@@ -293,14 +321,6 @@ echo 'installing fusionpbx head repo'
 cat > "/etc/apt/sources.list.d/fusionpbx.list" <<DELIM
 deb http://repo.fusionpbx.com/fusionpbx/head/debian/ wheezy main
 DELIM
-
-#postgresql 9.4 repo for x86 x86-64 bit pkgs
-#add in pgsql 9.4
-cat > "/etc/apt/sources.list.d/pgsql-pgdg.list" << DELIM
-deb http://apt.postgresql.org/pub/repos/apt/ wheezy-pgdg main
-DELIM
-#add pgsql repo key
-wget --quiet -O - http://apt.postgresql.org/pub/repos/apt/ACCC4CF8.asc | apt-key add -
 
 #------end of installing repos-----
 
@@ -372,8 +392,8 @@ service freeswitch restart
 
 #---Start of nginx / php5 install --------
 #Install and configure  PHP + Nginx + sqlite3 for use with the fusionpbx gui.
-apt-get -y install sqlite3 ssl-cert nginx php5-cli php5-common \
-	php-apc php5-gd php-db php5-fpm php5-memcache php5-sqlite
+apt-get -y install sqlite3 ssl-cert nginx php5-cli php5-common php-apc php5-gd \
+		php-db php5-fpm php5-memcache php5-sqlite php5-imap php5-mcrypt php5-curl
 
 # Changing file upload size from 2M to upload_size
 sed -i "$php_ini" -e "s#upload_max_filesize = 2M#upload_max_filesize = $upload_size#"
@@ -485,13 +505,13 @@ server{
         ssl_ciphers     HIGH:!ADH:!MD5;
 
 		#grandstream
-        rewrite "^.*/provision/cfg([A-Fa-f0-9]{12})(\.(xml|cfg))?$" /app/provision/?mac=\$1;
+        rewrite "^.*/provision/cfg([A-Fa-f0-9]{12})(\.(xml|cfg))?$" /app/provision/?mac=$1;
 
 		#aastra
 		#rewrite "^.*/provision/([A-Fa-f0-9]{12})(\.(cfg))?$" /app/provision/?mac=$1 last;
 
 		#yealink common
-		rewrite "^.*/provision/(y[0-9]{12})(\.cfg)?$" /app/provision/index.php?file=\$1\$2;
+		rewrite "^.*/provision/(y[0-9]{12})(\.cfg)?$" /app/provision/index.php?file=$1$2;
 
 		#yealink mac
 		rewrite "^.*/provision/([A-Fa-f0-9]{12})(\.(xml|cfg))?$" /app/provision/index.php?mac=$1 last;
@@ -638,8 +658,7 @@ apt-get -y --force-yes install fusionpbx-core fusionpbx-app-calls fusionpbx-app-
 	fusionpbx-app-recordings fusionpbx-app-registrations fusionpbx-app-ring-groups fusionpbx-app-settings \
 	fusionpbx-app-sip-profiles fusionpbx-app-sip-status fusionpbx-app-system fusionpbx-app-time-conditions \
 	fusionpbx-app-xml-cdr fusionpbx-app-vars fusionpbx-app-voicemails fusionpbx-app-voicemail-greetings \
-	fusionpbx-conf fusionpbx-scripts fusionpbx-sqldb fusionpbx-theme-enhanced fusionpbx-app-operator-panel \
-	fusionpbx-music-default
+	fusionpbx-conf fusionpbx-scripts fusionpbx-sqldb fusionpbx-theme-enhanced fusionpbx-music-default
 
 #set permissions on dir
 find "/var/lib/fusionpbx" -type d -exec chmod 775 {} +
@@ -728,8 +747,7 @@ if [[ $snom == "y" ]]; then
 apt-get -y --force-yes install fusionpbx-app-devices fusionpbx-app-provision fusionpbx-provisioning-template-snom && mkdir -p /etc/fusionpbx/resources/templates/provision && cp -rp /usr/share/examples/fusionpbx/resources/templates/provision/snom /etc/fusionpbx/resources/templates/provision/
 fi
 if [[ $yealink == "y" ]]; then
-apt-get -y --force-yes install fusionpbx-app-devices fusionpbx-app-provision fusionpbx-provisioning-template-yealink \
-&& mkdir -p /etc/fusionpbx/resources/templates/provision && cp -rp /usr/share/examples/fusionpbx/resources/templates/provision/yealink /etc/fusionpbx/resources/templates/provision/
+apt-get -y --force-yes install fusionpbx-app-devices fusionpbx-app-provision fusionpbx-provisioning-template-yealink && mkdir -p /etc/fusionpbx/resources/templates/provision && cp -rp /usr/share/examples/fusionpbx/resources/templates/provision/yealink /etc/fusionpbx/resources/templates/provision/
 fi
 if [[ $verto == "y" ]]; then
 apt-get -y --force-yes install freeswitch-mod-verto
@@ -769,6 +787,17 @@ for i in freeswitch nginx php5-fpm ;do service "${i}" restart >/dev/null 2>&1 ; 
 
 #Install postgresql-client option
 if [[ $postgresql_client == "y" ]]; then
+#postgresql 9.4 repo for x86 x86-64 bit pkgs
+cat > "/etc/apt/sources.list.d/pgsql-pgdg.list" << DELIM
+deb http://apt.postgresql.org/pub/repos/apt/ wheezy-pgdg main
+DELIM
+	
+	#add pgsql repo key
+	wget --quiet -O - http://apt.postgresql.org/pub/repos/apt/ACCC4CF8.asc | apt-key add -
+
+	#update the repos
+	apt-get update
+	
 	for i in postgresql-client-9.4 php5-pgsql ;do apt-get -y install "${i}"; done
 	service php5-fpm restart
 	clear
@@ -777,7 +806,7 @@ if [[ $postgresql_client == "y" ]]; then
 	echo
 	echo " Now Waiting on you to finish the installation via web browser "
 	echo	
-	printf '	Please open a web-browser to http://'; ip -f inet addr show dev $net_iface | sed -n 's/^ *inet *\([.0-9]*\).*/\1/p'
+	printf '	Please open a web-browser to http://'; ip -f inet addr show dev eth0 | sed -n 's/^ *inet *\([.0-9]*\).*/\1/p'
 cat << DELIM
 	Or the Doamin name assigned to the machine like http://"$(hostname).$(dnsdomainname)".
 	On the First configuration page of the web user interface.
@@ -796,6 +825,17 @@ fi
 
 #-----install & configure basic postgresql-server
 if [[ $postgresql_server == "y" ]]; then
+#postgresql 9.4 repo for x86 x86-64 bit pkgs
+cat > "/etc/apt/sources.list.d/pgsql-pgdg.list" << DELIM
+deb http://apt.postgresql.org/pub/repos/apt/ wheezy-pgdg main
+DELIM
+	
+	#add pgsql repo key
+	wget --quiet -O - http://apt.postgresql.org/pub/repos/apt/ACCC4CF8.asc | apt-key add -
+
+	#update the repos
+	apt-get update
+	
 	for i in postgresql-9.4 php5-pgsql ;do apt-get -y install "${i}"; done
 	service php5-fpm restart
 
@@ -807,7 +847,7 @@ if [[ $postgresql_server == "y" ]]; then
 	echo
 	echo " Now Waiting on you to finish the installation via web browser "
 	echo
-	printf 'Please open a web browser to http://'; ip -f inet addr show dev $net_iface | sed -n 's/^ *inet *\([.0-9]*\).*/\1/p'   
+	printf 'Please open a web browser to http://'; ip -f inet addr show dev eth0 | sed -n 's/^ *inet *\([.0-9]*\).*/\1/p'   
 cat << DELIM
  Or the Doamin name asigned to the machine like http://"$(hostname).$(dnsdomainname)".
  On the First configuration page of the web user interface
@@ -827,7 +867,7 @@ echo " The $wui_name install has finished...  "
 echo
 echo " Now Waiting on you to finish the installation via web browser "
 echo
-printf ' Please open a web-browser to http://'; ip -f inet addr show dev $net_iface | sed -n 's/^ *inet *\([.0-9]*\).*/\1/p'
+printf ' Please open a web-browser to http://'; ip -f inet addr show dev eth0 | sed -n 's/^ *inet *\([.0-9]*\).*/\1/p'
 cat << DELIM
  or the Doamin name asigned to the machine like http://"$(hostname).$(dnsdomainname)".
  On the First Configuration page of the web user interface "$wui_name".
@@ -1084,16 +1124,6 @@ for i in php5-fpm niginx monit fail2ban freeswitch ;do service "${i}" restart  >
 
 #----End of fail2ban/monit services install--------
 
-#option to disable xml_cdr files
-if [[ $xml_cdr_files == "y" ]]; then
-/bin/sed -i "$WWW_PATH"/"$wui_name"/app/vars/app_defaults.php -e 's#{"var_name":"xml_cdr_archive","var_value":"dir","var_cat":"Defaults","var_enabled":"true","var_description":""}#{"var_name":"xml_cdr_archive","var_value":"none","var_cat":"Defaults","var_enabled":"true","var_description":""}#'
-fi
-
-#option to disable some loging execpt for 
-if [[ $logging_level == "y" ]]; then
-/bin/sed -i /usr/share/examples/fusionpbx/resources/templates/conf/autoload_configs/logfile.conf.xml -e 's#<map name="all" value="debug,info,notice,warning,err,crit,alert"/>#<map name="all" value="warning,err,crit,alert"/>#'
-fi
-
 #end of fusionpbx install
 
 #---Setup scanner blocking service in iptables----------
@@ -1114,12 +1144,6 @@ iptables -I INPUT -j DROP -p udp --dport 5080 -m string --string "friendly-scann
 cat > /etc/sysctl.conf << DELIM
 kernel.panic = 10
 DELIM
-
-#Install optional openvpn-scripts
-#if [[ $install_openvpn == "y" ]]; then
-#echo "Installing Open-vpn configuration scripts"
-#apt-get install openvpn openvpn-scripts
-#fi
 
 #Ajenti admin portal. Makes maintaining the system easier.
 #ADD Ajenti repo & ajenti
