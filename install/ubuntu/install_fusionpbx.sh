@@ -113,7 +113,10 @@ FSREV="187abe02af4d64cdedc598bd3dfb1cd3ed0f4a91"
 FSCHECKOUTVER=false
 FPBXREV="1876"
 FBPXCHECKOUTVER=false
-URLSCRIPT="http://fusionpbx.googlecode.com/svn/branches/dev/scripts/install/ubuntu/install_fusionpbx.sh"
+#dev
+#URLSCRIPT="http://fusionpbx.googlecode.com/svn/branches/dev/scripts/install/ubuntu/install_fusionpbx.sh"
+#trunk
+URLSCRIPT="https://fusionpbx.googlecode.com/svn/trunk/scripts/install/ubuntu/install_fusionpbx.sh"
 INSFUSION=0
 INSFREESWITCH=0
 UPGFUSION=0
@@ -1824,7 +1827,7 @@ DELIM
 	#  SOLUTION: Turn off RepeatedMsgReduction in rsyslog.
 	/bin/echo "Turning off RepeatedMsgReduction in /etc/rsyslog.conf"
 	#not sure what the deal is with the single quotes here. Fixed in v4.4.0
-	#/bin/sed -i ës/RepeatedMsgReduction\ on/RepeatedMsgReduction\ off/í /etc/rsyslog.conf
+	#/bin/sed -i 's/RepeatedMsgReduction\ on/RepeatedMsgReduction\ off/' /etc/rsyslog.conf
 	/bin/sed -i 's/RepeatedMsgReduction\ on/RepeatedMsgReduction\ off/' /etc/rsyslog.conf
 	/etc/init.d/rsyslog restart
 
@@ -2342,7 +2345,7 @@ DELIM
 	/usr/sbin/adduser www-data daemon
 	/bin/chown -R www-data:www-data $WWW_PATH/$GUI_NAME
 	/bin/echo "freeswitch is now a member of the www-data group"
-	/bin/echo "  www-data is now a member of the dameon group"
+	/bin/echo "  www-data is now a member of the daemon group"
 
 	/usr/bin/find $WWW_PATH/$GUI_NAME -type f -exec /bin/chmod 644 {} \;
 	/usr/bin/find $WWW_PATH/$GUI_NAME -type d -exec /bin/chmod 755 {} \;
@@ -2663,7 +2666,7 @@ if [ $UPGFREESWITCH -eq 1 ]; then
 	else
 		/bin/echo
 		/bin/echo ' going to run make curent'
-		/bin/echo "   Make current completely cleans the build environment and rebuilds FreeSWITCHô"
+		/bin/echo "   Make current completely cleans the build environment and rebuilds FreeSWITCH™"
 		/bin/echo "   so it runs a long time. However, it will not overwrite files in a pre-existing"
 		/bin/echo '   "conf" directory. Also, the clean targets leave the "modules.conf" file.'
 		/bin/echo "   This handles the git pull, cleanup, and rebuild in one step"
