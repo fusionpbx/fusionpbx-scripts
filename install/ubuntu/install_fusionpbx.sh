@@ -20,6 +20,7 @@ LICENSE=$( cat << DELIM
 #
 #  Contributor(s):
 #		Gill Abada <ga@steadfasttelecom.com>
+#    Mark J Crane <markjcrane@fusionpbx.com>
 #------------------------------------------------------------------------------
 DELIM
 )
@@ -2666,7 +2667,7 @@ if [ $UPGFREESWITCH -eq 1 ]; then
 	else
 		/bin/echo
 		/bin/echo ' going to run make curent'
-		/bin/echo "   Make current completely cleans the build environment and rebuilds FreeSWITCH™"
+		/bin/echo "   Make current completely cleans the build environment and rebuilds FreeSWITCHÂ™"
 		/bin/echo "   so it runs a long time. However, it will not overwrite files in a pre-existing"
 		/bin/echo '   "conf" directory. Also, the clean targets leave the "modules.conf" file.'
 		/bin/echo "   This handles the git pull, cleanup, and rebuild in one step"
