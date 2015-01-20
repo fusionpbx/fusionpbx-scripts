@@ -121,6 +121,8 @@ cat << DELIM
    This Script Is Ment To Be Run On A Fresh Install Of Debian 7 (Wheezy)
    
    or Fresh Install Of Debian 8 (Jessie). 
+   
+   			("Ubuntu Is Unsupported with this script")
 
    If It Fails For Any Reason Please Report To r.neese@gmail.com.
 
