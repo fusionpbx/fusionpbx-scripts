@@ -566,6 +566,7 @@ php_ini="/etc/php5/fpm/php.ini"
 #Testing for internet connection. Pulled from and modified
 #http://www.linuxscrew.com/2009/04/02/tiny-bash-scripts-check-internet-connection-availability/
 ###############################################################################################
+#######################################
 #-----test internet connection-------
 #######################################
 echo
@@ -647,9 +648,9 @@ service ntp restart
 ########################################
 apt-get -y install unixodbc uuid memcached libtiff5 libtiff-tools time bison htop screen libpq5 lame
 
-##############################################
+#############################################
 #-----Start Install of freeswitch-----------
-##############################################
+#############################################
 apt-get -y install --force-yes freeswitch freeswitch-init freeswitch-meta-codecs freeswitch-mod-commands freeswitch-mod-curl \
 		freeswitch-mod-db freeswitch-mod-distributor freeswitch-mod-dptools freeswitch-mod-enum freeswitch-mod-esf freeswitch-mod-esl \
 		freeswitch-mod-expr freeswitch-mod-fsv freeswitch-mod-hash freeswitch-mod-memcache freeswitch-mod-portaudio freeswitch-mod-portaudio-stream \
@@ -660,9 +661,9 @@ apt-get -y install --force-yes freeswitch freeswitch-init freeswitch-meta-codecs
 		freeswitch-mod-say-en freeswitch-mod-posix-timer freeswitch-mod-timerfd freeswitch-mod-v8 freeswitch-mod-xml-cdr freeswitch-mod-xml-curl \
 		freeswitch-mod-xml-rpc freeswitch-conf-vanilla 
 
-#############################
+############################
 # Intel/AMD gets mod_shout
-#############################
+############################
 case $(uname -m) in x86_64|i[4-6]86)	
 	apt-get -y install --force-yes freeswitch-mod-shout
 esac
@@ -861,6 +862,7 @@ done
 # Pulled from freeswitch/debain/rules files. Sets Dir in FHS Layout.....
 ###################################################################################
 cd "$fs_src_path"
+if [[ freeswitch_stable == "y" ]]; then
 ./configure -C --with-gnu-ld --with-python --with-openssl \
 --enable-core-odbc-support --enable-zrtp \
 --enable-core-pgsql-support \
@@ -878,9 +880,25 @@ cd "$fs_src_path"
 --with-certsdir=/etc/freeswitch/tls \
 --with-scriptdir=/var/lib/freeswitch/scripts \
 --with-recordingsdir=/var/lib/freeswitch/recordings \
-if [[ freeswitch_stable == "y" ]]; then
 --enable-static-v8 --disable-parallel-build-v8
 else
+./configure -C --with-gnu-ld --with-python --with-openssl \
+--enable-core-odbc-support --enable-zrtp \
+--enable-core-pgsql-support \
+--prefix=/usr --localstatedir=/var \
+--sysconfdir=/etc/freeswitch \
+--with-modinstdir=/usr/lib/freeswitch/mod \
+--with-rundir=/var/run/freeswitch \
+--with-logfiledir=/var/log/freeswitch \
+--with-dbdir=/var/lib/freeswitch/db \
+--with-htdocsdir=/usr/share/freeswitch/htdocs \
+--with-soundsdir=/usr/share/freeswitch/sounds \
+--with-storagedir=/var/lib/freeswitch/storage \
+--with-cachedir=/var/cache/freeswitch \
+--with-grammardir=/usr/share/freeswitch/grammar \
+--with-certsdir=/etc/freeswitch/tls \
+--with-scriptdir=/var/lib/freeswitch/scripts \
+--with-recordingsdir=/var/lib/freeswitch/recordings \
 --enable-static-v8 --disable-parallel-build-v8 \
 --enable-sytem-lua
 fi
