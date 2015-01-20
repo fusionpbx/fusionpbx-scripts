@@ -118,7 +118,9 @@ cat << DELIM
 
              "IT IS NOT INTENDED TO BE RUN MULTIPLE TIMES"
 
-   This Script Is Ment To Be Run On A Fresh Install Of Debian 7 (Wheezy).
+   This Script Is Ment To Be Run On A Fresh Install Of Debian 7 (Wheezy)
+   
+   or Fresh Install Of Debian 8 (Jessie). 
 
    If It Fails For Any Reason Please Report To r.neese@gmail.com.
 
