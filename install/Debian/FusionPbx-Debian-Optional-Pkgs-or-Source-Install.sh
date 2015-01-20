@@ -104,7 +104,7 @@ else
 		exit
 	fi
 fi
-
+clear
 ###################
 # Notes / Warnings
 ###################
@@ -125,6 +125,7 @@ cat << DELIM
    If It Fails For Any Reason Please Report To r.neese@gmail.com.
 
    Please Include Any Screen Output You Can To Show Where It Fails.
+   
 DELIM
 
 ###############################################
@@ -535,7 +536,9 @@ else
 	fs_ver="v1.5"
 fi
 
+# Set the freeswitch src path based on version
 fs_src_path=/usr/src/freeswitch-"$fs_ver"
+
 ################################################################
 #Used for pkg based installs for cp the base configs into place
 ################################################################
