@@ -747,15 +747,26 @@ else
 ################################
 # Install freeswitch build deps
 ################################
-apt-get -y install time ntp ssh vim git-core libjpeg-dev subversion build-essential \
+lsb_release -c |grep -i jessie > /dev/null
+if [ $? -eq 0 ]; then
+	apt-get -y install time ntp ssh vim git-core libjpeg62-turbo-dev subversion build-essential \
 		autoconf automake devscripts gawk g++ git-core libtool make libncurses5-dev \
 		python-dev pkg-config libtiff5-dev libldns-dev \
 		libperl-dev libgdbm-dev libdb-dev gettext libcurl4-openssl-dev  \
 		libpcre3-dev libspeex-dev libspeexdsp-dev libsqlite3-dev \
 		libedit-dev screen htop pkg-config bzip2 bison libssl-dev unixodbc \
 		unixodbc-dev libtiff-tools libmemcached-dev uuid-dev libpq5 libpq-dev \
-		portaudio19-dev lame
-
+		portaudio19-dev lame libldap2-dev
+else
+	apt-get -y install time ntp ssh vim git-core libjpeg-dev subversion build-essential \
+		autoconf automake devscripts gawk g++ git-core libtool make libncurses5-dev \
+		python-dev pkg-config libtiff5-dev libldns-dev \
+		libperl-dev libgdbm-dev libdb-dev gettext libcurl4-openssl-dev  \
+		libpcre3-dev libspeex-dev libspeexdsp-dev libsqlite3-dev \
+		libedit-dev screen htop pkg-config bzip2 bison libssl-dev unixodbc \
+		unixodbc-dev libtiff-tools libmemcached-dev uuid-dev libpq5 libpq-dev \
+		portaudio19-dev lame libldap2-dev
+fi
 #######################
 # Install Freetdm Deps
 #######################
