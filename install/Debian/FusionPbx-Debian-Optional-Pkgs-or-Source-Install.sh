@@ -295,7 +295,7 @@ use_mod_freetdm="n"
 #mod_dingaling                #mod_spy                        #mod_translat
 #mod_flite                    #mod_pocketsphinx               #mod_tts_commandline
 #mod_event_multicast          #mod_event_test                 #mod_shout
-#mod_rtmp (sipml5)            #mod_random
+#mod_rtmp (sipml5)            #mod_random                     #languages/mod_v8
 
 ################################################################################
 #Enable optional modules from list above here used for fusionpnbx build !!!!!!
@@ -305,12 +305,12 @@ fusionpbx_modules_add=( mod_blacklist mod_callcenter mod_cidlookup mod_curl mod_
     mod_esl mod_lcr mod_memcache mod_amrwb mod_celt mod_codec2 mod_isac mod_silk mod_siren \
     mod_theora mod_portaudio mod_dingaling mod_spy mod_translate mod_flite mod_pocketsphinx \
     mod_tts_commandline mod_event_multicast mod_event_test mod_shout mod_rtmp mod_random \
-    ../../libs/freetdm/mod_freetdm )
+    ../../libs/freetdm/mod_freetdm mod_v8)
 else
 fusionpbx_modules_add=( mod_blacklist mod_callcenter mod_cidlookup mod_curl mod_distributor \
     mod_esl mod_lcr mod_memcache mod_amrwb mod_celt mod_codec2 mod_isac mod_silk mod_siren \
     mod_theora mod_portaudio mod_dingaling mod_spy mod_translate mod_flite mod_pocketsphinx \
-    mod_tts_commandline mod_event_multicast mod_event_test mod_shout mod_rtmp mod_random )
+    mod_tts_commandline mod_event_multicast mod_event_test mod_shout mod_rtmp mod_random mod_v8)
 fi
 #############################
 # Optional Freeswitch Modules
@@ -334,7 +334,7 @@ fi
 #event_handlers/mod_odbc_cdr      #event_handlers/mod_rayo          #event_handlers/mod_snmp
 #formats/mod_shell_stream         #formats/mod_ssml                 #formats/mod_vlc
 #languages/mod_basic              #languages/mod_java               #languages/mod_managed
-#languages/mod_perl               #languages/mod_python             #languages/mod_v8
+#languages/mod_perl               #languages/mod_python             
 #languages/mod_yaml               #loggers/mod_graylog2             #say/mod_say_de
 #say/mod_say_es                   #say/mod_say_es_ar                #say/mod_say_fa
 #say/mod_say_fr                   #say/mod_say_he                   #say/mod_say_hr
@@ -601,14 +601,32 @@ case $(uname -m) in x86_64|i[4-6]86)
 	if [[ $freeswitch_stable == "y" ]]; then
 		#adding in freeswitch reop to /etc/apt/sources.list.d/freeswitch.lists
 		echo " installing Intel/AMD64 Release/Stable repo "
-		cat > "/etc/apt/sources.list.d/freeswitch.list" <<DELIM
-		deb http://repo.fusionpbx.com/freeswitch/release/debian/ wheezy main
+		lsb_release -c |grep -i wheezy &> /dev/null 2>&1
+		if [ $? -eq 0 ]; then
+			echo "installing wheezy release repo"
+			cat > "/etc/apt/sources.list.d/freeswitch.list" <<DELIM
+			deb http://repo.fusionpbx.com/freeswitch/release/debian/ wheezy main
 DELIM
+		else
+			echo "installing jessie release repo"
+			cat > "/etc/apt/sources.list.d/freeswitch.list" <<DELIM
+			deb http://repo.fusionpbx.com/freeswitch/release/debian/ jessie main
+DELIM
+		fi
 	else
 		echo " installing Intel/AMD64 Head/Devel repo "
-		cat > "/etc/apt/sources.list.d/freeswitch.list" <<DELIM
-		deb http://repo.fusionpbx.com/freeswitch/head/debian/ wheezy main
+		lsb_release -c |grep -i wheezy &> /dev/null 2>&1
+		if [ $? -eq 0 ]; then
+			echo "installing wheezy head repo"
+			cat > "/etc/apt/sources.list.d/freeswitch.list" <<DELIM
+			deb http://repo.fusionpbx.com/freeswitch/head/debian/ wheezy main
 DELIM
+		else
+			echo " installing jessie head repo "
+			cat > "/etc/apt/sources.list.d/freeswitch.list" <<DELIM
+			deb http://repo.fusionpbx.com/freeswitch/head/debian/ jessie main
+DELIM
+		fi
 	fi
 esac
 
@@ -619,14 +637,32 @@ case $(uname -m) in armv7l)
 	if [[ $freeswitch_stable == "y" ]]; then
 		#adding Freeswitch ARMHF repo to /etc/apt/sources.list.d/freeswitch.lists
 		echo 'installing Freeswitch ARMHF Release/Stable repo'
-		cat > "/etc/apt/sources.list.d/freeswitch.list" <<DELIM
-		deb http://repo.fusionpbx.com/freeswitch-armhf/release/debian/ wheezy main
+		lsb_release -c |grep -i wheezy &> /dev/null 2>&1
+		if [ $? -eq 0 ]; then
+			echo "installing wheezy release repo"
+			cat > "/etc/apt/sources.list.d/freeswitch.list" <<DELIM
+			deb http://repo.fusionpbx.com/freeswitch-armhf/release/debian/ wheezy main
 DELIM
+		else
+			echo "installing jessie release repo"
+			cat > "/etc/apt/sources.list.d/freeswitch.list" <<DELIM
+			deb http://repo.fusionpbx.com/freeswitch-armhf/release/debian/ jessie main
+DELIM
+		fi
 	else
-		echo 'installing Freeswitch ARMHF Head/Devel repo'
-		cat > "/etc/apt/sources.list.d/freeswitch.list" <<DELIM
-		deb http://repo.fusionpbx.com/freeswitch-armhf/head/debian/ wheezy main
+		echo "installing Freeswitch ARMHF Head/Devel repo"
+		lsb_release -c |grep -i wheezy &> /dev/null 2>&1
+		if [ $? -eq 0 ]; then
+			echo "installing wheezy head repo"
+			cat > "/etc/apt/sources.list.d/freeswitch.list" <<DELIM
+			deb http://repo.fusionpbx.com/freeswitch-armhf/head/debian/ wheezy main
 DELIM
+		else
+			echo "installing jessie head repo"
+			cat > "/etc/apt/sources.list.d/freeswitch.list" <<DELIM
+			deb http://repo.fusionpbx.com/freeswitch-armhf/head/debian/ jessie main
+DELIM
+		fi
 	fi	
 esac
 	
@@ -862,7 +898,7 @@ done
 # Pulled from freeswitch/debain/rules files. Sets Dir in FHS Layout.....
 ###################################################################################
 cd "$fs_src_path"
-if [[ freeswitch_stable == "y" ]]; then
+if [[ $freeswitch_stable == "y" ]]; then
 ./configure -C --with-gnu-ld --with-python --with-openssl \
 --enable-core-odbc-support --enable-zrtp \
 --enable-core-pgsql-support \
