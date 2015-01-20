@@ -754,7 +754,7 @@ if [ $? -eq 0 ]; then
 		libpcre3-dev libspeex-dev libspeexdsp-dev libsqlite3-dev \
 		libedit-dev screen htop pkg-config bzip2 bison libssl-dev unixodbc \
 		unixodbc-dev libtiff-tools libmemcached-dev uuid-dev libpq5 libpq-dev \
-		portaudio19-dev lame libldap2-dev
+		portaudio19-dev lame libldap2-dev lua5.2 liblua5.2-dev
 else
 	apt-get -y install time ntp ssh vim git-core libjpeg-dev subversion build-essential \
 		autoconf automake devscripts gawk g++ git-core libtool make libncurses5-dev \
@@ -763,7 +763,7 @@ else
 		libpcre3-dev libspeex-dev libspeexdsp-dev libsqlite3-dev \
 		libedit-dev screen htop pkg-config bzip2 bison libssl-dev unixodbc \
 		unixodbc-dev libtiff-tools libmemcached-dev uuid-dev libpq5 libpq-dev \
-		portaudio19-dev lame libldap2-dev
+		portaudio19-dev lame libldap2-dev lua5.2 liblua5.2-dev
 fi
 #######################
 # Install Freetdm Deps
