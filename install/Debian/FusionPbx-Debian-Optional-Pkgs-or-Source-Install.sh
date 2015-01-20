@@ -213,7 +213,7 @@ echo
 # Select to use the Release or head branch of freeswitch
 # if you select to change y to n it will use 1.5 head branch
 ############################################################
-freeswitch_stable="y"
+freeswitch_stable="n"
 
 ################################################################################
 # If you select to use the freeswitch pkgs it will use the prebuilt debian pkgs.
@@ -406,7 +406,7 @@ logging_level="n"
 # Select to use the Stable or Dev Branch of fusionpbx
 # Change the y to n to use the dev branch for fusionpbx
 ########################################################
-fusionpbx_stable="y"
+fusionpbx_stable="n"
 
 #############################################################################
 #Set how long to keep freeswitch/fusionpbx log files 1 to 30 days (Default:5)
