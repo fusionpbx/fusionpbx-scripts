@@ -876,7 +876,12 @@ cd "$fs_src_path"
 --with-certsdir=/etc/freeswitch/tls \
 --with-scriptdir=/var/lib/freeswitch/scripts \
 --with-recordingsdir=/var/lib/freeswitch/recordings \
+if [[ freeswitch_stable == "y" ]]; then
 --enable-static-v8 --disable-parallel-build-v8
+else
+--enable-static-v8 --disable-parallel-build-v8 \
+--enable-sytem-lua
+fi
 
 ####################
 # BUILD fREESWITCH
