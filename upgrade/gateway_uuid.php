@@ -79,8 +79,18 @@ else {
 					$domain_name = $row["domain_name"];
 					$gateway = $row["gateway"];
 
+				//multi-tenant gateway name
+					if (count($_SESSION['domains']) > 1) {
+						$original_gateway_name = $domain_name."-".$gateway;
+					}
+
+				//single tenant gateway name
+					if (count($_SESSION['domains']) > 1) {
+						$original_gateway_name = $gateway;
+					}
+
 				//find a match
-					if ($deprecated == $domain_name."-".$gateway) {
+					if ($deprecated == $original_gateway_name) {
 						//get the variables
 							$domain_uuid = $row["domain_uuid"];
 							$gateway_uuid = $row["gateway_uuid"];
