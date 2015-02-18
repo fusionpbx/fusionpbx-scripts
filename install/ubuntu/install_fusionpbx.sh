@@ -63,9 +63,9 @@ DISTRO=wheezy
 #PAY ATTENTION TO THE SPACES POST AND PRE PARENTHESIS
 #  mod_shout removed
 if [ $DO_DAHDI == "y" ]; then
-	modules_add=( ../../libs/freetdm/mod_freetdm mod_spandsp mod_dingaling mod_portaudio mod_callcenter mod_lcr mod_cidlookup mod_flite mod_memcache mod_codec2 mod_pocketsphinx mod_xml_cdr mod_say_es mod_say_en )
+	modules_add=( mod_curl ../../libs/freetdm/mod_freetdm mod_spandsp mod_dingaling mod_portaudio mod_callcenter mod_lcr mod_cidlookup mod_flite mod_memcache mod_codec2 mod_pocketsphinx mod_xml_cdr mod_say_es mod_say_en )
 else
-	modules_add=( mod_spandsp mod_dingaling mod_callcenter mod_lcr mod_cidlookup mod_memcache mod_codec2 mod_pocketsphinx mod_xml_cdr mod_say_es mod_say_en )
+	modules_add=( mod_curl mod_spandsp mod_dingaling mod_callcenter mod_lcr mod_cidlookup mod_memcache mod_codec2 mod_pocketsphinx mod_xml_cdr mod_say_es mod_say_en )
 fi
 
 #-------
@@ -88,8 +88,11 @@ FPBXBRANCH="http://fusionpbx.googlecode.com/svn/branches/dev/fusionpbx"
 FSGIT=https://freeswitch.org/stash/scm/fs/freeswitch.git
 #FSGIT=https://stash.freeswitch.org/scm/fs/freeswitch.git
 #FSGIT=git://github.com/FreeSWITCH/FreeSWITCH.git
-FSSTABLE=true
+
+FSSTABLE=false
 FSStableVer="v1.4"
+
+FSDB=p
 
 #right now, make -j not working. see: jira FS-3005
 #CORES=$(/bin/grep processor -c /proc/cpuinfo)
@@ -1240,12 +1243,17 @@ if [ $INSFREESWITCH -eq 1 ]; then
 		/bin/echo -ne " ."
 		/bin/sleep 1
 		/bin/echo -ne " ."
-		case "$SQLITEMYSQL" in
+		case "$FSDB" in
 		[Pp]*)
-			/usr/bin/time /usr/src/freeswitch/configure --enable-core-pgsql-support --enable-zrtp
+			#/usr/bin/time /usr/src/freeswitch/configure --enable-core-pgsql-support --enable-zrtp
+			#zrtp busted atm.
+			/usr/bin/time /usr/src/freeswitch/configure --enable-core-pgsql-support
+			
 		;;
 		*)
-			/usr/bin/time /usr/src/freeswitch/configure --enable-zrtp
+			#/usr/bin/time /usr/src/freeswitch/configure --enable-zrtp
+			#zrtp busted atm
+			/usr/bin/time /usr/src/freeswitch/configure 
 		;;
 		esac
 
