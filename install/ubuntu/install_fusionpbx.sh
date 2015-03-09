@@ -890,7 +890,7 @@ else
 	echo "  the new file is saved in /tmp/install_fusionpbx.latest"
 	echo "  to see the difference, run:"
 	echo "  diff -y /tmp/install_fusionpbx.latest $WHEREAMI"
-	read -p "Continue [y/N]? " YESNO
+	read -p "Continue with the current script [y/N]? " YESNO
 	case $YESNO in
 		[Yy]*)
 			echo "OK, Continuing"
