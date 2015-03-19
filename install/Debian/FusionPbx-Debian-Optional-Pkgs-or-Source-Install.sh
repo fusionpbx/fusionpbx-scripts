@@ -659,15 +659,15 @@ case $(uname -m) in x86_64|i[4-6]86)
 		if [ $? -eq 0 ]; then
 			echo "installing wheezy release repo"
 			cat > "/etc/apt/sources.list.d/freeswitch.list" <<DELIM
-			#deb http://repo.fusionpbx.com/freeswitch/release/debian/ wheezy main
-			deb http://files.freeswitch.org/repo/deb/debian/ wheezy main
+			deb http://repo.fusionpbx.com/freeswitch/release/debian/ wheezy main
+			#deb http://files.freeswitch.org/repo/deb/debian/ wheezy main
 			
 DELIM
 		else
 			echo "installing jessie release repo"
 			cat > "/etc/apt/sources.list.d/freeswitch.list" <<DELIM
 			deb http://repo.fusionpbx.com/freeswitch/release/debian/ jessie main
-			deb http://files.freeswitch.org/repo/deb/debian/ jessie main
+			#deb http://files.freeswitch.org/repo/deb/debian/ jessie main
 DELIM
 		fi
 	else
