@@ -215,7 +215,7 @@ echo
 # Select to use the Release or head branch of freeswitch
 # if you select to change y to n it will use 1.5 head branch
 ############################################################
-freeswitch_stable="y"
+freeswitch_stable="y" #(Head Is Broken)
 
 ################################################################################
 # If you select to use the freeswitch pkgs it will use the prebuilt debian pkgs.
@@ -230,7 +230,7 @@ freeswitch_pkgs="y"
 # en-ca=English/CA en-us=English/US (default) fr-ca=French/Canadian pt-br=Portuguese/Brazill
 # ru-ru=Russian/Russia sv-se=Swedish/Sweden zh-cn=chinese/Mandarin zh-hk=chinese/HongKong
 #####################################################################################################
-freeswitch_sounds_language="en-us"
+freeswitch_sounds_language="en-us" #(other sounds are broken at min)
 
 ################################################################################
 #Set what sounds to use when using the freeswitch source build.
@@ -659,12 +659,15 @@ case $(uname -m) in x86_64|i[4-6]86)
 		if [ $? -eq 0 ]; then
 			echo "installing wheezy release repo"
 			cat > "/etc/apt/sources.list.d/freeswitch.list" <<DELIM
-			deb http://repo.fusionpbx.com/freeswitch/release/debian/ wheezy main
+			#deb http://repo.fusionpbx.com/freeswitch/release/debian/ wheezy main
+			deb http://files.freeswitch.org/repo/deb/debian/ wheezy main
+			
 DELIM
 		else
 			echo "installing jessie release repo"
 			cat > "/etc/apt/sources.list.d/freeswitch.list" <<DELIM
 			deb http://repo.fusionpbx.com/freeswitch/release/debian/ jessie main
+			deb http://files.freeswitch.org/repo/deb/debian/ jessie main
 DELIM
 		fi
 	else
