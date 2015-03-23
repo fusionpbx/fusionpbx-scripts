@@ -936,7 +936,7 @@ if [ $INSFREESWITCH -eq 1 ]; then
 		autoconf automake devscripts gawk g++ git-core libtool make libncurses5-dev \
 		python-dev pkg-config libtiff5-dev libldns-dev \
 		libperl-dev libgdbm-dev libdb-dev gettext libcurl4-openssl-dev \
-		libpcre3-dev libspeex-dev libspeexdsp-dev libsqlite3-dev libedit-dev \
+		libpcre3-dev libspeex-dev libspeexdsp-dev libsqlite3-dev libedit-dev libpq-dev \
 		screen htop pkg-config bzip2 curl memcached ntp php5-curl php5-imap php5-mcrypt lame \
 		time bison libssl-dev unixodbc libmyodbc unixodbc-dev libtiff-tools libmemcached-dev
 	else
