@@ -89,14 +89,14 @@ FSGIT=https://freeswitch.org/stash/scm/fs/freeswitch.git
 #FSGIT=https://stash.freeswitch.org/scm/fs/freeswitch.git
 #FSGIT=git://github.com/FreeSWITCH/FreeSWITCH.git
 
-FSSTABLE=false
+FSSTABLE=true
 FSStableVer="v1.4"
 
 FSDB=p
 
 #right now, make -j not working. see: jira FS-3005
-#CORES=$(/bin/grep processor -c /proc/cpuinfo)
-CORES=1
+CORES=$(/bin/grep processor -c /proc/cpuinfo)
+#CORES=1
 FQDN=$(hostname -f)
 #SRCPATH="/usr/src/freeswitch" #DEFAULT
 SRCPATH="/usr/src/freeswitch"
@@ -848,6 +848,16 @@ case $DISTRO_DETECT in
 		/bin/echo 
 		CONTINUE=YES
 	;;
+        jessie)
+                DISTRO=jessie
+                /bin/echo "OK you're running Debian Jessie.  This script is known to work"
+                /bin/echo "   with apache/nginx and sqlite|postgres9.4 options"
+                /bin/echo "   Please consider providing feedback on whether or not this works."
+
+                /bin/echo 
+                CONTINUE=YES
+        ;;
+
 #	else
 	*)
 		/bin/echo "This script was written for Ubuntu 10.04 LTS codename Lucid, 12.04 LTS and Debian Squeeze"
@@ -939,6 +949,14 @@ if [ $INSFREESWITCH -eq 1 ]; then
 		libpcre3-dev libspeex-dev libspeexdsp-dev libsqlite3-dev libedit-dev libpq-dev \
 		screen htop pkg-config bzip2 curl memcached ntp php5-curl php5-imap php5-mcrypt lame \
 		time bison libssl-dev unixodbc libmyodbc unixodbc-dev libtiff-tools libmemcached-dev
+        elif [ $DISTRO == "jessie" ]; then
+                /usr/bin/apt-get -y install ssh vim git-core libjpeg-dev subversion build-essential \
+                autoconf automake devscripts gawk g++ git-core libtool make libncurses5-dev \
+                python-dev pkg-config libtiff5-dev libldns-dev \
+                libperl-dev libgdbm-dev libdb-dev gettext libcurl4-openssl-dev \
+                libpcre3-dev libspeex-dev libspeexdsp-dev libsqlite3-dev libedit-dev libpq-dev \
+                screen htop pkg-config bzip2 curl memcached ntp php5-curl php5-imap php5-mcrypt lame \
+                time bison libssl-dev unixodbc libmyodbc unixodbc-dev libtiff-tools libmemcached-dev libtool-bin
 	else
 		/usr/bin/apt-get -y install ssh vim git-core libjpeg-dev subversion build-essential \
 		python-dev pkg-config libtiff5-dev libldns-dev \
@@ -998,6 +1016,9 @@ if [ $INSFREESWITCH -eq 1 ]; then
 			if [ $DISTRO = "wheezy" ]; then
 				echo "wheezy is PostgreSQL 9.4 by default"
 				POSTGRES9=9
+			elif [ $DISTRO = "jessie" ]; then
+                                echo "jessie is PostgreSQL 9.4 by default"
+                                POSTGRES9=9
 			else
 				/bin/echo
 				/bin/echo "OK, PostgreSQL! Would you prefer the stock verion 8.4"
@@ -1036,7 +1057,11 @@ if [ $INSFREESWITCH -eq 1 ]; then
 				/bin/echo "deb http://apt.postgresql.org/pub/repos/apt/ wheezy-pgdg main" > /etc/apt/sources.list.d/pgdg.list
 				wget --quiet -O - http://apt.postgresql.org/pub/repos/apt/ACCC4CF8.asc | apt-key add -
 				/usr/bin/apt-get update
-				/usr/bin/apt-get -y install postgresql-9.4 libpq-dev php5-pgsql		
+				/usr/bin/apt-get -y install postgresql-9.4 libpq-dev php5-pgsql
+                        elif [ $DISTRO = "jessie" ]; then
+                                POSTGRES9=9
+                                /usr/bin/apt-get update
+                                /usr/bin/apt-get -y install postgresql-9.4 libpq-dev php5-pgsql		
 				
 				service postgresql status |grep down
 				if [ $? -eq 0 ]; then
@@ -1927,6 +1952,9 @@ if [ $INSFUSION -eq 1 ]; then
 	if [ $DISTRO = "wheezy" ]; then
 		/usr/bin/apt-get -y install install php5-sqlite php-db
 	fi
+        if [ $DISTRO = "jessie" ]; then
+                /usr/bin/apt-get -y install install php5-sqlite php-db
+        fi
 	#-----------------
 	# Apache
 	#-----------------
@@ -2141,7 +2169,9 @@ DELIM
 		elif [ $DISTRO = "wheezy" ]; then
                         #included in main repo we have nginx [nginx-full] and php5-fpm
                         echo "already in Debian 7.x [wheezy], nothing to add."
-
+                elif [ $DISTRO = "jessie" ]; then
+                        #included in main repo we have nginx [nginx-full] and php5-fpm
+                        echo "already in Debian 8.x [jessie], nothing to add."
 		elif [ $DISTRO = "precise" ]; then
 			#included in main repo we have nginx [nginx-full] and php5-fpm
 			echo "already in 12.04 LTS [precise], nothing to add."
@@ -2205,6 +2235,9 @@ DELIM
 		elif [ $DISTRO = "wheezy" ]; then
 			PHPINIFILE="/etc/php5/fpm/php.ini"
 			PHPCONFFILE="/etc/php5/fpm/php-fpm.conf"
+                elif [ $DISTRO = "jessie" ]; then
+                        PHPINIFILE="/etc/php5/fpm/php.ini"
+                        PHPCONFFILE="/etc/php5/fpm/php-fpm.conf"
 		else
 			PHPINIFILE="/etc/php5/fpm/php.ini"
 			PHPCONFFILE="/etc/php5/fpm/php5-fpm.conf"
@@ -2430,6 +2463,9 @@ DELIM
 			if [ $DISTRO = "wheezy" ]; then
 				echo "precise is PostgreSQL 9.4 by default"
 				POSTGRES9=9
+                        elif [ $DISTRO = "jessie" ]; then
+                                echo "jessie is PostgreSQL 9.4 by default"
+                                POSTGRES9=9
 			else
 				/bin/echo
 				/bin/echo "OK, PostgreSQL! Would you prefer the stock verion 8.4"
@@ -2493,6 +2529,10 @@ DELIM
                                 #update repository for postgres 9.4 ...
                                 /bin/echo "deb http://apt.postgresql.org/pub/repos/apt/ wheezy-pgdg main" > /etc/apt/sources.list.d/pgdg.list
                                 wget --quiet -O - http://apt.postgresql.org/pub/repos/apt/ACCC4CF8.asc | apt-key add -
+                                /usr/bin/apt-get update
+                                /usr/bin/apt-get -y install postgresql-9.4 libpq-dev php5-pgsql
+                        elif [ $DISTRO = "jessie" ]; then
+                                POSTGRES9=9
                                 /usr/bin/apt-get update
                                 /usr/bin/apt-get -y install postgresql-9.4 libpq-dev php5-pgsql
 			else
