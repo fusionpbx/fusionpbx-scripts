@@ -70,6 +70,15 @@
 	}
 	unset($prep_statement, $sql, $results);
 
+//add a function to check for a valid uuid
+	if (!function_exists('is_uuid')) {
+		function is_uuid($uuid) {
+			//uuid version 4
+			$regex = '/^[0-9A-F]{8}-[0-9A-F]{4}-4[0-9A-F]{3}-[89AB][0-9A-F]{3}-[0-9A-F]{12}$/i';
+			return preg_match($regex, $uuid);
+		}
+	}
+
 //get fax extensions and uuids
 	$sql = "select fax_uuid, domain_uuid, fax_extension, fax_caller_id_name, fax_caller_id_number from v_fax ";
 	$prep_statement = $db->prepare(check_sql($sql));
@@ -130,59 +139,63 @@
 					$record['fax_file_path'] = $fax_file_path;
 
 					//get cdr details (if any)
-					$sql = "select destination_number, caller_id_name, caller_id_number, start_stamp, start_epoch from v_xml_cdr ";
-					$sql .= "where uuid = '".$xml_cdr_uuid."' ";
-					$sql .= "and domain_uuid = '".$domain_uuid."' ";
-					$prep_statement = $db->prepare(check_sql($sql));
-					$prep_statement->execute();
-					$cdr = $prep_statement->fetch(PDO::FETCH_ASSOC);
-					if (is_array($cdr) && count($cdr) > 0) {
-						$record['fax_destination'] = $cdr['destination_number'];
-						$record['fax_caller_id_name'] = $cdr['caller_id_name'];
-						$record['fax_caller_id_number'] = $cdr['caller_id_number'];
-						$record['fax_date'] = $cdr['start_stamp'];
-						$record['fax_epoch'] = $cdr['start_epoch'];
+					if (is_uuid(xml_cdr_uuid)) {
+						$sql = "select destination_number, caller_id_name, caller_id_number, start_stamp, start_epoch from v_xml_cdr ";
+						$sql .= "where uuid = '".$xml_cdr_uuid."' ";
+						$sql .= "and domain_uuid = '".$domain_uuid."' ";
+						$prep_statement = $db->prepare(check_sql($sql));
+						$prep_statement->execute();
+						$cdr = $prep_statement->fetch(PDO::FETCH_ASSOC);
+						if (is_array($cdr) && count($cdr) > 0) {
+							$record['fax_destination'] = $cdr['destination_number'];
+							$record['fax_caller_id_name'] = $cdr['caller_id_name'];
+							$record['fax_caller_id_number'] = $cdr['caller_id_number'];
+							$record['fax_date'] = $cdr['start_stamp'];
+							$record['fax_epoch'] = $cdr['start_epoch'];
+						}
+						else {
+							$record['fax_caller_id_name'] = $fax_extension_cid[$domain_uuid][$fax_ext]['name'];
+							$record['fax_caller_id_number'] = $fax_extension_cid[$domain_uuid][$fax_ext]['number'];
+							$record['fax_epoch'] = filemtime($fax_file_path);
+							$record['fax_date'] = date("Y-m-d H:i:s", $record['fax_epoch']);
+						}
+						unset($prep_statement, $sql, $cdr);
 					}
-					else {
-						$record['fax_caller_id_name'] = $fax_extension_cid[$domain_uuid][$fax_ext]['name'];
-						$record['fax_caller_id_number'] = $fax_extension_cid[$domain_uuid][$fax_ext]['number'];
-						$record['fax_epoch'] = filemtime($fax_file_path);
-						$record['fax_date'] = date("Y-m-d H:i:s", $record['fax_epoch']);
-					}
-
-					unset($prep_statement, $sql, $cdr);
 				}
 
 				//create record in the db
-					$sql = "insert into v_fax_files ";
-					$sql .= "( ";
-					$sql .= "fax_file_uuid, ";
-					$sql .= "fax_uuid, ";
-					$sql .= "domain_uuid, ";
-					$sql .= "fax_mode, ";
-					$sql .= "fax_destination, ";
-					$sql .= "fax_file_type, ";
-					$sql .= "fax_file_path, ";
-					$sql .= "fax_caller_id_name, ";
-					$sql .= "fax_caller_id_number, ";
-					$sql .= "fax_date, ";
-					$sql .= "fax_epoch ";
-					$sql .= ") ";
-					$sql .= "values ";
-					$sql .= "( ";
-					$sql .= "'".$record['fax_file_uuid']."', ";
-					$sql .= "'".$record['fax_uuid']."', ";
-					$sql .= "'".$domain_uuid."', ";
-					$sql .= "'".$record['fax_mode']."', ";
-					$sql .= "'".$record['fax_destination']."', ";
-					$sql .= "'".$record['fax_file_type']."', ";
-					$sql .= "'".$record['fax_file_path']."', ";
-					$sql .= "'".$record['fax_caller_id_name']."', ";
-					$sql .= "'".$record['fax_caller_id_number']."', ";
-					$sql .= "'".$record['fax_date']."', ";
-					$sql .= "'".$record['fax_epoch']."' ";
-					$sql .= ") ";
-					$db->exec($sql);
+					if (is_uuid(fax_file_uuid)) {
+						$sql = "insert into v_fax_files ";
+						$sql .= "( ";
+						$sql .= "fax_file_uuid, ";
+						$sql .= "fax_uuid, ";
+						$sql .= "domain_uuid, ";
+						$sql .= "fax_mode, ";
+						$sql .= "fax_destination, ";
+						$sql .= "fax_file_type, ";
+						$sql .= "fax_file_path, ";
+						$sql .= "fax_caller_id_name, ";
+						$sql .= "fax_caller_id_number, ";
+						$sql .= "fax_date, ";
+						$sql .= "fax_epoch ";
+						$sql .= ") ";
+						$sql .= "values ";
+						$sql .= "( ";
+						$sql .= "'".$record['fax_file_uuid']."', ";
+						$sql .= "'".$record['fax_uuid']."', ";
+						$sql .= "'".$domain_uuid."', ";
+						$sql .= "'".$record['fax_mode']."', ";
+						$sql .= "'".$record['fax_destination']."', ";
+						$sql .= "'".$record['fax_file_type']."', ";
+						$sql .= "'".$record['fax_file_path']."', ";
+						$sql .= "'".$record['fax_caller_id_name']."', ";
+						$sql .= "'".$record['fax_caller_id_number']."', ";
+						$sql .= "'".$record['fax_date']."', ";
+						$sql .= "'".$record['fax_epoch']."' ";
+						$sql .= ") ";
+						//echo $sql;
+						$db->exec($sql);
+					}
 
 				echo $fax_ext.", ".strtoupper($fax_box).", ".$fax_file.(($html) ? "<br>" : null)."\n";
 
