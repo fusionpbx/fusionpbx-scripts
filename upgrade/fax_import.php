@@ -139,7 +139,7 @@
 					$record['fax_file_path'] = $fax_file_path;
 
 					//get cdr details (if any)
-					if (is_uuid(xml_cdr_uuid)) {
+					if (is_uuid($xml_cdr_uuid)) {
 						$sql = "select destination_number, caller_id_name, caller_id_number, start_stamp, start_epoch from v_xml_cdr ";
 						$sql .= "where uuid = '".$xml_cdr_uuid."' ";
 						$sql .= "and domain_uuid = '".$domain_uuid."' ";
@@ -164,7 +164,7 @@
 				}
 
 				//create record in the db
-					if (is_uuid(fax_file_uuid)) {
+					if (is_uuid($record['fax_uuid']) && is_uuid($record['fax_file_uuid'])) {
 						$sql = "insert into v_fax_files ";
 						$sql .= "( ";
 						$sql .= "fax_file_uuid, ";
