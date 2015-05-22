@@ -65,7 +65,7 @@
 	$results = $prep_statement->fetchAll(PDO::FETCH_ASSOC);
 	if (count($results) > 0) {
 		foreach ($results as $row) {
-			$domain_namez[$row['domain_uuid']] = $row['domain_name'];
+			$domain_names[$row['domain_uuid']] = $row['domain_name'];
 		}
 	}
 	unset($prep_statement, $sql, $results);
@@ -94,8 +94,13 @@
 	unset($prep_statement, $sql, $results);
 
 //set domain fax storage folder paths to check
-	foreach ($domain_namez as $domain_uuid => $domain_name) {
-		$domain_fax_storage_paths[$domain_uuid] = (($domain_storage_folders[$domain_uuid] != '') ? $domain_storage_folders[$domain_uuid] : $default_storage_folder).'/fax/'.$domain_name;
+	foreach ($domain_names as $domain_uuid => $domain_name) {
+		if (count($domain_names) == 1) {
+			$domain_fax_storage_paths[$domain_uuid] = (($domain_storage_folders[$domain_uuid] != '') ? $domain_storage_folders[$domain_uuid] : $default_storage_folder).'/fax';
+		}
+		else {
+			$domain_fax_storage_paths[$domain_uuid] = (($domain_storage_folders[$domain_uuid] != '') ? $domain_storage_folders[$domain_uuid] : $default_storage_folder).'/fax/'.$domain_name;
+		}
 	}
 
 //traverse through domain fax storage folders
@@ -107,7 +112,7 @@
 
 //traverse through domain fax file paths
 	foreach ($domain_fax_file_paths as $domain_uuid => $fax_file_paths) {
-		echo "\n\nImporting ".$domain_namez[$domain_uuid]." faxes...".(($html) ? "<br><br>" : null)."\n\n";
+		echo "\n\nImporting ".$domain_names[$domain_uuid]." faxes...".(($html) ? "<br><br>" : null)."\n\n";
 		foreach ($fax_file_paths as $fax_file_path) {
 			$fax_ext_path = str_replace($domain_fax_storage_paths[$domain_uuid].'/', '', $fax_file_path);
 			$tmp_array = explode('/', $fax_ext_path);
