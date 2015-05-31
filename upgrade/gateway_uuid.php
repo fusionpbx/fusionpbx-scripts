@@ -85,7 +85,7 @@ else {
 					}
 
 				//single tenant gateway name
-					if (count($_SESSION['domains']) > 1) {
+					if (count($_SESSION['domains']) == 1) {
 						$original_gateway_name = $gateway;
 					}
 
