@@ -19,8 +19,9 @@ LICENSE=$( cat << DELIM
 # Credit: Based off of the BEER-WARE LICENSE (REVISION 42) by Poul-Henning Kamp
 #
 #  Contributor(s):
-#		Gill Abada <ga@steadfasttelecom.com>
-#    Mark J Crane <markjcrane@fusionpbx.com>
+#     Gill Abada <ga@steadfasttelecom.com>
+#     Mark J Crane <markjcrane@fusionpbx.com>
+#     Andrew Stanaitis <andrew@canlith.com>
 #------------------------------------------------------------------------------
 DELIM
 )
@@ -57,6 +58,7 @@ DO_DAHDI=n
 #DISTRO=precise
 #DISTRO=lucid
 DISTRO=wheezy
+#DISTRO=jessie
 
 #below is a list of modules we want to add to provide functionality for FusionPBX
 #don't worry about the applications/mod_ format.  This script will find that in modules.conf
@@ -90,7 +92,9 @@ FSGIT=https://freeswitch.org/stash/scm/fs/freeswitch.git
 #FSGIT=git://github.com/FreeSWITCH/FreeSWITCH.git
 
 FSSTABLE=true
+#FSSTABLE=file
 FSStableVer="v1.4"
+FSStablefile=freeswitch-1.4.19
 
 FSDB=p
 
@@ -108,10 +112,12 @@ WWW_PATH="/var/www"
 #WWW_PATH="/var/www/html"
 
 GUI_NAME=fusionpbx
-INST_FPBX=svn
+INST_FPBX=git
+#INST_FPBX=svn
 #INST_FPBX=tgz
 #full path required
 #TGZ_FILE="/home/coltpbx/fusionpbx-1.2.1.tar.gz"
+FUSIONPBX_GIT=https://github.com/fusionpbx/fusionpbx.git
 FSREV="187abe02af4d64cdedc598bd3dfb1cd3ed0f4a91"
 #IF FSCHECKOUTVER is true, FSSTABLE needs to be false
 FSCHECKOUTVER=false
@@ -120,7 +126,8 @@ FBPXCHECKOUTVER=false
 #dev
 #URLSCRIPT="http://fusionpbx.googlecode.com/svn/branches/dev/scripts/install/ubuntu/install_fusionpbx.sh"
 #trunk
-URLSCRIPT="https://fusionpbx.googlecode.com/svn/trunk/scripts/install/ubuntu/install_fusionpbx.sh"
+#URLSCRIPT="https://fusionpbx.googlecode.com/svn/trunk/scripts/install/ubuntu/install_fusionpbx.sh"
+URLSCRIPT="https://raw.githubusercontent.com/fusionpbx/fusionpbx-scripts/master/install/ubuntu/install_fusionpbx.sh"
 INSFUSION=0
 INSFREESWITCH=0
 UPGFUSION=0
@@ -1147,6 +1154,13 @@ if [ $INSFREESWITCH -eq 1 ]; then
 				/bin/echo "GIT ERROR"
 				exit 1
 			fi
+		elif [ "$FSSTABLE" == file ]; then
+            echo "installing $FSStablefile of FreeSWITCH"
+		    wget http://files.freeswitch.org/freeswitch-releases/$FSStablefile.tar.gz
+		    tar -zxvf $FSStablefile.tar.gz
+		    mkdir freeswitch
+		    cp -R $FSStablefile/* /usr/src/freeswitch/
+			cd /usr/src/freeswitch		
 		else
 			echo "going dev branch."
 			/usr/bin/time /usr/bin/git clone $FSGIT
@@ -1187,6 +1201,10 @@ if [ $INSFREESWITCH -eq 1 ]; then
 	/bin/grep 'bootstrap_done' /tmp/install_fusion_status > /dev/null
 	if [ $? -eq 0 ]; then
 		/bin/echo "Bootstrap already done. skipping"
+	
+	elif [ "$FSSTABLE" == file ]; then
+		echo "bootstrap not required"
+	
 	else
 		#might see about -j option to bootstrap.sh
 		/etc/init.d/ssh start
@@ -2378,6 +2396,8 @@ DELIM
 			fi
 	elif [ $INST_FPBX == tgz ]; then
 			/bin/tar -C $WWW_PATH -xzvf $TGZ_FILE
+	elif [ $INST_FPBX == git ]; then
+		    /usr/bin/git clone $FUSIONPBX_GIT	
 	fi
 	if [ ! -e $WWW_PATH/$GUI_NAME ]; then
 		/bin/mv $WWW_PATH/fusionpbx $WWW_PATH/$GUI_NAME
