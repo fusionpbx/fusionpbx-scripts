@@ -199,7 +199,12 @@
 						$sql .= "'".$record['fax_epoch']."' ";
 						$sql .= ") ";
 						//echo $sql;
-						$db->exec($sql);
+						try {
+							$db->exec($sql);
+						}
+						catch (Exception $e) {
+							echo 'Caught exception: ',  $e->getMessage(), "\n";
+						}
 					}
 
 				echo $fax_ext.", ".strtoupper($fax_box).", ".$fax_file.(($html) ? "<br>" : null)."\n";
