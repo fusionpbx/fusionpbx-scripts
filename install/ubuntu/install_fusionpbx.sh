@@ -94,7 +94,7 @@ FSGIT=https://freeswitch.org/stash/scm/fs/freeswitch.git
 FSSTABLE=true
 #FSSTABLE=file
 FSStableVer="v1.4"
-FSStablefile=freeswitch-1.4.19
+FSStablefile=freeswitch-1.4.20
 
 FSDB=p
 
@@ -118,7 +118,7 @@ INST_FPBX=git
 #full path required
 #TGZ_FILE="/home/coltpbx/fusionpbx-1.2.1.tar.gz"
 FUSIONPBX_GIT=https://github.com/fusionpbx/fusionpbx.git
-FSREV="187abe02af4d64cdedc598bd3dfb1cd3ed0f4a91"
+FSREV="0ae8ee7f8f13a37cf48381381b2f30906e750e19"
 #IF FSCHECKOUTVER is true, FSSTABLE needs to be false
 FSCHECKOUTVER=false
 FPBXREV="1876"
