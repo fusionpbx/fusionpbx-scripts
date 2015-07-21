@@ -57,8 +57,8 @@ DO_DAHDI=n
 #DISTRO=squeeze
 #DISTRO=precise
 #DISTRO=lucid
-DISTRO=wheezy
-#DISTRO=jessie
+#DISTRO=wheezy
+DISTRO=jessie
 
 #below is a list of modules we want to add to provide functionality for FusionPBX
 #don't worry about the applications/mod_ format.  This script will find that in modules.conf
