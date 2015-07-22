@@ -288,8 +288,8 @@ server {
 
 	#yealink mac
 	rewrite "^.*/([A-Fa-f0-9]{12})(\.(xml|cfg))?$" /app/provision/index.php?mac=\$1 last;
-	
-	#polycom first set from wiki
+
+	#polycom
 	rewrite "^.*/provision/000000000000.cfg$" "/app/provison/?mac=$1&file=%7b%24mac%7d.cfg";
 	#rewrite "^.*/provision/sip_330(\.(ld))$" /includes/firmware/sip_330.$2;
 	rewrite "^.*/provision/features.cfg$" /app/provision/?mac=$1&file=features.cfg; 
@@ -298,7 +298,7 @@ server {
 	rewrite "^.*/provision/([A-Fa-f0-9]{12})-registration.cfg$" "/app/provision/?mac=$1&file=%7b%24mac%7d-registration.cfg";
 	rewrite "^.*/provision/([A-Fa-f0-9]{12})-site.cfg$"  /app/provision/?mac=$1&file=site.cfg;
 	rewrite "^.*/provision/([A-Fa-f0-9]{12})-web.cfg$"  /app/provision/?mac=$1&file=web.cfg;
-	
+
 	if (\$uri !~* ^.*provision.*$) {
 		rewrite ^(.*) https://\$host\$1 permanent;
 		break;
@@ -355,6 +355,16 @@ server {
 
 	#yealink mac
 	rewrite "^.*/([A-Fa-f0-9]{12})(\.(xml|cfg))?$" /app/provision/index.php?mac=\$1 last;
+
+	#polycom
+	rewrite "^.*/provision/000000000000.cfg$" "/app/provison/?mac=$1&file=%7b%24mac%7d.cfg";
+	#rewrite "^.*/provision/sip_330(\.(ld))$" /includes/firmware/sip_330.$2;
+	rewrite "^.*/provision/features.cfg$" /app/provision/?mac=$1&file=features.cfg; 
+	rewrite "^.*/provision/([A-Fa-f0-9]{12})-sip.cfg$" /app/provision/?mac=$1&file=sip.cfg;
+	rewrite "^.*/provision/([A-Fa-f0-9]{12})-phone.cfg$" /app/provision/?mac=$1;
+	rewrite "^.*/provision/([A-Fa-f0-9]{12})-registration.cfg$" "/app/provision/?mac=$1&file=%7b%24mac%7d-registration.cfg";
+	rewrite "^.*/provision/([A-Fa-f0-9]{12})-site.cfg$"  /app/provision/?mac=$1&file=site.cfg;
+	rewrite "^.*/provision/([A-Fa-f0-9]{12})-web.cfg$"  /app/provision/?mac=$1&file=web.cfg;
 
 	access_log /var/log/nginx/access.log;
 	error_log /var/log/nginx/error.log;
