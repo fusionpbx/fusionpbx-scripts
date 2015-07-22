@@ -57,8 +57,8 @@ DO_DAHDI=n
 #DISTRO=squeeze
 #DISTRO=precise
 #DISTRO=lucid
-DISTRO=wheezy
-#DISTRO=jessie
+#DISTRO=wheezy
+DISTRO=jessie
 
 #below is a list of modules we want to add to provide functionality for FusionPBX
 #don't worry about the applications/mod_ format.  This script will find that in modules.conf
@@ -94,7 +94,7 @@ FSGIT=https://freeswitch.org/stash/scm/fs/freeswitch.git
 FSSTABLE=true
 #FSSTABLE=file
 FSStableVer="v1.4"
-FSStablefile=freeswitch-1.4.19
+FSStablefile=freeswitch-1.4.20
 
 FSDB=p
 
@@ -118,7 +118,7 @@ INST_FPBX=git
 #full path required
 #TGZ_FILE="/home/coltpbx/fusionpbx-1.2.1.tar.gz"
 FUSIONPBX_GIT=https://github.com/fusionpbx/fusionpbx.git
-FSREV="187abe02af4d64cdedc598bd3dfb1cd3ed0f4a91"
+FSREV="0ae8ee7f8f13a37cf48381381b2f30906e750e19"
 #IF FSCHECKOUTVER is true, FSSTABLE needs to be false
 FSCHECKOUTVER=false
 FPBXREV="1876"
@@ -288,6 +288,16 @@ server {
 
 	#yealink mac
 	rewrite "^.*/([A-Fa-f0-9]{12})(\.(xml|cfg))?$" /app/provision/index.php?mac=\$1 last;
+	
+	#polycom first set from wiki
+	rewrite "^.*/provision/000000000000.cfg$" "/app/provison/?mac=$1&file=%7b%24mac%7d.cfg";
+	#rewrite "^.*/provision/sip_330(\.(ld))$" /includes/firmware/sip_330.$2;
+	rewrite "^.*/provision/features.cfg$" /app/provision/?mac=$1&file=features.cfg; 
+	rewrite "^.*/provision/([A-Fa-f0-9]{12})-sip.cfg$" /app/provision/?mac=$1&file=sip.cfg;
+	rewrite "^.*/provision/([A-Fa-f0-9]{12})-phone.cfg$" /app/provision/?mac=$1;
+	rewrite "^.*/provision/([A-Fa-f0-9]{12})-registration.cfg$" "/app/provision/?mac=$1&file=%7b%24mac%7d-registration.cfg";
+	rewrite "^.*/provision/([A-Fa-f0-9]{12})-site.cfg$"  /app/provision/?mac=$1&file=site.cfg;
+	rewrite "^.*/provision/([A-Fa-f0-9]{12})-web.cfg$"  /app/provision/?mac=$1&file=web.cfg;
 	
 	if (\$uri !~* ^.*provision.*$) {
 		rewrite ^(.*) https://\$host\$1 permanent;
