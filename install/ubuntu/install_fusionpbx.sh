@@ -1820,7 +1820,14 @@ failregex = \[WARNING\] sofia_reg.c:\d+ SIP auth failure \(REGISTER\) on sofia p
 ignoreregex =
 DELIM
 
-/bin/cat > /etc/fail2ban/filter.d/freeswitch-dos.conf  <<"DELIM"
+	fi
+	
+		if [ -a /etc/fail2ban/filter.d/freeswitch-dos.conf ]; then
+		/bin/echo "fail2ban filter for freeswitch-dos already done!"
+
+	else
+	
+		/bin/cat > /etc/fail2ban/filter.d/freeswitch-dos.conf  <<"DELIM"
 # Fail2Ban configuration file
 #
 # Author: soapee01
