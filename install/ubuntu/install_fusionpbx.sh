@@ -78,23 +78,13 @@ VERSION="Version - using subversion, no longer keeping track. WAF License"
 #FPBXBRANCH="http://fusionpbx.googlecode.com/svn/trunk/fusionpbx"
 #dev branch
 FPBXBRANCH="http://fusionpbx.googlecode.com/svn/branches/dev/fusionpbx"
-# Modules_comp_default determined using
-#  grep -v ^$ /usr/src/freeswitch/modules.conf |grep -v ^# | tr '\n' ' '
-#  on FreeSWITCH version FreeSWITCH Version 1.0.head (git-8f2ee97 2010-12-05 17-19-28 -0600)
-#modules_comp_default=( loggers/mod_console loggers/mod_logfile loggers/mod_syslog applications/mod_commands applications/mod_conference applications/mod_dptools applications/mod_enum applications/mod_fifo applications/mod_db applications/mod_hash applications/mod_voicemail applications/mod_expr applications/mod_esf applications/mod_fsv applications/mod_spandsp applications/mod_cluechoo applications/mod_valet_parking codecs/mod_g723_1 codecs/mod_amr codecs/mod_g729 codecs/mod_h26x codecs/mod_bv codecs/mod_ilbc codecs/mod_speex codecs/mod_siren dialplans/mod_dialplan_xml dialplans/mod_dialplan_asterisk endpoints/mod_sofia endpoints/mod_loopback event_handlers/mod_event_socket event_handlers/mod_cdr_csv formats/mod_native_file formats/mod_sndfile formats/mod_local_stream formats/mod_tone_stream formats/mod_file_string languages/mod_spidermonkey languages/mod_lua say/mod_say_en say/mod_say_ru )
-#making dynamic
-#MOVING: Needs to happen after bootstrap...
-#modules_comp_default=( `/bin/grep -v ^$ /usr/src/freeswitch/modules.conf |/bin/grep -v ^# | /usr/bin/tr '\n' ' '` )
 
-#staying with default repository, feel free to change this to github. Some report faster downloads.
 FSGIT=https://freeswitch.org/stash/scm/fs/freeswitch.git
-#FSGIT=https://stash.freeswitch.org/scm/fs/freeswitch.git
-#FSGIT=git://github.com/FreeSWITCH/FreeSWITCH.git
 
 FSSTABLE=true
 #FSSTABLE=file
 FSStableVer="v1.4"
-FSStablefile=freeswitch-1.4.20
+#FSStablefile=freeswitch-1.4.20
 
 FSDB=p
 
@@ -118,7 +108,12 @@ INST_FPBX=git
 #full path required
 #TGZ_FILE="/home/coltpbx/fusionpbx-1.2.1.tar.gz"
 FUSIONPBX_GIT=https://github.com/fusionpbx/fusionpbx.git
-FSREV="0ae8ee7f8f13a37cf48381381b2f30906e750e19"
+
+FUSIONPBX_STABLE=true
+
+FUSIONPBX_STABLE_VERSION="4.0"
+
+FSREV=false
 #IF FSCHECKOUTVER is true, FSSTABLE needs to be false
 FSCHECKOUTVER=false
 FPBXREV="1876"
@@ -2425,6 +2420,10 @@ DELIM
 			/bin/tar -C $WWW_PATH -xzvf $TGZ_FILE
 	elif [ $INST_FPBX == git ]; then
 		    /usr/bin/git clone $FUSIONPBX_GIT	
+		    cd $WWW_PATH/fusionpbx
+		    if [ $FUSIONPBX_STABLE == true]; then
+				/usr/bin/git checkout $FUSIONPBX_STABLE_VERSION
+			fi
 	fi
 	if [ ! -e $WWW_PATH/$GUI_NAME ]; then
 		/bin/mv $WWW_PATH/fusionpbx $WWW_PATH/$GUI_NAME
