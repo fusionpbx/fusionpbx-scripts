@@ -2419,11 +2419,16 @@ DELIM
 	elif [ $INST_FPBX == tgz ]; then
 			/bin/tar -C $WWW_PATH -xzvf $TGZ_FILE
 	elif [ $INST_FPBX == git ]; then
-		    /usr/bin/git clone $FUSIONPBX_GIT	
-		    cd $WWW_PATH/fusionpbx
-		    if [ $FUSIONPBX_STABLE == true]; then
-				/usr/bin/git checkout $FUSIONPBX_STABLE_VERSION
-			fi
+		    /usr/bin/git clone $FUSIONPBX_GIT
+		    if [ $FUSIONPBX_STABLE == true ]; then
+		        /bin/echo "Using FusionPBX Stable $FUSIONPBX_STABLE_VERSION From GitHub"
+		        cd $WWW_PATH/fusionpbx
+			/usr/bin/git checkout $FUSIONPBX_STABLE_VERSION
+		    else
+		        /bin/echo "Beware.. Using FusionPBX Master From GitHub"
+		        cd $WWW_PATH/fusionpbx
+			/usr/bin/git checkout master
+		    fi
 	fi
 	if [ ! -e $WWW_PATH/$GUI_NAME ]; then
 		/bin/mv $WWW_PATH/fusionpbx $WWW_PATH/$GUI_NAME
