@@ -109,7 +109,7 @@ INST_FPBX=git
 #TGZ_FILE="/home/coltpbx/fusionpbx-1.2.1.tar.gz"
 FUSIONPBX_GIT=https://github.com/fusionpbx/fusionpbx.git
 
-FUSIONPBX_STABLE=true
+FUSIONPBX_STABLE=false
 
 FUSIONPBX_STABLE_VERSION="4.0"
 
