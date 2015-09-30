@@ -83,7 +83,7 @@ FSGIT=https://freeswitch.org/stash/scm/fs/freeswitch.git
 
 FSSTABLE=true
 #FSSTABLE=file
-FSStableVer="v1.4"
+FSStableVer="tags/v1.4.19"
 #FSStablefile=freeswitch-1.4.20
 
 FSDB=p
