@@ -1920,7 +1920,13 @@ DELIM
 	#should see log lines such as:
 	#2011-02-13 06:37:59,889 fail2ban.filter : INFO   Log rotation detected for /usr/local/freeswitch/log/freeswitch.log
 	/etc/init.d/freeswitch start
-	/etc/init.d/fail2ban restart
+	
+	if [ $DISTRO == "jessie" ]; then
+		sleep 5
+		/bin/systemctl restart fail2ban.service
+	else 
+		/etc/init.d/fail2ban restart
+	fi
 
 	/bin/echo "     fail2ban for ssh enabled by default"
 	/bin/echo "     Default is 3 failures before your IP gets blocked for 600 seconds"
@@ -2710,7 +2716,13 @@ DELIM
 	#/etc/init.d/freeswitch start
 	/bin/echo "Setting up Fail2Ban for FusionPBX"
 	fusionfail2ban
-	/etc/init.d/fail2ban restart
+	
+	if [ $DISTRO == "jessie" ]; then
+		sleep 5
+		/bin/systemctl restart fail2ban.service
+	else 
+		/etc/init.d/fail2ban restart
+	fi
 
 	/bin/echo
 	/bin/echo
