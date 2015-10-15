@@ -81,10 +81,11 @@ FPBXBRANCH="http://fusionpbx.googlecode.com/svn/branches/dev/fusionpbx"
 
 FSGIT=https://freeswitch.org/stash/scm/fs/freeswitch.git
 
-FSSTABLE=true
-#FSSTABLE=file
-FSStableVer="tags/v1.4.19"
-#FSStablefile=freeswitch-1.4.20
+#FSSTABLE=true
+#FSStableVer="tags/v1.4.23"
+
+FSSTABLE=file
+FSStablefile=freeswitch-1.4.23
 
 FSDB=p
 
