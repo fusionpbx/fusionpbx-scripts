@@ -160,7 +160,7 @@ fi
 rpm -ivh pgdg-centos92-9.2-6.noarch.rpm
 
 #install other required packages
-yum -y install autoconf automake gcc-c++ git-core libjpeg-devel libtool make ncurses-devel pkgconfig unixODBC-devel openssl-devel gnutls-devel libogg-devel libvorbis-devel curl-devel libtiff-devel libjpeg-devel python-devel expat-devel zlib zlib-devel bzip2 which postgresql92-devel postgresql92-odbc postgresql92-server subversion screen vim php* ntp
+yum -y install autoconf automake gcc-c++ git-core libjpeg-devel libtool make ncurses-devel pkgconfig unixODBC-devel openssl-devel gnutls-devel libogg-devel libvorbis-devel curl-devel libtiff-devel libjpeg-devel python-devel expat-devel zlib zlib-devel bzip2 which postgresql92-devel postgresql92-odbc postgresql92-server screen vim php* ntp
 
 
 # dz Install unixodbc so we can switch from the default sqllite db to postgresql for Freeswitch
@@ -299,14 +299,9 @@ chown  apache:apache /usr/local/freeswitch/conf/autoload_configs/cidlookup.conf.
 cd /usr/local/bin/
 ln -s /usr/local/freeswitch/bin/fs_cli fs_cli
 
-#start installing FusionPBX From Subversion
-#cd /var/www
-#svn co http://fusionpbx.googlecode.com/svn/trunk/fusionpbx html
-
+#start installing FusionPBX From Git
 cd /var/www/html
-
-mkdir fusionpbx
-svn co http://fusionpbx.googlecode.com/svn/trunk/fusionpbx fusionpbx
+git clone https://github.com/fusionpbx/fusionpbx.git fusionpbx
 
 #Add a redirect so the default doc at the web root goes to the fusionpbx login.
 cat > /var/www/html/index.php <<EOT
