@@ -74,11 +74,6 @@ fi
 #DEFINES
 #-------
 VERSION="Version - using subversion, no longer keeping track. WAF License"
-#latest release
-#FPBXBRANCH="http://fusionpbx.googlecode.com/svn/trunk/fusionpbx"
-#dev branch
-FPBXBRANCH="http://fusionpbx.googlecode.com/svn/branches/dev/fusionpbx"
-
 FSGIT=https://freeswitch.org/stash/scm/fs/freeswitch.git
 
 FSSTABLE=true
@@ -111,10 +106,6 @@ INST_FPBX=git
 #full path required
 #TGZ_FILE="/home/coltpbx/fusionpbx-1.2.1.tar.gz"
 FUSIONPBX_GIT=https://github.com/fusionpbx/fusionpbx.git
-
-FUSIONPBX_STABLE=false
-
-FUSIONPBX_STABLE_VERSION="4.0"
 
 FSREV=false
 #IF FSCHECKOUTVER is true, FSSTABLE needs to be false
@@ -2429,15 +2420,27 @@ DELIM
 			/bin/tar -C $WWW_PATH -xzvf $TGZ_FILE
 	elif [ $INST_FPBX == git ]; then
 		    /usr/bin/git clone $FUSIONPBX_GIT
-		    if [ $FUSIONPBX_STABLE == true ]; then
-		        /bin/echo "Using FusionPBX Stable $FUSIONPBX_STABLE_VERSION From GitHub"
-		        cd $WWW_PATH/fusionpbx
-			/usr/bin/git checkout $FUSIONPBX_STABLE_VERSION
-		    else
-		        /bin/echo "Beware.. Using FusionPBX Master From GitHub"
-		        cd $WWW_PATH/fusionpbx
-			/usr/bin/git checkout master
-		    fi
+			branches=()
+			eval "$(git for-each-ref --shell --format='branches+=(%(refname:short))' refs/heads/)"
+			for id in "${!branches[@]}";
+			do
+				branch=${branches[$id]};
+				printf "%s)%s" $id $branch;
+				if [ $branch == 'master' ];
+				then printf " *default";
+				fi
+				printf "\n";
+			
+			done
+			while true;
+			do
+				read -p "Which branch would you like to use? " branch
+				if [[ -n "${branches[$branch]}" ]];
+				then break;
+				fi;
+				echo "Please choose a existing branch.";
+			done
+			/usr/bin/git checkout "${branches[$branch]}"
 	fi
 	if [ ! -e $WWW_PATH/$GUI_NAME ]; then
 		/bin/mv $WWW_PATH/fusionpbx $WWW_PATH/$GUI_NAME
