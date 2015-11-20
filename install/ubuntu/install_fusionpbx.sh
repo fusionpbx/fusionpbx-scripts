@@ -105,7 +105,9 @@ INST_FPBX=git
 #INST_FPBX=tgz
 #full path required
 #TGZ_FILE="/home/coltpbx/fusionpbx-1.2.1.tar.gz"
-FUSIONPBX_GIT=https://github.com/fusionpbx/fusionpbx.git
+FUSIONPBX_GIT_SERVER=https://github.com
+FUSIONPBX_GIT_CONTRIBUTER=fusionpbx
+FUSIONPBX_GIT_PROJECT=fusionpbx
 
 FSREV=false
 #IF FSCHECKOUTVER is true, FSSTABLE needs to be false
@@ -2419,6 +2421,13 @@ DELIM
 	elif [ $INST_FPBX == tgz ]; then
 			/bin/tar -C $WWW_PATH -xzvf $TGZ_FILE
 	elif [ $INST_FPBX == git ]; then
+			echo "If you would like to use a different contributer enter it below"
+			DEFAULT_CONTRIBUTER=$FUSIONPBX_GIT_CONTRIBUTER;
+			read -p "or press enter to use '$DEFAULT_CONTRIBUTER'? " FUSIONPBX_GIT_CONTRIBUTER
+			if [ -z $FUSIONPBX_GIT_CONTRIBUTER ];
+			then FUSIONPBX_GIT_CONTRIBUTER=$DEFAULT_CONTRIBUTER;
+			fi
+			FUSIONPBX_GIT="$FUSIONPBX_GIT_SERVER/$FUSIONPBX_GIT_CONTRIBUTER/$FUSIONPBX_GIT_PROJECT";
 		    /usr/bin/git clone $FUSIONPBX_GIT
 			cd $GUI_NAME;
 			branches=()
@@ -2428,7 +2437,9 @@ DELIM
 				branch=${branches[$id]};
 				printf "[%s] %s" $id $branch;
 				if [ $branch == 'origin/master' ];
-				then printf " *default";
+				then
+					printf " *default";
+					default_branch=$id;	
 				fi
 				printf "\n";
 			
@@ -2436,6 +2447,9 @@ DELIM
 			while true;
 			do
 				read -p "Which branch would you like to use? " branch
+				if [[ -z $branch ]];
+				then branch=$default_branch;
+				fi;
 				if [[ -n "${branches[$branch]}" ]];
 				then break;
 				fi;
