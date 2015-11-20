@@ -74,6 +74,11 @@ fi
 #DEFINES
 #-------
 VERSION="Version - using subversion, no longer keeping track. WAF License"
+#latest release
+#FPBXBRANCH="http://fusionpbx.googlecode.com/svn/trunk/fusionpbx"
+#dev branch
+FPBXBRANCH="http://fusionpbx.googlecode.com/svn/branches/dev/fusionpbx"
+
 FSGIT=https://freeswitch.org/stash/scm/fs/freeswitch.git
 
 FSSTABLE=true
@@ -108,6 +113,10 @@ INST_FPBX=git
 FUSIONPBX_GIT_SERVER=https://github.com
 FUSIONPBX_GIT_CONTRIBUTER=fusionpbx
 FUSIONPBX_GIT_PROJECT=fusionpbx
+
+FUSIONPBX_STABLE=false
+
+FUSIONPBX_STABLE_VERSION="4.0"
 
 FSREV=false
 #IF FSCHECKOUTVER is true, FSSTABLE needs to be false
