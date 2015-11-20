@@ -1976,7 +1976,7 @@ if [ $INSFUSION -eq 1 ]; then
 	#remastersys iso ditches the apt data. have to update
 	/usr/bin/apt-get update
 	#get reqs for both
-	/usr/bin/apt-get -y install python-software-properties subversion ghostscript
+	/usr/bin/apt-get -y install git-core python-software-properties subversion ghostscript
 	  #provides apt-add-repository
 	  #installs python-software-properties unattended-upgrades
 	  #/usr/bin/apt-get -y install ppa-purge #in backports. don't want that repo
@@ -2420,13 +2420,14 @@ DELIM
 			/bin/tar -C $WWW_PATH -xzvf $TGZ_FILE
 	elif [ $INST_FPBX == git ]; then
 		    /usr/bin/git clone $FUSIONPBX_GIT
+			cd $GUI_NAME;
 			branches=()
-			eval "$(git for-each-ref --shell --format='branches+=(%(refname:short))' refs/heads/)"
+			eval "$(/usr/bin/git for-each-ref --shell --format='branches+=(%(refname:short))' refs/remotes/)"
 			for id in "${!branches[@]}";
 			do
 				branch=${branches[$id]};
-				printf "%s)%s" $id $branch;
-				if [ $branch == 'master' ];
+				printf "[%s] %s" $id $branch;
+				if [ $branch == 'origin/master' ];
 				then printf " *default";
 				fi
 				printf "\n";
