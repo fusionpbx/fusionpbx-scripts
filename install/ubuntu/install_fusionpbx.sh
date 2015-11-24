@@ -909,12 +909,15 @@ CURMD5=$(md5sum "$WHEREAMI" | sed -e "s/\ .*//")
 echo "The md5sum of the current script is: $CURMD5"
 NEWMD5=$(md5sum /tmp/install_fusionpbx.latest | sed -e "s/\ .*//")
 echo "The md5sum of the latest script is: $NEWMD5"
-
+DIFFTYPE = 'different';
+if [ /tmp/install_fusionpbx.latest -nt $WHEREAMI ]
+then DIFFTYPE = 'newer';
+fi
 if [[ "$CURMD5" == "$NEWMD5" ]]; then
 	echo "files are the same, continuing"
 else
-	echo "There is a new version of this script."
-	echo "  It is PROBABLY a good idea use the new version"
+	echo "There is a $DIFFTYPE version of this script."
+	echo "  It is PROBABLY a good idea use the $DIFFTYPE version"
 	echo "  the new file is saved in /tmp/install_fusionpbx.latest"
 	echo "  to see the difference, run:"
 	echo "  diff -y /tmp/install_fusionpbx.latest $WHEREAMI"
