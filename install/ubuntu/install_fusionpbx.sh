@@ -2411,7 +2411,7 @@ DELIM
 	fi
 
 	/bin/echo "Stopping FreeSWITCH..."
-	#/etc/init.d/freeswitch stop
+	/usr/sbin/service freeswitch stop
 	if [[ "$INST_FPBX" == "svn" ]]; then
 			if [ $FBPXCHECKOUTVER == true ]; then
 				/bin/echo "Going to install FusionPBX SVN Rev $FPBXREV"
@@ -2434,7 +2434,7 @@ DELIM
 		    /usr/bin/git clone $FUSIONPBX_GIT
 			cd $GUI_NAME;
 			branches=()
-			eval "$(/usr/bin/git for-each-ref --shell --format='branches+=(%(refname:short))' refs/remotes/)"
+			eval eval "$(/usr/bin/git for-each-ref --shell --format='branches+=(%(refname:short))' refs/remotes/ | perl -l -wpe "s{'\w+/}{'}")"
 			for id in "${!branches[@]}";
 			do
 				branch=${branches[$id]};
@@ -2572,7 +2572,7 @@ DELIM
 			#apache2 is installed.
 			/etc/init.d/apache2 restart
 		fi
-		/usr/sbin/service freeswitch restart
+		/usr/sbin/service freeswitch start
 		/bin/echo "Now you'll need to manually finish the install and come back"
 		/bin/echo "  This way I can finish up the last bit of permissions issues"
 		/bin/echo "  Just go to"
@@ -2679,7 +2679,7 @@ DELIM
 		#nativepgsql
 		
 		
-		/usr/sbin/service freeswitch restart
+		/usr/sbin/service freeswitch start
 		/bin/echo "Now you'll need to manually finish the install and come back"
 		/bin/echo "  This way I can finish up the last bit of permissions issues"
 		/bin/echo "  Just go to"
@@ -2709,7 +2709,7 @@ DELIM
 			/etc/init.d/apache2 restart
 		fi
 
-		/usr/sbin/service freeswitch restart
+		/usr/sbin/service freeswitch start
 		/bin/echo "FusionPBX install.php was done automatically"
 		/bin/echo "  when sqlite was selected. "
 		/bin/echo "  FreeSWITCH Directory: /usr/local/freeswitch"
