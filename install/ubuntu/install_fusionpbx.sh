@@ -909,9 +909,9 @@ CURMD5=$(md5sum "$WHEREAMI" | sed -e "s/\ .*//")
 echo "The md5sum of the current script is: $CURMD5"
 NEWMD5=$(md5sum /tmp/install_fusionpbx.latest | sed -e "s/\ .*//")
 echo "The md5sum of the latest script is: $NEWMD5"
-DIFFTYPE = 'different';
+DIFFTYPE='different';
 if [ /tmp/install_fusionpbx.latest -nt $WHEREAMI ]
-then DIFFTYPE = 'newer';
+then DIFFTYPE='newer';
 fi
 if [[ "$CURMD5" == "$NEWMD5" ]]; then
 	echo "files are the same, continuing"
@@ -2572,6 +2572,7 @@ DELIM
 			#apache2 is installed.
 			/etc/init.d/apache2 restart
 		fi
+		/usr/sbin/service freeswitch restart
 		/bin/echo "Now you'll need to manually finish the install and come back"
 		/bin/echo "  This way I can finish up the last bit of permissions issues"
 		/bin/echo "  Just go to"
@@ -2678,6 +2679,7 @@ DELIM
 		#nativepgsql
 		
 		
+		/usr/sbin/service freeswitch restart
 		/bin/echo "Now you'll need to manually finish the install and come back"
 		/bin/echo "  This way I can finish up the last bit of permissions issues"
 		/bin/echo "  Just go to"
@@ -2707,6 +2709,7 @@ DELIM
 			/etc/init.d/apache2 restart
 		fi
 
+		/usr/sbin/service freeswitch restart
 		/bin/echo "FusionPBX install.php was done automatically"
 		/bin/echo "  when sqlite was selected. "
 		/bin/echo "  FreeSWITCH Directory: /usr/local/freeswitch"
