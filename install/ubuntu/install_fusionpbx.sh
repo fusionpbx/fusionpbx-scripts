@@ -76,13 +76,8 @@ fi
 VERSION="Version - using subversion, no longer keeping track. WAF License"
 FSGIT=https://freeswitch.org/stash/scm/fs/freeswitch.git
 
-FSSTABLE=true
-
-#FSStableVer="tags/v1.4.23"
-#FSStablefile=freeswitch-1.4.23
-
 FSSTABLE=file
-FSStablefile=freeswitch-1.4.23
+FSStablefile=freeswitch-1.4.26
 
 FSDB=p
 
@@ -406,6 +401,12 @@ DELIM
 	/etc/init.d/nginx restart
 }
 
+function start_freeswitch {
+	/usr/sbin/service freeswitch start
+	echo Waiting for freeswitch to start ...;
+	sleep 10;
+	echo ... Continuing;
+}
 
 function fusionfail2ban {
 
@@ -2424,12 +2425,6 @@ DELIM
 	elif [ $INST_FPBX == tgz ]; then
 			/bin/tar -C $WWW_PATH -xzvf $TGZ_FILE
 	elif [ $INST_FPBX == git ]; then
-			echo "If you would like to use a different contributer enter it below"
-			DEFAULT_CONTRIBUTER=$FUSIONPBX_GIT_CONTRIBUTER;
-			read -p "or press enter to use '$DEFAULT_CONTRIBUTER'? " FUSIONPBX_GIT_CONTRIBUTER
-			if [ -z $FUSIONPBX_GIT_CONTRIBUTER ];
-			then FUSIONPBX_GIT_CONTRIBUTER=$DEFAULT_CONTRIBUTER;
-			fi
 			FUSIONPBX_GIT="$FUSIONPBX_GIT_SERVER/$FUSIONPBX_GIT_CONTRIBUTER/$FUSIONPBX_GIT_PROJECT";
 		    /usr/bin/git clone $FUSIONPBX_GIT
 			cd $GUI_NAME;
@@ -2572,7 +2567,7 @@ DELIM
 			#apache2 is installed.
 			/etc/init.d/apache2 restart
 		fi
-		/usr/sbin/service freeswitch start
+		start_freeswitch
 		/bin/echo "Now you'll need to manually finish the install and come back"
 		/bin/echo "  This way I can finish up the last bit of permissions issues"
 		/bin/echo "  Just go to"
@@ -2679,7 +2674,7 @@ DELIM
 		#nativepgsql
 		
 		
-		/usr/sbin/service freeswitch start
+		start_freeswitch
 		/bin/echo "Now you'll need to manually finish the install and come back"
 		/bin/echo "  This way I can finish up the last bit of permissions issues"
 		/bin/echo "  Just go to"
@@ -2709,7 +2704,7 @@ DELIM
 			/etc/init.d/apache2 restart
 		fi
 
-		/usr/sbin/service freeswitch start
+		start_freeswitch
 		/bin/echo "FusionPBX install.php was done automatically"
 		/bin/echo "  when sqlite was selected. "
 		/bin/echo "  FreeSWITCH Directory: /usr/local/freeswitch"
