@@ -103,6 +103,7 @@ INST_FPBX=git
 FUSIONPBX_GIT_SERVER=https://github.com
 FUSIONPBX_GIT_CONTRIBUTER=fusionpbx
 FUSIONPBX_GIT_PROJECT=fusionpbx
+FUSIONPBX_GIT_ASKBRANCH=0
 
 FSREV=false
 #IF FSCHECKOUTVER is true, FSSTABLE needs to be false
@@ -2425,32 +2426,35 @@ DELIM
 			FUSIONPBX_GIT="$FUSIONPBX_GIT_SERVER/$FUSIONPBX_GIT_CONTRIBUTER/$FUSIONPBX_GIT_PROJECT";
 		    /usr/bin/git clone $FUSIONPBX_GIT
 			cd $GUI_NAME;
-			branches=()
-			eval eval "$(/usr/bin/git for-each-ref --shell --format='branches+=(%(refname:short))' refs/remotes/ | perl -l -wpe "s{'\w+/}{'}")"
-			for id in "${!branches[@]}";
-			do
-				branch=${branches[$id]};
-				printf "[%s] %s" $id $branch;
-				if [ $branch == 'origin/master' ];
+			if [ FUSIONPBX_GIT_ASKBRANCH == 1 ]
 				then
-					printf " *default";
-					default_branch=$id;	
-				fi
-				printf "\n";
-			
-			done
-			while true;
-			do
-				read -p "Which branch would you like to use? " branch
-				if [[ -z $branch ]];
-				then branch=$default_branch;
-				fi;
-				if [[ -n "${branches[$branch]}" ]];
-				then break;
-				fi;
-				echo "Please choose a existing branch.";
-			done
-			/usr/bin/git checkout "${branches[$branch]}"
+				branches=()
+				eval eval "$(/usr/bin/git for-each-ref --shell --format='branches+=(%(refname:short))' refs/remotes/ | perl -l -wpe "s{'\w+/}{'}")"
+				for id in "${!branches[@]}";
+				do
+					branch=${branches[$id]};
+					printf "[%s] %s" $id $branch;
+					if [ $branch == 'origin/master' ];
+					then
+						printf " *default";
+						default_branch=$id;	
+					fi
+					printf "\n";
+				
+				done
+				while true;
+				do
+					read -p "Which branch would you like to use? " branch
+					if [[ -z $branch ]];
+					then branch=$default_branch;
+					fi;
+					if [[ -n "${branches[$branch]}" ]];
+					then break;
+					fi;
+					echo "Please choose a existing branch.";
+				done
+				/usr/bin/git checkout "${branches[$branch]}"
+			fi;
 	fi
 	if [ ! -e $WWW_PATH/$GUI_NAME ]; then
 		/bin/mv $WWW_PATH/fusionpbx $WWW_PATH/$GUI_NAME
