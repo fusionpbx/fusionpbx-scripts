@@ -74,11 +74,6 @@ fi
 #DEFINES
 #-------
 VERSION="Version - using subversion, no longer keeping track. WAF License"
-#latest release
-#FPBXBRANCH="http://fusionpbx.googlecode.com/svn/trunk/fusionpbx"
-#dev branch
-FPBXBRANCH="http://fusionpbx.googlecode.com/svn/branches/dev/fusionpbx"
-
 FSGIT=https://freeswitch.org/stash/scm/fs/freeswitch.git
 
 FSSTABLE=true
@@ -110,11 +105,9 @@ INST_FPBX=git
 #INST_FPBX=tgz
 #full path required
 #TGZ_FILE="/home/coltpbx/fusionpbx-1.2.1.tar.gz"
-FUSIONPBX_GIT=https://github.com/fusionpbx/fusionpbx.git
-
-FUSIONPBX_STABLE=false
-
-FUSIONPBX_STABLE_VERSION="4.0"
+FUSIONPBX_GIT_SERVER=https://github.com
+FUSIONPBX_GIT_CONTRIBUTER=fusionpbx
+FUSIONPBX_GIT_PROJECT=fusionpbx
 
 FSREV=false
 #IF FSCHECKOUTVER is true, FSSTABLE needs to be false
@@ -916,12 +909,15 @@ CURMD5=$(md5sum "$WHEREAMI" | sed -e "s/\ .*//")
 echo "The md5sum of the current script is: $CURMD5"
 NEWMD5=$(md5sum /tmp/install_fusionpbx.latest | sed -e "s/\ .*//")
 echo "The md5sum of the latest script is: $NEWMD5"
-
+DIFFTYPE='different';
+if [ /tmp/install_fusionpbx.latest -nt $WHEREAMI ]
+then DIFFTYPE='newer';
+fi
 if [[ "$CURMD5" == "$NEWMD5" ]]; then
 	echo "files are the same, continuing"
 else
-	echo "There is a new version of this script."
-	echo "  It is PROBABLY a good idea use the new version"
+	echo "There is a $DIFFTYPE version of this script."
+	echo "  It is PROBABLY a good idea use the $DIFFTYPE version"
 	echo "  the new file is saved in /tmp/install_fusionpbx.latest"
 	echo "  to see the difference, run:"
 	echo "  diff -y /tmp/install_fusionpbx.latest $WHEREAMI"
@@ -1985,7 +1981,7 @@ if [ $INSFUSION -eq 1 ]; then
 	#remastersys iso ditches the apt data. have to update
 	/usr/bin/apt-get update
 	#get reqs for both
-	/usr/bin/apt-get -y install python-software-properties subversion ghostscript
+	/usr/bin/apt-get -y install git-core python-software-properties subversion ghostscript
 	  #provides apt-add-repository
 	  #installs python-software-properties unattended-upgrades
 	  #/usr/bin/apt-get -y install ppa-purge #in backports. don't want that repo
@@ -2428,16 +2424,41 @@ DELIM
 	elif [ $INST_FPBX == tgz ]; then
 			/bin/tar -C $WWW_PATH -xzvf $TGZ_FILE
 	elif [ $INST_FPBX == git ]; then
+			echo "If you would like to use a different contributer enter it below"
+			DEFAULT_CONTRIBUTER=$FUSIONPBX_GIT_CONTRIBUTER;
+			read -p "or press enter to use '$DEFAULT_CONTRIBUTER'? " FUSIONPBX_GIT_CONTRIBUTER
+			if [ -z $FUSIONPBX_GIT_CONTRIBUTER ];
+			then FUSIONPBX_GIT_CONTRIBUTER=$DEFAULT_CONTRIBUTER;
+			fi
+			FUSIONPBX_GIT="$FUSIONPBX_GIT_SERVER/$FUSIONPBX_GIT_CONTRIBUTER/$FUSIONPBX_GIT_PROJECT";
 		    /usr/bin/git clone $FUSIONPBX_GIT
-		    if [ $FUSIONPBX_STABLE == true ]; then
-		        /bin/echo "Using FusionPBX Stable $FUSIONPBX_STABLE_VERSION From GitHub"
-		        cd $WWW_PATH/fusionpbx
-			/usr/bin/git checkout $FUSIONPBX_STABLE_VERSION
-		    else
-		        /bin/echo "Beware.. Using FusionPBX Master From GitHub"
-		        cd $WWW_PATH/fusionpbx
-			/usr/bin/git checkout master
-		    fi
+			cd $GUI_NAME;
+			branches=()
+			eval "$(/usr/bin/git for-each-ref --shell --format='branches+=(%(refname:short))' refs/remotes/)"
+			for id in "${!branches[@]}";
+			do
+				branch=${branches[$id]};
+				printf "[%s] %s" $id $branch;
+				if [ $branch == 'origin/master' ];
+				then
+					printf " *default";
+					default_branch=$id;	
+				fi
+				printf "\n";
+			
+			done
+			while true;
+			do
+				read -p "Which branch would you like to use? " branch
+				if [[ -z $branch ]];
+				then branch=$default_branch;
+				fi;
+				if [[ -n "${branches[$branch]}" ]];
+				then break;
+				fi;
+				echo "Please choose a existing branch.";
+			done
+			/usr/bin/git checkout "${branches[$branch]}"
 	fi
 	if [ ! -e $WWW_PATH/$GUI_NAME ]; then
 		/bin/mv $WWW_PATH/fusionpbx $WWW_PATH/$GUI_NAME
@@ -2551,6 +2572,7 @@ DELIM
 			#apache2 is installed.
 			/etc/init.d/apache2 restart
 		fi
+		/usr/sbin/service freeswitch restart
 		/bin/echo "Now you'll need to manually finish the install and come back"
 		/bin/echo "  This way I can finish up the last bit of permissions issues"
 		/bin/echo "  Just go to"
@@ -2657,6 +2679,7 @@ DELIM
 		#nativepgsql
 		
 		
+		/usr/sbin/service freeswitch restart
 		/bin/echo "Now you'll need to manually finish the install and come back"
 		/bin/echo "  This way I can finish up the last bit of permissions issues"
 		/bin/echo "  Just go to"
@@ -2686,6 +2709,7 @@ DELIM
 			/etc/init.d/apache2 restart
 		fi
 
+		/usr/sbin/service freeswitch restart
 		/bin/echo "FusionPBX install.php was done automatically"
 		/bin/echo "  when sqlite was selected. "
 		/bin/echo "  FreeSWITCH Directory: /usr/local/freeswitch"
