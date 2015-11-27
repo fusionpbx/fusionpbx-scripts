@@ -74,17 +74,7 @@ fi
 #DEFINES
 #-------
 VERSION="Version - using subversion, no longer keeping track. WAF License"
-#latest release
-#FPBXBRANCH="http://fusionpbx.googlecode.com/svn/trunk/fusionpbx"
-#dev branch
-FPBXBRANCH="http://fusionpbx.googlecode.com/svn/branches/dev/fusionpbx"
-
 FSGIT=https://freeswitch.org/stash/scm/fs/freeswitch.git
-
-FSSTABLE=true
-
-#FSStableVer="tags/v1.4.26"
-#FSStablefile=freeswitch-1.4.26
 
 FSSTABLE=file
 FSStablefile=freeswitch-1.4.26
@@ -110,11 +100,10 @@ INST_FPBX=git
 #INST_FPBX=tgz
 #full path required
 #TGZ_FILE="/home/coltpbx/fusionpbx-1.2.1.tar.gz"
-FUSIONPBX_GIT=https://github.com/fusionpbx/fusionpbx.git
-
-FUSIONPBX_STABLE=false
-
-FUSIONPBX_STABLE_VERSION="4.0"
+FUSIONPBX_GIT_SERVER=https://github.com
+FUSIONPBX_GIT_CONTRIBUTER=fusionpbx
+FUSIONPBX_GIT_PROJECT=fusionpbx
+FUSIONPBX_GIT_ASKBRANCH=0
 
 FSREV=false
 #IF FSCHECKOUTVER is true, FSSTABLE needs to be false
@@ -413,6 +402,12 @@ DELIM
 	/etc/init.d/nginx restart
 }
 
+function start_freeswitch {
+	/usr/sbin/service freeswitch start
+	echo Waiting for freeswitch to start ...;
+	sleep 10;
+	echo ... Continuing;
+}
 
 function fusionfail2ban {
 
@@ -1985,7 +1980,7 @@ if [ $INSFUSION -eq 1 ]; then
 	#remastersys iso ditches the apt data. have to update
 	/usr/bin/apt-get update
 	#get reqs for both
-	/usr/bin/apt-get -y install python-software-properties subversion ghostscript
+	/usr/bin/apt-get -y install git-core python-software-properties subversion ghostscript
 	  #provides apt-add-repository
 	  #installs python-software-properties unattended-upgrades
 	  #/usr/bin/apt-get -y install ppa-purge #in backports. don't want that repo
@@ -2415,7 +2410,7 @@ DELIM
 	fi
 
 	/bin/echo "Stopping FreeSWITCH..."
-	#/etc/init.d/freeswitch stop
+	/usr/sbin/service freeswitch stop
 	if [[ "$INST_FPBX" == "svn" ]]; then
 			if [ $FBPXCHECKOUTVER == true ]; then
 				/bin/echo "Going to install FusionPBX SVN Rev $FPBXREV"
@@ -2428,16 +2423,38 @@ DELIM
 	elif [ $INST_FPBX == tgz ]; then
 			/bin/tar -C $WWW_PATH -xzvf $TGZ_FILE
 	elif [ $INST_FPBX == git ]; then
+			FUSIONPBX_GIT="$FUSIONPBX_GIT_SERVER/$FUSIONPBX_GIT_CONTRIBUTER/$FUSIONPBX_GIT_PROJECT";
 		    /usr/bin/git clone $FUSIONPBX_GIT
-		    if [ $FUSIONPBX_STABLE == true ]; then
-		        /bin/echo "Using FusionPBX Stable $FUSIONPBX_STABLE_VERSION From GitHub"
-		        cd $WWW_PATH/fusionpbx
-			/usr/bin/git checkout $FUSIONPBX_STABLE_VERSION
-		    else
-		        /bin/echo "Beware.. Using FusionPBX Master From GitHub"
-		        cd $WWW_PATH/fusionpbx
-			/usr/bin/git checkout master
-		    fi
+			cd $GUI_NAME;
+			if [ FUSIONPBX_GIT_ASKBRANCH == 1 ]
+				then
+				branches=()
+				eval eval "$(/usr/bin/git for-each-ref --shell --format='branches+=(%(refname:short))' refs/remotes/ | perl -l -wpe "s{'\w+/}{'}")"
+				for id in "${!branches[@]}";
+				do
+					branch=${branches[$id]};
+					printf "[%s] %s" $id $branch;
+					if [ $branch == 'origin/master' ];
+					then
+						printf " *default";
+						default_branch=$id;	
+					fi
+					printf "\n";
+				
+				done
+				while true;
+				do
+					read -p "Which branch would you like to use? " branch
+					if [[ -z $branch ]];
+					then branch=$default_branch;
+					fi;
+					if [[ -n "${branches[$branch]}" ]];
+					then break;
+					fi;
+					echo "Please choose a existing branch.";
+				done
+				/usr/bin/git checkout "${branches[$branch]}"
+			fi;
 	fi
 	if [ ! -e $WWW_PATH/$GUI_NAME ]; then
 		/bin/mv $WWW_PATH/fusionpbx $WWW_PATH/$GUI_NAME
@@ -2551,6 +2568,7 @@ DELIM
 			#apache2 is installed.
 			/etc/init.d/apache2 restart
 		fi
+		start_freeswitch
 		/bin/echo "Now you'll need to manually finish the install and come back"
 		/bin/echo "  This way I can finish up the last bit of permissions issues"
 		/bin/echo "  Just go to"
@@ -2657,6 +2675,7 @@ DELIM
 		#nativepgsql
 		
 		
+		start_freeswitch
 		/bin/echo "Now you'll need to manually finish the install and come back"
 		/bin/echo "  This way I can finish up the last bit of permissions issues"
 		/bin/echo "  Just go to"
@@ -2686,6 +2705,7 @@ DELIM
 			/etc/init.d/apache2 restart
 		fi
 
+		start_freeswitch
 		/bin/echo "FusionPBX install.php was done automatically"
 		/bin/echo "  when sqlite was selected. "
 		/bin/echo "  FreeSWITCH Directory: /usr/local/freeswitch"
