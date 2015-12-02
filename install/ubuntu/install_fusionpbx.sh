@@ -2426,7 +2426,7 @@ DELIM
 			FUSIONPBX_GIT="$FUSIONPBX_GIT_SERVER/$FUSIONPBX_GIT_CONTRIBUTER/$FUSIONPBX_GIT_PROJECT";
 		    /usr/bin/git clone $FUSIONPBX_GIT
 			cd $GUI_NAME;
-			if [ FUSIONPBX_GIT_ASKBRANCH == 1 ]
+			if [ $FUSIONPBX_GIT_ASKBRANCH == 1 ]
 				then
 				branches=()
 				eval eval "$(/usr/bin/git for-each-ref --shell --format='branches+=(%(refname:short))' refs/remotes/ | perl -l -wpe "s{'\w+/}{'}")"
