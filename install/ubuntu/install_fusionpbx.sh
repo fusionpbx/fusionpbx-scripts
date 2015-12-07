@@ -2434,7 +2434,7 @@ DELIM
 				do
 					branch=${branches[$id]};
 					printf "[%s] %s" $id $branch;
-					if [ $branch == 'origin/master' ];
+					if [ $branch == 'master' ];
 					then
 						printf " *default";
 						default_branch=$id;	
