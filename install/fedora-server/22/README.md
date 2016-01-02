@@ -13,7 +13,7 @@
   4. Run script ./deploy_fusionpbx_fedora_server22
   5. Provide answers on asked questions.
 
-###### Installation Model.
+###### Installation Model:
    1. Database and fusionpbx on same host.
    2. Database and fusionpbx on separate hosts.
   
