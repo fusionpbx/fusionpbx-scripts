@@ -1,0 +1,448 @@
+#!/bin/bash
+
+###############################################
+#
+#   Installation Script to Install FreeSWITCH, FusionPBX, PostgreSQL, PHP, Apache and required
+#   Supporting software on Centos 6.
+#   Copyright (C) 2011, Ken Rice <krice@tollfreegateway.com>
+#  
+#   Version: MPL 1.1
+#  
+#   The contents of this file are subject to the Mozilla Public License Version
+#   1.1 (the "License"); you may not use this file except in compliance with
+#   the License. You may obtain a copy of the License at
+#   http://www.mozilla.org/MPL/
+#  
+#   Software distributed under the License is distributed on an "AS IS" basis,
+#   WITHOUT WARRANTY OF ANY KIND, either express or implied. See the License
+#   for the specific language governing rights and limitations under the
+#   License.
+#  
+#   The Initial Developer of the Original Code is
+#   Ken Rice <krice@tollfreegateway.com>
+#   Portions created by the Initial Developer are Copyright (C)
+#   the Initial Developer. All Rights Reserved.
+#  
+#   Contributor(s):
+#   
+#   Slava Bendersky volga629@networklab.ca
+#   Also thanks to:
+#   The FreeSWITCH, FusionPBX and PostgreSQL Crews without them, none of this would be possible
+#  
+###############################################
+VERSION="1.2"
+
+###########################################
+##  Set Defaults for Variables
+defSUPPORTNAME='Company Name'
+defSUPPORTEMAIL='support@example.com'
+defPUBLICHOSTNAME='voice.example.com'
+defDOMAINNAME='example.com'
+defUSERNAME_FUSIONPBX='fusionpbx'
+defDB_HOST='127.0.0.1'
+defDBNAME_FUSIONPBX='fusionpbx'
+defDBNAME_FREESWITCH='freeswitch'
+###########################################
+
+if [[ "$EUID" -ne 0 ]]; then
+  echo "Please run as root ..."
+  exit 1
+fi
+
+# Find pgsql staff
+find_psql_lib=$(find /usr -name psqlodbcw.so)
+find_psql_data_dir=$(find /var/lib/pgsql -type d -name data)
+find_psql_service_file=$(find /usr/lib/systemd/system -type f -name postgresql*.service)
+find_psql_db94_setup=$(find / -type f -name postgresql94-setup)
+my_ip=$(ip -o route get 8.8.8.8 | awk '{print $7}')
+my_name=(hostname -s)
+# Install functions.
+. ./install-functions_fedora_server22
+
+#get the machine type x86_64
+MACHINE_TYPE=$(uname -m)
+
+cat <<EOT
+This Script will install basic configuration required to run FusionPBX on Fedora22 server
+As with anything you will want to review the configs after the installer to make sure they are what you want.
+This is Version $VERSION of this script.
+EOT
+
+read -p "SNMP Support Name [$defSUPPORTNAME]: " -e t1
+if [ -n "$t1" ]
+then
+SUPPORTNAME="$t1"
+else
+SUPPORTNAME="$defSUPPORTNAME"
+fi
+
+read -p "Support Email [$defSUPPORTEMAIL]: " -e t1
+if [ -n "$t1" ]
+then
+SUPPORTEMAIL="$t1"
+else
+SUPPORTEMAIL="$defSUPPORTEMAIL"
+fi
+
+read -p "Domain Name [$defDOMAINNAME]: " -e t1
+if [ -n "$t1" ]
+then
+DOMAINNAME="$t1"
+else
+DOMAINNAME="$defDOMAINNAME"
+fi
+
+defPUBLICHOSTNAME="sip.${DOMAINNAME}"
+
+read -p "Public Hostname [$defPUBLICHOSTNAME]: " -e t1
+if [ -n "$t1" ]
+then
+PUBLICHOSTNAME="$t1"
+else
+PUBLICHOSTNAME="$defPUBLICHOSTNAME"
+fi
+
+read -r -p "Do you want deploy database on same server ? [Y/n] " answer
+if [[ $answer =~ ^([yY][eE][sS]|[yY])$ ]]; then
+   DB_HOST="$defDB_HOST"
+   read -p "User name for fusionpbx database [$defUSERNAME_FUSIONPBX]: " -e t1
+   if [ -n "$t1" ]
+   then
+   USERNAME_FUSIONPBX="$t1"
+   else
+   USERNAME_FUSIONPBX="$defUSERNAME_FUSIONPBX"
+   fi
+
+   read -p "Database name for freeswitch database [$defDBNAME_FREESWITCH]: " -e t1
+   if [ -n "$t1" ]
+   then
+   DBNAME_FREESWITCH="$t1"
+   else
+   DBNAME_FREESWITCH="$defDBNAME_FREESWITCH"
+   fi
+
+   read -p "Database name for fusionpbx database [$defDBNAME_FUSIONPBX]: " -e t1
+   if [ -n "$t1" ]
+   then
+   DBNAME_FUSIONPBX="$t1"
+   else
+   DBNAME_FUSIONPBX="$defDBNAME_FUSIONPBX"
+   fi
+
+   read -s -p  "Enter freeswitch database user password: " psql_passwd
+   DBNAME_FREESWITCH_PASSWD="$psql_passwd"
+
+else
+   echo -ne "\e[31mIf deployed pgpool2 with watchdog enter VIP (Virtual IP/Hostname).\e[0m\n"
+   read -r -p "Please enter IP/Hostname of database server: " ip_address
+   DB_HOST="$ip_address"
+fi
+
+if [[ ${DB_HOST%%.*} -eq 127 ]]; then
+   read -r -p "Do you want deploy database with BDR (PgSQL Multi Master Replication) ? [Y/n] " bdr_answer 
+   if [[ $bdr_answer =~ ^([yY][eE][sS]|[yY])$ ]]; then
+      DB_TYPE="bdr"
+   fi
+fi
+  
+read -r -p "Are you sure? [Y/n] " response
+if [[ $response =~ ^([yY][eE][sS]|[yY])$ ]]; then
+    echo -n "Here we go..."
+else
+     echo "Aborting:"
+     exit
+fi
+
+###############
+#install dependencies
+if [[ ${DB_HOST%%.*} -eq 127 ]] && [[ "$DB_TYPE" != bdr ]]; then
+   dnf -y install postgresql-server
+else
+   rc=$(rpm -q postgresql-bdr94-2ndquadrant-fedora >/dev/null 2>&1; echo $?)
+   if [[ $rc -ne 0 ]]; then
+      dnf install -y http://packages.2ndquadrant.com/postgresql-bdr94-2ndquadrant/yum-repo-rpms/postgresql-bdr94-2ndquadrant-fedora-1.0-2.noarch.rpm
+      dnf install -y postgresql-bdr94-bdr postgresql-bdr94-contrib
+   else 
+      dnf install -y postgresql-bdr94-bdr postgresql-bdr94-contrib
+   fi 
+fi
+
+echo "Installing required repository ..."
+dnf -y install http://download1.rpmfusion.org/free/fedora/rpmfusion-free-release-22.noarch.rpm
+dnf -y install http://download1.rpmfusion.org/nonfree/fedora/rpmfusion-nonfree-release-22.noarch.rpm
+cmd_yum_repo_fusionpbx > /etc/yum.repos.d/networklab.repo
+dnf -y install incron chrony ipset git memcached fail2ban fail2ban-firewalld ulogd sudo ghostscript libtiff vim wget net-snmp net-snmp-utils postgresql-odbc nginx freeswitch freeswitch-* php php-common php-pdo php-process php-pgsql php-soap php-odbc php-xml php-xmlrpc php-pgsql php-fpm  php-cli php-pear php-pdo php-gd php-mbstring php-mcrypt 
+if [[ $? -eq 0 ]]; then
+   echo "Setting up configuration file ..."
+   mv /etc/ulogd.conf /etc/ulogd.conf.orig
+   mv /etc/snmp/snmpd.conf /etc/snmp/snmpd.conf.orig
+   cmd_ulogd_fusionpbx > /etc/ulogd.conf
+   cmd_nginx_fusionpbx > /etc/nginx/conf.d/fusionpbx.conf
+   cmd_snmp_fusionpbx > /etc/snmp/snmpd.conf
+   cmd_fail2ban_fusionpbx > /etc/fail2ban/jail.conf
+   cmd_service_sip-ext > /etc/firewalld/services/sip-ext.xml
+   cmd_service_sip-int > /etc/firewalld/services/sip-int.xml
+   cmd_service_chronyd > /etc/firewalld/services/chronyd.xml
+   cmd_service_snmp > /etc/firewalld/services/snmp.xml
+   cmd_service_www > /etc/firewalld/services/www.xml
+   cmd_service_rtp > /etc/firewalld/services/rtp.xml
+   cmd_service_xml_rpc > /etc/firewalld/services/xml-rpc.xml
+   cmd_sysconfig_freeswitch > /etc/sysconfig/freeswitch
+fi
+
+echo "Adjusting firewalld logs ..."
+mkdir -p /var/log/firewalld_log
+
+echo "Adjusting Selinux ..."
+if [[ -x /usr/sbin/setenforce ]]; then
+      /usr/sbin/setenforce 0
+      /bin/sed -i -e s,'SELINUX=enforcing','SELINUX=disabled', /etc/sysconfig/selinux
+      /bin/sed -i -e s,'SELINUX=enforcing','SELINUX=disabled', /etc/selinux/config
+fi
+
+echo "Setting up FusionPBX web app ..."
+deploy_fusion_pbx /usr/share/nginx/fusionpbx
+
+if [[ ${DB_HOST%%.*} -eq 127 ]] && [[ "$DB_TYPE" != bdr ]]; then
+   updatedb
+   postgresql-setup --initdb
+   if [[ -d "$find_psql_data_dir" ]]; then
+      echo "PgSQL already initialized continue ..."
+      systemctl restart ${find_psql_service_file##*/}
+      systemctl status ${find_psql_service_file##*/}
+      cmd_create_db
+      mv ${find_psql_data_dir}/data/pg_hba.conf ${find_psql_data_dir}/pg_hba.conf.orig
+      mv ${find_psql_data_dir}/postgresql.conf ${find_psql_data_dir}/postgresql.conf.orig
+      cmd_odbc_fusionpbx > /etc/odbc.ini
+      cmd_odbc_fusionpbx_p2 >> /etc/odbcinst.ini
+      cmd_postgres_hba_fusionpbx > ${find_psql_data_dir}/pg_hba.conf
+      cmd_postgres_conf_fusionpbx > ${find_psql_data_dir}/postgresql.conf
+      chown -R postgres:postgres ${find_psql_data_dir}
+      systemctl restart ${find_psql_service_file##*/}
+    else
+      echo "Unknown error is happed ..."
+      exit
+    fi
+elif [[ "$DB_TYPE" = bdr ]]; then
+      updatedb
+      ${find_psql_db94_setup} --initdb
+      echo "Setting up SSL certificate for BDR ..."
+      # Local works, not sure about remote deployment yet
+      CertMng --CASetup /etc/pki/pg_bdr
+      echo "\e[31mCA authority has being setup to generate server cert use CertMng --GenCert ${cert_cnf}\e[0m\n"
+      echo "\e[31mWhen generating server certificate please set name as: [${my_name}] \e[0m\n"
+      echo "\e[31mIn order PgSQL to start corectly server private key should have permssions 600\e[0m\n"
+      pause
+      cmd_create_db
+      cmd_odbc_fusionpbx > /etc/odbc.ini
+      cmd_odbc_fusionpbx_p2 >> /etc/odbcinst.ini 
+      cmd_postgres_conf_fusionpbx > ${find_psql_data_dir}/postgresql.conf
+      cmd_postgres_bdr_conf_fusionpbx >> ${find_psql_data_dir}/postgresql.conf
+      cmd_postgres_bdr_hba_fusionpbx > ${find_psql_data_dir}/pg_hba.conf
+      systemctl restart postgresql-9.4.service
+      echo "Deploying freeswitch schema optimized for PgSQL BDR ..."
+      curl --silent -u fusionpbx_Admin:dron12345  -o /root/freeswitch-pgsql-bdr-1.6.5.sql http://ftpsrv01.networklab.ca/misc/freeswitch-pgsql-bdr-1.6.5.sql
+      su - postgres -c "psql --command 'CREATE EXTENSION pgcrypto' -d ${DBNAME_FREESWITCH} -W ${DBNAME_FREESWITCH_PASSWD}"
+      psql -U postgres -W ${DBNAME_FREESWITCH_PASSWD} -d freeswitch -f ~/freeswitch-pgsql-bdr-1.6.5.sql -L /root/sql.log
+      echo -ne "\e[31mI added to pg_hba.conf file only myself please add rest replication members.\e[0m\n"
+      sleep 4
+      chown -R postgres:postgres ${find_psql_data_dir} /etc/pki/pg_bdr
+else
+    read -r -p "Do you want me deploy PgSQL on remote host? [Y/n] " answer 
+    if [[ $answer =~ ^([yY][eE][sS]|[yY])$ ]]; then
+        echo -ne "\e[31mPlease make sure ssh key installed and tested with root access.\e[0m\n"
+        pause
+        echo -ne "\e[31mIf entered PgPool2 VIP ip then answer here are 'No' and enter actual database server ip.\e[0m\n"
+        read -r -p "Is IP/Hostname [$DB_HOST] correct ? [Y/n] " answer
+        if [[ $answer =~ ^([yY][eE][sS]|[yY])$ ]]; then
+           deploy_remote_pgsql 
+           ssh "$DB_HOST" -l root -o 'LogLevel ERROR' -o 'StrictHostKeyChecking=no' -t -t "$(</tmp/deploy_remote_pgsql)"
+        else
+           read -r -p "Please enter IP/Hostname of PgSQL server: " new_ip_address
+           deploy_remote_pgsql
+           ssh "$new_ip_address" -l root -o 'LogLevel ERROR' -o 'StrictHostKeyChecking=no' -t -t "$(</tmp/deploy_remote_pgsql)"
+        fi
+     else
+        echo "Continue on set FusionPbx setup ..." 
+    fi
+fi
+
+echo "Setting up firewalld ..."
+default_interface=$(ip -o route get 8.8.8.8 | awk '{print $5}')
+get_zone=$(firewall-cmd --get-zone-of-interface=$default_interface)
+pre_array_list=(
+"PRE -i $default_interface+ -m recent --update --name MYSIP -j ACCEPT"
+"PRE -i $default_interface+ -p tcp --dport 5060:5082 -m string --string sip:${PUBLICHOSTNAME} --algo bm --icase -j NEWSIP"
+"PRE -i $default_interface+ -p udp --dport 5060:5082 -m string --string sip:${PUBLICHOSTNAME} --algo bm --to 1500 --icase -j NEWSIP"
+"PRE -i $default_interface+ -m recent --update --name BADSIP -j DROP"
+"PRE -i $default_interface+ -p tcp --dport 5060:5082 -j TCPSIP"
+"PRE -i $default_interface+ -p udp --dport 5060:5082 -j UDPSIP"
+"LOG01 -m limit --limit 4/min --limit-burst 10 -m comment --comment SIP-TRAFFIC-CHECK-LOG -j NFLOG --nflog-prefix  Firewalld:raw-sip2FW:ACCEPT: --nflog-group 2 --nflog-threshold 10"
+"LOG01 -m comment --comment SIP-TRAFFIC-CHECK-LOG -j ACCEPT"
+"LOG02 -m limit --limit 4/min --limit-burst 10 -m comment --comment BAD-SIP-SCANNER-LOG -j NFLOG --nflog-prefix  Firewalld:bad-sip2FW:DROP: --nflog-group 3 --nflog-threshold 10"
+"LOG02 -m comment --comment BAD-SIP-SCANNER-LOG -j DROP"
+"TCPSIP -m string --string sundayddr --algo bm -j BADSIP"
+"TCPSIP -m string --string sipsak --algo bm -j BADSIP"
+"TCPSIP -m string --string sipvicious --algo bm --icase -j BADSIP"
+"TCPSIP -m string --string friendly-scanner --algo bm -j BADSIP"
+"TCPSIP -m string --string iWar --algo bm -j BADSIP"
+"TCPSIP -m string --string sip-scan --algo bm -j BADSIP"
+"TCPSIP -m string --string sipcli --algo bm -j BADSIP"
+"TCPSIP -m string --string eyeBeam --algo bm -j BADSIP"
+"TCPSIP -m string --string VaxSIPUserAgent --algo bm -j BADSIP"
+"TCPSIP -m string --string sip:nm@nm --algo bm -j BADSIP"
+"TCPSIP -m string --string sip:carol@chicago.com --algo bm -j BADSIP"
+"UDPSIP -m string --string sundayddr --algo bm --to 1500 -j BADSIP"
+"UDPSIP -m string --string sipsak --algo bm --to 1500 -j BADSIP"
+"UDPSIP -m string --string sipvicious --algo bm --icase --to 1500 -j BADSIP"
+"UDPSIP -m string --string friendly-scanner --algo bm --to 1500 -j BADSIP"
+"UDPSIP -m string --string iWar --algo bm --to 1500 -j BADSIP"
+"UDPSIP -m string --string sip-scan --algo bm --to 1500 -j BADSIP"
+"UDPSIP -m string --string sipcli --algo bm --to 1500 -j BADSIP"
+"UDPSIP -m string --string eyeBeam --algo bm --to 1500 -j BADSIP"
+"UDPSIP -m string --string VaxSIPUserAgent --algo bm --to 1500 -j BADSIP"
+"UDPSIP -m string --string sip:nm@nm --algo bm --to 1500 -j BADSIP"
+"UDPSIP -m string --string sip:carol@chicago.com --algo bm --to 1500 -j BADSIP"
+"BADSIP -m recent --set --name BADSIP -g LOG02"
+"NEWSIP -m recent --set --name MYSIP -g LOG01"
+)
+
+for chain in {BADSIP,TCPSIP,UDPSIP,NEWSIP,LOG01,LOG02}; do
+     firewall-cmd --permanent --direct --add-chain ipv4 raw "$chain"
+done
+
+echo "Starting update firewalld rules ..."
+num=0
+for pre_rule in "${pre_array_list[@]}"; do
+    i=$((num++))
+    echo "Adding rule number: $i"
+    if [[ "$pre_rule" = PRE* ]]; then
+       firewall-cmd --permanent --direct --add-rule ipv4 raw PREROUTING ${i} ${pre_rule#PRE }
+    elif [[ "$pre_rule" = LOG01* ]]; then
+       firewall-cmd --permanent --direct --add-rule ipv4 raw LOG01 ${i} ${pre_rule#LOG01 }
+    elif [[ "$pre_rule" = LOG02* ]]; then
+        firewall-cmd --permanent --direct --add-rule ipv4 raw LOG02 ${i} ${pre_rule#LOG02 }
+    elif [[ "$pre_rule" = TCPSIP* ]]; then
+        firewall-cmd --permanent --direct --add-rule ipv4 raw TCPSIP ${i} ${pre_rule#TCPSIP }
+    elif [[ "$pre_rule" = UDPSIP* ]]; then
+        firewall-cmd --permanent --direct --add-rule ipv4 raw UDPSIP ${i} ${pre_rule#UDPSIP }
+    elif [[ "$pre_rule" = BADSIP* ]]; then
+        firewall-cmd --permanent --direct --add-rule ipv4 raw BADSIP ${i} ${pre_rule#BADSIP }
+    elif [[ "$pre_rule" = NEWSIP* ]]; then
+        firewall-cmd --permanent --direct --add-rule ipv4 raw NEWSIP ${i} ${pre_rule#NEWSIP }
+    else
+        echo "Didn't found any firewalld rule .."
+    fi
+done
+
+service_file_array=( $(find /etc/firewalld/services -maxdepth 1 -type f -name '*.xml') )
+
+if [[ ${DB_HOST%%.*} -eq 127 ]]; then
+   for file in "${service_file_array[@]##*/}"; do
+       firewall-cmd --permanent --zone "$get_zone" --add-service "${file%.xml}"
+   done
+fi
+
+firewall-cmd --reload
+
+echo "Setting up certificate for freeswitch ..."
+if [ ! -d /etc/freeswitch/ssl ]; then
+   mkdir -p /etc/freeswitch/ssl/CA
+fi
+
+if (shopt -s nullglob dotglob; f=(/etc/freeswitch/ssl/CA/*); ((! ${#f[@]}))); then
+     sed -i '/^CONFDIR=*/d' /usr/bin/gentls_cert
+     sed -i '/^DAYS=*/a \CONFDIR=\/etc\/freeswitch/ssl' /usr/bin/gentls_cert
+     /usr/bin/gentls_cert setup -cn ${PUBLICHOSTNAME} -alt DNS:${PUBLICHOSTNAME} -org ${DOMAINNAME}
+fi
+
+shopt -u nullglob dotglob
+
+cat <<EOT
+
+******************************
+
+Almost done!   Now certificates for encryption of TLS and SRTP will be created.  Answer yes when asked to create the certificates.
+
+******************************
+
+EOT
+
+/usr/bin/gentls_cert create_server -cn ${PUBLICHOSTNAME} -alt DNS:${PUBLICHOSTNAME} -org ${DOMAINNAME}
+chmod 640 /etc/freeswitch/ssl/agent.pem
+chmod 640 /etc/freeswitch/ssl/CA/cacert.pem
+chmod 640 /etc/freeswitch/ssl/cafile.pem
+
+/usr/bin/gentls_cert create_client -cn client.${DOMAINNAME} -out phone
+
+echo "Correcting all permissions ..."
+usermod -G daemon nginx
+cp -rp /usr/share/nginx/fusionpbx/resources/install/scripts/* /usr/share/freeswitch/scripts 
+chown -R freeswitch:daemon /etc/freeswitch/ssl
+chown -R freeswitch:daemon /usr/share/freeswitch
+chown -R nginx:nginx /usr/share/nginx/fusionpbx
+chown -R nginx:nginx /var/lib/php/sessions
+rm -f /etc/freeswitch/sip_profiles/{external-ipv6.xml,external.xml,internal-ipv6.xml,internal.xml}
+cd /etc/freeswitch
+find . -type f -exec chmod 0660 {} \;
+
+echo "Correcting freeswitch configuration file ..."
+line1="<X-PRE-PROCESS cmd=\"set\" data=\"dsn=pgsql://hostaddr=${DB_HOST} dbname=${DBNAME_FREESWITCH} user=${USERNAME_FUSIONPBX} password=${DBNAME_FREESWITCH_PASSWD}\"/>"
+if [[ "$DB_TYPE" = bdr ]]; then
+     line2='<param name="auto-create-schemas" value="false"/>'
+else
+     line2='<param name="auto-create-schemas" value="true"/>'
+fi
+line3="<param name=\"odbc-dsn\" value=\"$${dsn}\"/>"
+line4="<param name=\"core-db-dsn\" value=\"$${dsn}\"/>"
+line5='security.limit_extensions = .php .html .js .gif .png'
+line6='user = nginx'
+line7='group = nginx'
+line8='listen = 9000'
+line9='<param name="xml-handler-script" value="app.lua xml_handler"/>'
+line10='<param name="xml-handler-bindings" value="configuration,dialplan,directory"/>'
+line11='<param name="script-directory" value="/usr/share/freeswitch/scripts/?.lua"/>'
+line12='<X-PRE-PROCESS cmd="set" data="json_db_handle=$${dsn}"/>'
+file_add2="/etc/freeswitch/autoload_configs/switch.conf.xml"
+file_add5="/etc/freeswitch/autoload_configs/db.conf.xml"
+file_add6="/etc/freeswitch/autoload_configs/lcr.conf.xml"
+file_add7="/etc/php-fpm.d/www.conf"
+file_add8="/etc/freeswitch/autoload_configs/lua.conf.xml"
+file_add9="/etc/freeswitch/vars.xml"
+sed -i -e '/^user=*/d' -e '/^group=*/d' -e '/^listen=*/d'  "$file_add7"
+sed -i "154 i \ \   $line3" "$file_add2"
+sed -i "155 i \ \   $line4" "$file_add2"
+sed -i "3 i \ \   $line3" "$file_add5"
+sed -i "3 i \ \   $line3" "$file_add6"
+sed -i "373 i \ \ $line5" "$file_add7"
+sed -i "23 i \ \ $line6" "$file_add7"
+sed -i "25 i \ \ $line7" "$file_add7"
+sed -i "40 i \ \ $line8" "$file_add7"
+sed -i "3 i \ \   $line9" "$file_add8"
+sed -i "4 i \ \   $line10" "$file_add8"
+sed -i "6 i \ \   $line11" "$file_add8"
+sed -i "8 i \ \   $line1" "$file_add9"
+sed -i "9 i \ \   $line1" "$file_add12"
+
+
+echo "Correcting start up services ..."
+if [[ ${DB_HOST%%.*} -eq 127 ]]; then
+   systemctl enable ${find_psql_service_file##*/}
+   systemctl restart ${find_psql_service_file##*/}
+fi
+
+for service in {php-fpm,freeswitch,nginx,memcached,fail2ban,firewalld,ulogd}; do
+    systemctl enable "${service/%/.service}"
+    systemctl restart "${service/%/.service}"
+done
+
+echo "Installing crontab jobs for xml cdr..."
+cmd_crontab_fusionpbx > /etc/cron.d/xml_cdr_fusionpbx
+
+web_interface=${my_ip}
+echo -n "
+As long as you didnt see errors by this point Firewalls, PostgreSQL, FreeSWITCH, FusionPBX, Fail2Ban, Monit should be installed.
+Point your browser to http://$web_interface:82/ and let the FusionPBX installer take it from there.
+Please use user name and password previously set in \"Database setup section\" to complete database setup in FusionPBX Setup Wizard.
+For post installation task visit wiki page https://networklab.freshdesk.com/solution/articles/6000030050-post-installation-task.
+"

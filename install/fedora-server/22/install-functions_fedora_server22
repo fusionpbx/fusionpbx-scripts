@@ -1,0 +1,711 @@
+# ~* SHELL FUNCTIONS FUSIONPBX *~
+#
+#
+#
+pause() {
+    local key="$@"
+    [ -z $key ] && key="Are you sure? Press [Enter] key to continue..."
+    read -p "$key" readEnterKey
+}
+
+deploy_remote_pgsql() {
+    cmd_remote_pgsql_p1 >  /tmp/deploy_remote_pgsql
+    cmd_remote_pgsql_p2 >> /tmp/deploy_remote_pgsql
+    cmd_remote_pgsql_p3 >> /tmp/deploy_remote_pgsql
+    cmd_remote_pgsql_p4 >> /tmp/deploy_remote_pgsql
+    cmd_remote_pgsql_p5 >> /tmp/deploy_remote_pgsql
+    cmd_remote_pgsql_p6 >> /tmp/deploy_remote_pgsql
+    cmd_remote_pgsql_p7 >> /tmp/deploy_remote_pgsql
+}
+
+deploy_fusion_pbx() {
+   shopt -s nullglob dotglob
+   files=("$1"/*)
+   if (( ${#files[*]} )); then
+      read -r -p "FusionPBX directory is not empty Do you want to delete it ? [Y/n] " del_answer
+      if [[ $del_answer =~ ^([yY][eE][sS]|[yY])$ ]]; then
+         rm -rf "$1"
+         mkdir -p "$1"
+         git clone https://github.com/fusionpbx/fusionpbx.git "$1"
+         rm -rf "$1"/.git
+      fi
+   elif (( ! ${#files[*]} )); then
+         rm -rf "$1"
+         mkdir -p "$1"
+         git clone https://github.com/fusionpbx/fusionpbx.git "$1"
+         rm -rf "$1"/.git
+    else
+        echo "Error occured ..."
+   fi
+
+   echo "Correcting directory for customized provisioning templates ..."
+   mkdir -p /etc/fusionpbx/resources
+   cp "$1"/resources/config.php /etc/fusionpbx
+   cp /usr/share/freeswitch/scripts/resources/config.lua /etc/fusionpbx
+   cp -rp "$1"/resources/templates /etc/fusionpbx/resources
+   rm -rf /etc/fusionpbx/resources/templates/{conf,engine}
+   chown -R nginx:nginx /etc/fusionpbx
+
+   shopt -u nullglob dotglob
+}
+
+cmd_create_db() {
+    #install pgcrypto extension
+    su - postgres -c "createuser -W -E -s -e ${USERNAME_FUSIONPBX}"
+    su - postgres -c "createdb -E UTF8 -O ${USERNAME_FUSIONPBX} ${DBNAME_FREESWITCH}"
+    su - postgres -c "createdb -E UTF8 -O ${USERNAME_FUSIONPBX} ${DBNAME_FUSIONPBX}"
+    echo "Setting up passwords for database user Postgres ..."
+    su - postgres -c "psql --command '\password postgres'"
+    echo "Setting up passwords for database user ${USERNAME_FUSIONPBX} ..."
+    su - postgres -c "psql --command \"\password ${USERNAME_FUSIONPBX}"\"
+}
+
+cmd_crontab_fusionpbx() {
+updatedb
+xml_cdr_bin=$(find / -type f -name v_xml_cdr_import.php)
+php_bin=$(which php)
+cat << EOF
+* * * * * root ${php_bin} ${xml_cdr_bin} >/dev/null 2>&1
+EOF
+}
+
+
+cmd_ulogd_fusionpbx() {
+cat << 'EOF'
+[global]
+logfile=/var/log/ulogd/ulogd.log
+loglevel=5
+
+rmem=131071
+bufsize=150000
+
+plugin="/usr/lib64/ulogd/ulogd_inppkt_NFLOG.so"
+plugin="/usr/lib64/ulogd/ulogd_inppkt_ULOG.so"
+plugin="/usr/lib64/ulogd/ulogd_inpflow_NFCT.so"
+plugin="/usr/lib64/ulogd/ulogd_filter_IFINDEX.so"
+plugin="/usr/lib64/ulogd/ulogd_output_SYSLOG.so"
+plugin="/usr/lib64/ulogd/ulogd_output_LOGEMU.so"
+plugin="/usr/lib64/ulogd/ulogd_raw2packet_BASE.so"
+plugin="/usr/lib64/ulogd/ulogd_filter_PRINTPKT.so"
+plugin="/usr/lib64/ulogd/ulogd_filter_IP2STR.so"
+
+# Write log to "/var/log/messages" with SYSLOG option
+#stack=log1:NFLOG,base1:BASE,ifi1:IFINDEX,ip2str1:IP2STR,print1:PRINTPKT,emu1:SYSLOG
+#stack=log2:NFLOG,base2:BASE,ifi2:IFINDEX,ip2str1:IP2STR,print2:PRINTPKT,emu2:SYSLOG
+
+# Write log through plugin LOGEMU plugin
+stack=log1:NFLOG,base1:BASE,ifi1:IFINDEX,ip2str1:IP2STR,print1:PRINTPKT,emu1:LOGEMU
+stack=log2:NFLOG,base2:BASE,ifi1:IFINDEX,ip2str1:IP2STR,print1:PRINTPKT,emu2:LOGEMU
+
+[log1]
+group=2
+numeric_label=1
+
+[log2]
+group=3
+numeric_label=0
+
+[emu1]
+file="/var/log/firewalld_log/firewalld_accept.log"
+sync=1
+
+[emu2]
+file="/var/log/firewalld_log/firewalld_drop.log"
+sync=1
+EOF
+
+}
+
+cmd_nginx_fusionpbx() {
+cat << 'EOF'
+server {
+	listen 82;
+	#listen 443 default ssl;
+	#server_name fusionpbx;
+	access_log /var/log/nginx/fusionpbx.access_log;
+	error_log /var/log/nginx/fusionpbx.error_log;
+	root /usr/share/nginx/fusionpbx;
+	#ssl_certificate /etc/ssl/fusionpbx.ssl.crt;
+	#ssl_certificate_key /etc/ssl/fusionpbx.ssl.key.nopass;
+
+	location / {
+                root /usr/share/nginx/fusionpbx;
+		index index.php;
+	}
+
+        #grandstream
+	rewrite "^.*/provision/cfg([A-Fa-f0-9]{12})(\.(xml|cfg))?$" /app/provision/?mac=\$1;
+
+	#aastra
+	#rewrite "^.*/provision/([A-Fa-f0-9]{12})(\.(cfg))?$" /app/provision/?mac=\$1 last;
+
+	#yealink common
+	rewrite "^.*/(y[0-9]{12})(\.cfg)?$" /app/provision/index.php?file=\$1\$2;
+
+	#yealink mac
+	rewrite "^.*/([A-Fa-f0-9]{12})(\.(xml|cfg))?$" /app/provision/index.php?mac=\$1 last;
+       
+ 
+       location ~ \.php$ {
+          if (!-f $request_filename) {
+                return 404;
+       }
+       fastcgi_split_path_info ^(.+\.php)(/.+)$;
+       include /etc/nginx/fastcgi_params;
+       fastcgi_pass 127.0.0.1:9000;
+       fastcgi_param SCRIPT_FILENAME $document_root$fastcgi_script_name;
+       }
+
+       location ~ /resources/ {
+             root /usr/share/nginx/fusionpbx;
+             allow all;
+             fastcgi_split_path_info ^(.+\.php)(/.+)$;
+             include /etc/nginx/fastcgi_params;
+             fastcgi_pass 127.0.0.1:9000;
+             fastcgi_param SCRIPT_FILENAME $document_root$fastcgi_script_name;
+        }
+
+	location ~ .ht {
+			deny all;
+	}
+	location ~^.+.(db)$ {
+			deny all;
+	}
+}
+EOF
+}
+
+cmd_yum_repo_fusionpbx() {
+cat << 'EOF'
+[networklab-F22-Server]
+name = VoIP - NetworkLab
+baseurl = http://ftpsrv01.networklab.ca/fedora/22/RPMS/$basearch
+enabled = 1
+protect = 0
+gpgcheck = 1
+gpgkey = http://ftpsrv01.networklab.ca/fedora/22/RPMS/keys/RPM-GPG-KEY-NetworkLab-F22-Server
+
+[networklab-F22-Server-noarch]
+name = VoIP Noarch - NetworkLab
+baseurl = http://ftpsrv01.networklab.ca/fedora/22/RPMS/noarch
+enabled = 1
+protect = 0
+gpgcheck = 1
+gpgkey = http://ftpsrv01.networklab.ca/fedora/22/RPMS/keys/RPM-GPG-KEY-NetworkLab-F22-Server
+EOF
+}
+
+cmd_snmp_fusionpbx() {
+cat << "EOF"
+rocommunity  public
+syslocation  ${SUPPORTNAME}
+syscontact  ${SUPPORTEMAIL}
+EOF
+}
+
+cmd_odbc_fusionpbx() {
+cat << EOF
+[myodbc3]
+Driver       = ${find_psql_lib}
+Description  = Connector/ODBC 3.51 Driver DSN
+SERVER       = ${DB_HOST}
+PORT         = 5432
+USER         = ${USERNAME_FUSIONPBX}
+Password     = 
+Database     = ${DBNAME_FREESWITCH}
+ReadOnly     = No
+Servertype   = postgres
+DSN          = myodbc3
+
+[myodbc4]
+Driver       = ${find_psql_lib}
+Description  = Connector/ODBC 3.51 Driver DSN
+SERVER       = ${DB_HOST}
+PORT         = 5432
+USER         = ${USERNAME_FUSIONPBX}
+Password     = 
+Database     = ${DBNAME_FUSIONPBX}
+ReadOnly     = No
+Servertype   = postgres
+DSN          = myodbc4
+
+[Default]
+Driver       = PostgreSQL
+Description  = PostgreSQL Data Source
+Server       = 127.0.0.1
+Port         = 5432
+UserName     = feeswitch
+Password     =
+EOF
+}
+
+cmd_odbc_fusionpbx_p2() {
+cat << EOF
+[ODBC]
+Trace        = Yes
+TraceFile    = /var/log/pgsql-trace.log
+EOF
+}
+
+cmd_fail2ban_fusionpbx() {
+cat << "EOF"
+[INCLUDES]
+before = paths-fedora.conf
+
+[DEFAULT]
+ignoreip = 127.0.0.1/8
+ignorecommand =
+bantime  = 7200
+findtime  = 600
+maxretry = 3
+backend = auto
+usedns = warn
+logencoding = auto
+enabled = false
+filter = %(__name__)s
+destemail = ${user_email}
+sender = fail2ban@localhost
+mta = sendmail
+protocol = tcp
+chain = INPUT
+port = 0:65535
+banaction = firewallcmd-ipset
+action_ = %(banaction)s[name=%(__name__)s, bantime="%(bantime)s", port="%(port)s", protocol="%(protocol)s", chain="%(chain)s"]
+action_mw = %(banaction)s[name=%(__name__)s, bantime="%(bantime)s", port="%(port)s", protocol="%(protocol)s", chain="%(chain)s"]
+            %(mta)s-whois[name=%(__name__)s, dest="%(destemail)s", protocol="%(protocol)s", chain="%(chain)s"]
+action_mwl = %(banaction)s[name=%(__name__)s, bantime="%(bantime)s", port="%(port)s", protocol="%(protocol)s", chain="%(chain)s"]
+             %(mta)s-whois-lines[name=%(__name__)s, dest="%(destemail)s", logpath=%(logpath)s, chain="%(chain)s"]
+action_xarf = %(banaction)s[name=%(__name__)s, bantime="%(bantime)s", port="%(port)s", protocol="%(protocol)s", chain="%(chain)s"]
+             xarf-login-attack[service=%(__name__)s, sender="%(sender)s", logpath=%(logpath)s, port="%(port)s"]
+action_blocklist_de  = blocklist_de[email="%(sender)s", service=%(filter)s, apikey="%(blocklist_de_apikey)s"]
+action_badips = badips.py[category="%(name)s", banaction="%(banaction)s"]
+action = %(action_)s
+
+[freeswitch]
+enabled  = true 
+port     = 5060,5061,5081,5082
+action   = %(action_mwl)s
+logpath  = /var/log/freeswitch/freeswitch.log
+maxretry = 3
+
+[nginx-http-auth]
+enabled  = true
+action   = %(action_mwl)s
+port    = 82,http,https
+logpath = %(nginx_error_log)s
+
+[nginx-botsearch]
+enabled  = true
+action   = %(action_mwl)s
+port    =  82,http,https
+logpath  = %(nginx_error_log)s
+maxretry = 2
+
+[php-url-fopen]
+enabled  = true
+action   = %(action_mwl)s
+port     = 82,http,https
+bantime  = 86400
+logpath  = %(nginx_access_log)s
+maxretry = 2
+
+EOF
+}
+
+cmd_postgres_hba_fusionpbx() {
+cat << 'EOF'
+# TYPE  DATABASE        USER            ADDRESS                 METHOD
+
+# "local" is for Unix domain socket connections only
+local   all             all                                     peer
+# IPv4 local connections:
+host    all             all             127.0.0.1/32            peer
+# IPv6 local connections:
+host    all             all             ::1/128                 peer
+# Allow replication connections from localhost, by a user with the
+# replication privilege.
+#local   replication     postgres                                peer
+#host    replication     postgres        127.0.0.1/32            ident
+#host    replication     postgres        ::1/128                 ident
+EOF
+}
+
+
+cmd_postgres_bdr_hba_fusionpbx() {
+
+cat << "EOF"
+# TYPE  DATABASE        USER            ADDRESS                 METHOD
+
+# "local" is for Unix domain socket connections only
+local   all             all                                     peer
+# IPv4 local connections:
+host    all             all             127.0.0.1/32            peer
+# IPv6 local connections:
+host    all             all             ::1/128                 peer
+
+hostssl all             all            ${my_ip}/32             trust
+host    replication     postgres       ${my_ip}/32             trust
+
+# Allow replication connections from localhost, by a user with the
+# replication privilege.
+#local   replication     postgres                                peer
+#host    replication     postgres        127.0.0.1/32            ident
+#host    replication     postgres        ::1/128                 ident
+EOF
+
+}
+
+cmd_postgres_bdr_conf_fusionpbx() {
+cat << EOF
+listen_addresses = "*"
+shared_preload_libraries = "bdr"
+wal_level = "logical"
+track_commit_timestamp = on
+max_wal_senders = 10
+max_replication_slots = 10
+ssl = true
+ssl_ciphers = "HIGH:MEDIUM:+3DES:!aNULL"
+ssl_cert_file = "/etc/pki/pg_bdr/${my_name}/${my_name}-cert.pem"
+ssl_key_file = "/etc/pki/pg_bdr/${my_name}/${my_name}-key-nopasswd.pem"
+ssl_ca_file = "/etc/pki/pg_bdr/ca-cert.pem"
+ssl_crl_file = "/etc/pki/pg_bdr/ca_rev-list.pem"
+# max_worker_processes = 20
+#log_error_verbosity = verbose
+#log_min_messages = debug1
+#log_line_prefix = 'd=%d p=%p a=%a%q '
+#bdr.default_apply_delay=2000   # milliseconds
+#bdr.log_conflicts_to_table=on
+#bdr.skip_ddl_replication = off
+EOF
+}
+
+cmd_postgres_conf_fusionpbx() {
+cat << 'EOF'
+max_connections = 100
+shared_buffers = 256MB
+logging_collector = on
+log_destination = 'stderr'
+log_directory = 'pg_log'
+log_filename = 'postgresql-%G-%m-%d-%a.log'
+log_truncate_on_rotation = off
+log_rotation_age = 31d
+client_min_messages = notice
+log_min_messages = info
+log_min_error_statement = notice
+log_min_duration_statement = 1000
+log_line_prefix = '%t %u@%r:%d [%p] '
+log_timezone = 'US/Eastern'
+datestyle = 'iso, mdy'
+timezone = 'US/Eastern'
+lc_messages = 'en_US.UTF-8'
+lc_monetary = 'en_US.UTF-8'
+lc_numeric = 'en_US.UTF-8'
+lc_time = 'en_US.UTF-8'
+default_text_search_config = 'pg_catalog.english'
+EOF
+}
+
+cmd_service_sip-ext() {
+cat << 'EOF'
+<?xml version="1.0" encoding="utf-8"?>
+<service>
+ <short>sip-ext</short>
+ <description>sip ext freeswitch</description>
+ <port protocol="tcp" port="5080"/>
+ <port protocol="udp" port="5080"/>
+ <port protocol="tcp" port="5081"/>
+</service>
+EOF
+}
+
+cmd_service_sip-int() {
+cat << 'EOF'
+<?xml version="1.0" encoding="utf-8"?>
+<service>
+ <short>sip-int</short>
+ <description>sip int freeswitch</description>
+ <port protocol="tcp" port="5060"/>
+ <port protocol="udp" port="5060"/>
+ <port protocol="tcp" port="5061"/>
+</service>
+EOF
+}
+
+cmd_service_chronyd() {
+cat << 'EOF'
+<?xml version="1.0" encoding="utf-8"?>
+<service>
+ <short>chronyd</short>
+ <description>chronyd</description>
+ <port protocol="udp" port="123"/>
+</service>
+EOF
+}
+
+cmd_service_snmp() {
+cat << 'EOF'
+<?xml version="1.0" encoding="utf-8"?>
+<service>
+ <short>snmp</short>
+ <description>snmp</description>
+ <port protocol="udp" port="161"/>
+ <port protocol="udp" port="162"/>
+</service>
+EOF
+}
+
+cmd_service_www() {
+cat << 'EOF'
+<?xml version="1.0" encoding="utf-8"?>
+<service>
+ <short>www</short>
+ <description>web services</description>
+ <port protocol="tcp" port="80"/>
+ <port protocol="tcp" port="82"/>
+ <port protocol="tcp" port="443"/>
+</service>
+EOF
+}
+
+cmd_service_rtp() {
+cat << 'EOF'
+<?xml version="1.0" encoding="utf-8"?>
+<service>
+ <short>rtp</short>
+ <description>rtp freeswitch</description>
+ <port protocol="udp" port="16384-32768"/>
+</service>
+EOF
+}
+
+cmd_service_xml_rpc() {
+cat << 'EOF'
+<?xml version="1.0" encoding="utf-8"?>
+<service>
+ <short>fs-xml-rpc</short>
+ <description>Freeswitch XML RPC</description>
+ <port protocol="tcp" port="8787"/>
+</service>
+EOF
+}
+
+cmd_sysconfig_freeswitch() {
+cat << 'EOF'
+PID_FILE=/var/run/freeswitch/freeswitch.pid
+FS_USER=freeswitch
+FS_GROUP=daemon
+FREESWITCH_PARAMS="-ncwait -nonat -u freeswitch -g daemon -certs /etc/freeswitch/ssl"
+EOF
+}
+
+cmd_remote_pgsql_p1() {
+cat << 'EOF'
+#!/bin/bash
+dnf_bin=$(which dnf)
+# Find pgsql staff
+# Fix contrib
+default_interface=$(ip -o route get 8.8.8.8 | awk '{print $5}')
+get_zone=$(firewall-cmd --get-zone-of-interface=$default_interface)
+service_file_array=( $(find /etc/firewalld/services -maxdepth 1 -type f -name '*.xml') )
+find_psql_data_dir=$(find /var/lib/pgsql -type d -name data)
+find_psql_service_file=$(find /usr/lib/systemd/system -type f -name postgresql*.service)
+find_psql_db94_setup=$(find / -type f -name postgresql94-setup)
+my_ip=$(ip -o route get 8.8.8.8 | awk '{print $7}')
+my_name=(hostname -s)
+rc_n=$(rpm -q postgresql-bdr94-2ndquadrant-fedora >/dev/null 2>&1; echo $?)
+rc=$(rpm -q postgresql-server >/dev/null 2>&1; echo $?)
+
+read -p "Enter user name for fusionpbx database : " fusionpbx_username
+USERNAME_FUSIONPBX="$fusionpbx_username"
+read -p  "Enter fusionpbx database name: " fusionpbx_dbname
+DBNAME_FUSIONPBX="$fusionpbx_dbname"
+read -p  "Enter freeswitch database name: " freeswitch_dbname
+DBNAME_FREESWITCH="$freeswitch_dbname"
+read -s -p  "Enter freeswitch database user password: " psql_passwd
+DBNAME_FREESWITCH_PASSWD="$psql_passwd"
+
+read -r -p "Do you want deploy database with BDR (Multi Master Replication) ? [Y/n] " bdr_answer
+if [[ $bdr_answer =~ ^([yY][eE][sS]|[yY])$ ]]; then
+     DB_TYPE="bdr"
+fi
+
+if [[ "$DB_TYPE" = bdr ]] && [[ $rc_n -ne 0 ]]; then
+   "$dnf_bin" install -y http://packages.2ndquadrant.com/postgresql-bdr94-2ndquadrant/yum-repo-rpms/postgresql-bdr94-2ndquadrant-fedora-1.0-2.noarch.rpm
+   "$dnf_bin" install -y postgresql-bdr94-bdr postgresql-bdr94-contrib
+else
+    "$dnf_bin" install -y postgresql-bdr94-bdr postgresql-bdr94-contrib
+fi
+
+if [[ "$DB_TYPE" != bdr ]] && [[ $rc -ne 0 ]]; then
+   "$dnf_bin" -y install postgresql-server
+fi
+
+cp /usr/lib/firewalld/services/postgresql.xml /etc/firewalld/services
+for file in "${service_file_array[@]##*/}"; do
+    firewall-cmd --permanent --zone "$get_zone" --add-service "${file%.xml}"
+done
+
+firewall-cmd --reload
+EOF
+}
+
+cmd_remote_pgsql_p2() {
+cat << 'EOF'
+
+psql_config() {
+printf '%s' '
+max_connections = 100
+shared_buffers = 256MB
+logging_collector = on
+log_destination = 'stderr'
+log_directory = 'pg_log'
+log_filename = 'postgresql-%G-%m-%d-%a.log'
+log_truncate_on_rotation = off
+log_rotation_age = 31d
+client_min_messages = notice
+log_min_messages = info
+log_min_error_statement = notice
+log_min_duration_statement = 1000
+log_line_prefix = '%t %u@%r:%d [%p] '
+log_timezone = 'US/Eastern'
+datestyle = 'iso, mdy'
+timezone = 'US/Eastern'
+lc_messages = 'en_US.UTF-8'
+lc_monetary = 'en_US.UTF-8'
+lc_numeric = 'en_US.UTF-8'
+lc_time = 'en_US.UTF-8'
+default_text_search_config = 'pg_catalog.english'
+'
+}
+EOF
+}
+
+cmd_remote_pgsql_p3() {
+cat << 'EOF'
+cmd_postgres_bdr_conf_fusionpbx() {
+printf "%s" "
+listen_addresses = '*'
+shared_preload_libraries = 'bdr'
+wal_level = 'logical'
+track_commit_timestamp = on
+max_wal_senders = 10
+max_replication_slots = 10
+ssl = true
+ssl_ciphers = 'HIGH:MEDIUM:+3DES:!aNULL'
+ssl_cert_file = "/etc/pki/pg_bdr/${my_name}/${my_name}-cert.pem"
+ssl_key_file = "/etc/pki/pg_bdr/${my_name}/${my_name}-key-nopasswd.pem"
+ssl_ca_file = "/etc/pki/pg_bdr/ca-cert.pem"
+ssl_crl_file = "/etc/pki/pg_bdr/ca_rev-list.pem"
+# max_worker_processes = 20
+# #log_error_verbosity = verbose
+# #log_min_messages = debug1
+# #log_line_prefix = 'd=%d p=%p a=%a%q '
+# #bdr.default_apply_delay=2000   # milliseconds
+# #bdr.log_conflicts_to_table=on
+# #bdr.skip_ddl_replication = off
+"
+}
+EOF
+}
+
+cmd_remote_pgsql_p4() {
+cat << 'EOF'
+
+cmd_postgres_bdr_hba_fusionpbx() {
+
+printf "%s" "
+# TYPE  DATABASE        USER            ADDRESS                 METHOD
+
+# "local" is for Unix domain socket connections only
+local   all             all                                     peer
+# IPv4 local connections:
+host    all             all             127.0.0.1/32            peer
+# IPv6 local connections:
+host    all             all             ::1/128                 peer
+
+hostssl all             all            ${my_ip}/32             trust
+host    replication     postgres       ${my_ip}/32             trust
+
+# Allow replication connections from localhost, by a user with the
+# replication privilege.
+#local   replication     postgres                                peer
+#host    replication     postgres        127.0.0.1/32            ident
+#host    replication     postgres        ::1/128                 ident
+"
+}
+EOF
+}
+
+
+cmd_remote_pgsql_p5() {
+cat << 'EOF'
+psql_hba_config() {
+printf '%s' '
+# TYPE  DATABASE        USER            ADDRESS                 METHOD
+
+# "local" is for Unix domain socket connections only
+local   all             all                                     peer
+# IPv4 local connections:
+host    all             all             127.0.0.1/32            peer
+# IPv6 local connections:
+host    all             all             ::1/128                 peer
+# Allow replication connections from localhost, by a user with the
+# replication privilege.
+#local   replication     postgres                                peer
+#host    replication     postgres        127.0.0.1/32            ident
+#host    replication     postgres        ::1/128                 ident
+'
+}
+EOF
+}
+
+cmd_remote_pgsql_p6() {
+cat << 'EOF'
+printf '%s' '
+cmd_create_db() {
+    su - postgres -c "createuser -W -E -s -e ${USERNAME_FUSIONPBX}"
+    su - postgres -c "createdb -E UTF8 -O ${USERNAME_FUSIONPBX} ${DBNAME_FREESWITCH}"
+    su - postgres -c "createdb -E UTF8 -O ${USERNAME_FUSIONPBX} ${DBNAME_FUSIONPBX}"
+    echo "Setting up passwords for database user Postgres ..."
+    su - postgres -c "psql --command '\password postgres'"
+    echo "Setting up passwords for database user ${USERNAME_FUSIONPBX} ..."
+    su - postgres -c "psql --command \"\password ${USERNAME_FUSIONPBX}"\"
+}
+EOF
+}
+'
+}
+
+cmd_remote_pgsql_p7() {
+printf '%s' '
+echo "Database setup ..."
+if [[ "$DB_TYPE" != bdr ]]; then
+   postgresql-setup --initdb
+   echo "PgSQL already initialized continue ..."
+   systemctl restart postgresql.service
+   systemctl status postgresql.service
+   cmd_create_db
+   mv /var/lib/pgsql/data/pg_hba.conf /var/lib/pgsql/data/pg_hba.conf.orig
+   mv /var/lib/pgsql/data/postgresql.conf /var/lib/pgsql/data/postgresql.conf.orig
+   psql_hba_config > /var/lib/pgsql/data/pg_hba.conf
+   psql_config > /var/lib/pgsql/data/postgresql.conf
+   chown -R postgres:postgres /var/lib/pgsql/data/
+   systemctl restart postgresql.service
+else
+   updatedb
+   ${find_psql_db94_setup} --initdb
+   cmd_create_db
+   cmd_postgres_conf_fusionpbx > ${find_psql_data_dir}/postgresql.conf
+   cmd_postgres_bdr_conf_fusionpbx >> ${find_psql_data_dir}/postgresql.conf
+   cmd_postgres_bdr_hba_fusionpbx >> ${find_psql_data_dir}/pg_hba.conf
+   systemctl restart postgresql-9.4.service
+   echo "Deploying freeswitch schema optimized for PgSQL BDR ..."
+   curl --silent -u fusionpbx_Admin:dron12345  -o /root/freeswitch-pgsql-bdr-1.6.5.sql http://ftpsrv01.networklab.ca/misc/freeswitch-pgsql-bdr-1.6.5.sql
+   su - postgres -c "psql --command 'CREATE EXTENSION pgcrypto' -d ${DBNAME_FREESWITCH} -W ${DBNAME_FREESWITCH_PASSWD}"
+   psql -U postgres -W ${DBNAME_FREESWITCH_PASSWD} -d freeswitch -f ~/freeswitch-pgsql-bdr-1.6.5.sql -L /root/sql.log
+   echo -ne "\e[31mI added to pg_hba.conf file only myself please add rest replication members.\e[0m\n"
+   sleep 4
+   chown -R postgres:postgres ${find_psql_data_dir} /etc/pki/pg_bdr
+fi
+'
+}
