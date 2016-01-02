@@ -1,0 +1,469 @@
+#!/bin/bash
+# 
+# Steps to create certs:
+# #######################
+# Generate private key
+# openssl genrsa -aes128 -out dsm01-key.pem 4096
+# Removing password from key
+# openssl rsa -in dsm01-key.pem -out dsm01-key-nopasswd.pem
+# Creating sign request for CA
+# openssl req -new -out dsm01-req.pem -key dsm01-key-nopasswd.pem -config "$gencert"
+# Sign CA request
+# openssl ca -in dsm01-req.pem -days "$exp_days" -cert ca-cert.pem -keyfile ca-key.pem -out dsm01-cert.pem -config "$gencert"
+#
+# TODO:
+# CertMng --CASetup /tmp/cert --Ext v3_req --Opt "MsgDigestAlg="md5",SSLKeySize=1024,ExpDays=365,DNS=casipgw01.networklab.ca,IP=192.168.10.69"
+# Default value: SSLKeySize=4096; ExpDays="$exp_days", MsgDigestAlg="md5"
+#
+#DEF_DIR
+def_dir="/etc/pki/pg_bdr"
+date=$(date +"%m-%d-%Y-%T")
+#CONF_FILE
+conf_file="networklab.cnf"
+ca_ext="-extensions v3_ca"
+req_ext="-extensions v3_req"
+usr_ext="-extensions usr_cert"
+version='1.0.1'
+
+declare -A opt_array
+
+usage() {
+echo -ne "Valid options for: $0\n[ --CASetup | Setup new CA | Value: Installation directory full path ]\n[ --GenCert | Generate Cert | Value: CNF file name | File format 'myorg.cnf' ] \n[ --GenReq | Generate Cert Request | Value: CNF file name | File format 'myorg.cnf' ]\n[ --RevokeCert | Cancel Certificate | Value: CNF file name | File format 'myorg.cnf' ]\n[ --SignRequest | Self Sign CA Certificate | Value: full path to request file | File format 'shortname-req.pem' ]\n[ --Ext | Openssl Extensions | Value: v3_ca,v3_req,usr_cert ]\n[ --Export | Export to PKSC12 or JKS | Value: P12, JKS ]\n[ --Opt | If Opt specified it will override default value | Default Value: SSLKeySize=4096; ExpDays=1095; MsgDigestAlg=sha1 | Supported Option: SSLKeySize; ExpDays; MsgDigestAlg; DNS; IP; ]\nExample: CA Authority setup with alternative dns names:\nCertMng --CASetup /tmp/cert --Ext v3_ca --Opt \"MsgDigestAlg=md5,SSLKeySize=1024,ExpDays=365,DNS1=myhostname.mydomainname.org,IP1=10.10.10.10\"\nNote: DNS IP can be specified how match you need.\n"
+}
+
+GenCert=""
+GenReq=""
+RevokeCert=""
+SignReq=""
+CASetup=""
+Opt=""
+Ext=""
+Export=""
+
+val=$(getopt -o :h::v::o:: --long GenCert:,GenReq:,RevokeCert:,SignRequest:,CASetup:,Opt:,Ext:,Export:,version:: -n 'CertMng' -- "$@")
+eval set -- "$val"
+
+if (( $# == 1 )); then
+usage
+exit
+fi
+
+while :; do
+case "$1" in
+-h|--help) usage $0 && exit 0;;
+-v|--version) echo "${0##*/} $version" && exit 0;;
+-c|--CASetup) setup=$2; shift 2;;
+-o|--Opt) list=$2; IFS=, read -r -a opt_list <<< "$list"; shift 2;;
+-g|--GenCert) gencert=$2; shift 2;;
+-r|--GenReq) genreq=$2; shift 2;;
+-R|--RevokeCert) certrevoke=$2; shift 2;;
+-S|--SignRequest) req_file=$2; shift 2;;
+-e|--Ext) ext=$2; shift 2;;
+-E|--Export) con=$2; shift 2;;
+--) shift 1; break;;
+*) break; usage ;;
+esac
+done
+
+for c in "${opt_list[@]}"; do
+opt_array+=([${c%%=*}]=${c#*=})
+done
+
+key_size=${opt_array['SSLKeySize']:=4096}
+exp_days=${opt_array['ExpDays']:=1095}
+msg_alg=${opt_array['MsgDigestAlg']:=sha1}
+
+if [[ "$ext" == v3_req ]]; then
+for r in "${!opt_array[@]}"; do
+if [[ $r = DNS* ]]; then
+sum=$((n++))
+new_dns=$(sed -r 's/[0-9]{1,10}$//' <<< "$r")
+str_dns+=("$new_dns.$sum = ${opt_array[$r]}")
+fi
+if [[ $r = IP* ]]; then
+num=$((m++))
+new_ip=$(sed -r 's/[0-9]{1,10}$//' <<< "$r")
+str_ip+=("$new_ip.$num = ${opt_array[$r]}")
+fi
+done
+fi
+
+con() {
+echo -n "Please enter user last name: "
+read name
+if [[ -d "$def_dir"/"$name" ]]; then
+passwd
+case "$con" in
+P12)
+openssl pkcs12 -export -name "$name"-cert -in "$def_dir"/"$name"/"$name"-cert.pem -inkey "$def_dir"/"$name"/"$name"-key-nopasswd.pem -out "$def_dir"/"$name"/"$name".p12 -passout pass:"${password[*]}"
+;;
+JKS)
+if [[ -f "$def_dir"/"$name"/"$name".p12 ]]; then
+keytool -importkeystore -srckeystore "$def_dir"/"$name"/"$name".p12 -srcstoretype pkcs12 -destkeystore "$def_dir"/"$name"/"$name".jks -srckeypass "${password[*]}" -destkeypass "${password[*]}" -deststorepass "${password[*]}" -srcstorepass "${password[*]}" -noprompt -alias "$name"-cert
+keytool -list -v -keystore "$def_dir"/"$name"/"$name".jks -storepass "${password[*]}"
+else
+openssl pkcs12 -export -name "$name"-cert -in "$def_dir"/"$name"/"$name"-cert.pem -inkey "$def_dir"/"$name"/"$name"-key-nopasswd.pem -out "$def_dir"/"$name"/"$name".p12 -passout pass:"${password[*]}"
+keytool -importkeystore -srckeystore "$def_dir"/"$name"/"$name".p12 -srcstoretype pkcs12 -destkeystore "$def_dir"/"$name"/"$name".jks -srckeypass "${password[*]}" -destkeypass "${password[*]}" -deststorepass "${password[*]}" -srcstorepass "${password[*]}" -noprompt -alias "$name"-cert
+keytool -list -v -keystore "$def_dir"/"$name"/"$name".jks -storepass "${password[*]}"
+fi
+;;
+*)
+echo "Invalid Option $1 ..."
+exit 1
+;;
+esac
+fi
+}
+
+passwd() {
+echo -n "Enter Global Password [private key/keystore]: "
+unset password
+while IFS= read -r -s -n1 pass; do
+if [[ -z $pass ]]; then
+echo
+break
+else
+echo -n '*'
+password+="$pass"
+fi
+done
+
+}
+
+name_print() {
+printf '%s\n' '/^#NAMES/a' "${str_ip[@]}" . w a | ex -s $1
+printf '%s\n' '/^#NAMES/a' "${str_dns[@]}" . w a | ex -s $1
+}
+
+add_req_v3() {
+sed -i '/#EXT_V3/a \
+[ v3_req ] \
+basicConstraints = CA:FALSE \
+subjectKeyIdentifier = hash \
+keyUsage = nonRepudiation, digitalSignature, keyEncipherment, dataEncipherment \
+subjectAltName = @alt_names \
+\
+[alt_names] \
+#NAMES' "$1"
+
+
+sed -i '/#EXT_REQ/a \
+req_extensions = v3_req' "$1"
+}
+
+add_ca_ext() {
+sed -i '/#EXT_CA/a \
+x509_extensions = v3_ca' "$1"
+}
+
+add_default_ext() {
+sed -i '/#EXT_USR/a \
+x509_extensions = usr_cert' "$1"
+}
+
+remove_ext() {
+sed -i '/#EXT_V3/,/#END/{//!d}' "$1"
+sed -i '/#EXT_REQ/,/#END/{//!d}' "$1"
+sed -i '/#EXT_CA/,/#END/{//!d}' "$1"
+sed -i '/#EXT_USR/,/#END/{//!d}' "$1"
+}
+
+sign_req() {
+echo -n "Please enter short name: "
+read name
+
+passwd
+
+echo "Signing request for $name ..."
+if [[ ! -d "$def_dir"/"$name" ]]; then
+mkdir -p "$def_dir"/"$name"
+fi
+
+/bin/mv "$req_file" "$def_dir"/"$name"
+openssl ca -in "$def_dir"/"$name"/"${req_file##*/}" -days "$exp_days" -cert "$def_dir"/ca-cert.pem -keyfile "$def_dir"/ca-key.pem -out "$def_dir"/"$name"/"$name"-cert.pem -passin pass:"${password[*]}" -config "$def_dir"/"$conf_file"
+if [[ "$?" -ne 0 ]]; then
+echo "Error is happened, check certificate request file. Exiting ..."
+exit 1
+fi
+echo "Done ..."
+echo -n "Verifing created cert for $name"
+openssl verify -CAfile "$def_dir"/ca-cert.pem "$def_dir"/"$name"/"$name"-cert.pem
+echo "Done ..."
+exit 0
+}
+
+gen_req() {
+echo -n "Please enter user last name: "
+read name
+
+passwd
+
+echo "Generating certificates request for $name ..."
+if [[ ! -d "$def_dir"/"$name" ]]; then
+mkdir -p "$def_dir"/"$name"
+fi
+
+openssl genrsa -aes128 -passout pass:"${password[*]}" -out "$def_dir"/"$name"/"$name"-key.pem "$key_size"
+openssl rsa -passin pass:"${password[*]}" -in "$def_dir"/"$name"/"$name"-key.pem -out "$def_dir"/"$name"/"$name"-key-nopasswd.pem
+
+if [[ "$ext" == v3_req ]]; then
+add_req_v3 "$def_dir"/"$genreq"
+name_print "$def_dir"/"$genreq"
+openssl req -new -passin pass:"${password[*]}" -out "$def_dir"/"$name"/"$name"-req.pem -key "$def_dir"/"$name"/"$name"-key-nopasswd.pem -extensions v3_req -config "$def_dir"/"$genreq"
+else
+openssl req -new -passin pass:"${password[*]}" -out "$def_dir"/"$name"/"$name"-req.pem -key "$def_dir"/"$name"/"$name"-key-nopasswd.pem -config "$def_dir"/"$genreq"
+fi
+
+cat "$def_dir"/"$name"/"$name"-req.pem
+echo "Done ..."
+exit 0
+}
+
+gen_user() {
+echo -n "Please enter user last name: "
+read name
+
+passwd
+
+echo "Generating certificates for $name ..."
+if [[ -d "$def_dir"/"$name" ]]; then
+echo -n "User with name $name already exist. Do you want revoke cert first? [Y/n]: "
+read answer
+if [[ "$answer" =~ ^([yY][eE][sS]|[yY])$ ]]; then
+openssl ca -cert "$def_dir"/ca-cert.pem -keyfile "$def_dir"/ca-key.pem -revoke "$def_dir"/"$name"/"$name"-cert.pem -passin pass:"${password[*]}" -config "$def_dir"/"$gencert"
+openssl ca -cert "$def_dir"/ca-cert.pem -keyfile "$def_dir"/ca-key.pem -gencrl -out "$def_dir"/ca_rev-list.pem -passin pass:"${password[*]}" -config "$def_dir"/"$gencert"
+/bin/mv -f "$def_dir"/"$name" "$def_dir"/"$name"_rev-"$date"
+else
+echo "Done. Exiting ..."
+exit 1
+fi
+fi
+
+if [[ ! -d "$def_dir"/"$name" ]]; then
+mkdir -p "$def_dir"/"$name"
+fi
+openssl genrsa -aes128 -passout pass:"${password[*]}" -out "$def_dir"/"$name"/"$name"-key.pem "$key_size"
+openssl rsa -passin pass:"${password[*]}" -in "$def_dir"/"$name"/"$name"-key.pem -out "$def_dir"/"$name"/"$name"-key-nopasswd.pem
+
+if [[ "$ext" == v3_req ]]; then
+add_req_v3 "$def_dir"/"$gencert"
+name_print "$def_dir"/"$gencert"
+openssl req -new -passin pass:"${password[*]}" -out "$def_dir"/"$name"/"$name"-req.pem -key "$def_dir"/"$name"/"$name"-key-nopasswd.pem -extensions v3_req -config "$def_dir"/"$gencert"
+openssl ca -in "$def_dir"/"$name"/"$name"-req.pem -days "$exp_days" -cert "$def_dir"/ca-cert.pem -keyfile "$def_dir"/ca-key.pem -out "$def_dir"/"$name"/"$name"-cert.pem -extensions v3_req -config "$def_dir"/"$gencert" -passin pass:"${password[*]}"
+else
+openssl req -new -passin pass:"${password[*]}" -out "$def_dir"/"$name"/"$name"-req.pem -key "$def_dir"/"$name"/"$name"-key-nopasswd.pem -config "$def_dir"/"$gencert"
+openssl ca -in "$def_dir"/"$name"/"$name"-req.pem -days "$exp_days" -cert "$def_dir"/ca-cert.pem -keyfile "$def_dir"/ca-key.pem -out "$def_dir"/"$name"/"$name"-cert.pem -config "$def_dir"/"$gencert" -passin pass:"${password[*]}"
+fi
+
+cat "$def_dir"/"$name"/"$name"-cert.pem "$def_dir"/"$name"/"$name"-key-nopasswd.pem > "$def_dir"/"$name"/"$name"-bundle.pem
+echo "Done ..."
+
+echo -n "Verifing created cert for $name"
+openssl verify -CAfile "$def_dir"/ca-cert.pem "$def_dir"/"$name"/"$name"-cert.pem
+remove_ext "$def_dir"/"$gencert"
+echo "Done ..."
+exit 0
+
+}
+
+certrev_user() {
+echo -n "Please enter user last name: "
+read name
+
+passwd
+
+openssl ca -cert "$def_dir"/ca-cert.pem -keyfile "$def_dir"/ca-key.pem -revoke "$def_dir"/"$name"/"$name"-cert.pem -passin pass:"${password[*]}" -config "$def_dir"/"$certrevoke"
+openssl ca -cert "$def_dir"/ca-cert.pem -keyfile "$def_dir"/ca-key.pem -gencrl -out "$def_dir"/ca_rev-list.pem -passin pass:"${password[*]}" -config "$def_dir"/"$certrevoke"
+/bin/mv -f "$def_dir"/"$name" "$def_dir"/"$name"_rev-"$date"
+
+}
+
+ca_cnf() {
+d='$dir'
+printf "%sdefault_ca = CA_default
+[ CA_default ]
+dir = ca_dir
+serial = $d/serial
+database = $d/index.txt
+new_certs_dir = $d/certs
+certificate = $d/ca-cert.pem
+crl = $d/ca_rev-list.pem
+private_key = $d/ca-key.pem
+default_days = "$exp_days"
+default_crl_days = 15
+default_md = "$msg_alg"
+crl_extensions = crl_ext
+#EXT_USR
+#END
+preserve = no
+email_in_dn = no
+unique_subject = no
+nameopt = default_ca
+certopt = default_ca
+policy = policy_match
+
+[ policy_match ]
+countryName = match
+stateOrProvinceName = match
+organizationName = match
+organizationalUnitName = optional
+commonName = supplied
+emailAddress = optional
+
+[ req ]
+default_bits = "$key_size" # Size of keys
+default_keyfile = ca_key.pem # name of generated keys
+default_md = "$msg_alg" # message digest algorithm
+string_mask = nombstr # permitted characters
+distinguished_name = req_distinguished_name
+#EXT_REQ
+#END
+#EXT_CA
+#END
+
+[ req_distinguished_name ]
+# Variable name Prompt string
+#------------------------- ----------------------------------
+0.organizationName = Organization Name (company)
+organizationalUnitName = Organizational Unit Name (department, division)
+emailAddress = Email Address
+emailAddress_max = 40
+localityName = Locality Name (city, district)
+stateOrProvinceName = State or Province Name (full name)
+countryName = Country Name (2 letter code)
+countryName_min = 2
+countryName_max = 2
+commonName = Common Name (hostname, IP, or your name)
+commonName_max = 64
+# Default values for the above, for consistency and less typing.
+# Variable name Value
+#------------------------ ------------------------------
+0.organizationName_default = org_name
+organizationalUnitName_default = org_unit
+localityName_default = org_locality
+stateOrProvinceName_default = org_state
+countryName_default = org_country
+emailAddress_default = org_email
+
+[ usr_cert ]
+# These extensions are added when 'ca' signs a request.
+basicConstraints = CA:FALSE
+keyUsage = nonRepudiation, digitalSignature, keyEncipherment
+nsComment = \"OpenSSL Generated Certificate\"
+subjectKeyIdentifier = hash
+authorityKeyIdentifier = keyid,issuer
+
+[ v3_ca ]
+# Extensions for a typical CA
+subjectKeyIdentifier = hash
+authorityKeyIdentifier = keyid:always,issuer
+basicConstraints = CA:true
+keyUsage = cRLSign, keyCertSign
+
+#EXT_V3
+#END
+
+[ crl_ext ]
+# issuerAltName=issuer:copy
+authorityKeyIdentifier = keyid:always,issuer:always
+"
+}
+
+ca_setup() {
+echo -n "Specify Organization Name: "
+read org_name
+echo -n "Specify Organization Unit: "
+read org_unit
+echo -n "Specify Organization Locality: "
+read org_locality
+echo -n "Specify Organization State: "
+read org_state
+echo -n "Specify Organization Country: "
+read org_country
+echo -n "Specify Organization Email: "
+read org_email
+
+passwd
+
+echo "Generating CNF file for Openssl .."
+mkdir -p "$setup"
+mkdir -p "$setup"/certs
+ca_cnf > "$setup"/${org_name,,}.cnf
+
+ca_dir="$(echo $setup | sed 's:/:\\\/:g')"
+
+sed -i -e "s/org_name/$org_name/g" \
+-e "s/org_unit/$org_unit/g" \
+-e "s/org_locality/$org_locality/g" \
+-e "s/org_state/$org_state/g" \
+-e "s/org_country/$org_country/g" \
+-e "s/ca_dir/$ca_dir/g" \
+-e "s/org_email/$org_email/g" "$setup"/"${org_name,,}".cnf
+
+echo "Done ..."
+#fi
+
+echo "01" > "$setup"/serial
+echo "01" > "$setup"/crlnumber
+touch "$setup"/index.txt
+openssl genrsa -aes128 -passout pass:"${password[*]}" -out "$setup"/ca-key.pem "$key_size"
+
+if [[ "$ext" == v3_req ]]; then
+add_req_v3 "$setup"/"${org_name,,}".cnf
+add_ca_ext "$setup"/"${org_name,,}".cnf
+name_print "$setup"/"${org_name,,}".cnf
+openssl req -new -x509 -extensions v3_ca -key "$setup"/ca-key.pem -out "$setup"/ca-cert.pem -days "$exp_days" -passin pass:"${password[*]}" -config "$setup"/"${org_name,,}".cnf
+else
+add_ca_ext "$setup"/"${org_name,,}".cnf
+openssl req -new -x509 -key "$setup"/ca-key.pem -out "$setup"/ca-cert.pem -days "$exp_days" -passin pass:"${password[*]}" -config "$setup"/"${org_name,,}".cnf
+fi
+openssl ca -passin pass:"${password[*]}" -config "$setup"/"${org_name,,}".cnf -gencrl -out "$setup"/ca_rev-list.pem
+
+cert_mng=$(which CertMng)
+
+sed -i "/^conf_file/d" $cert_mng
+sed -i "/^#CONF_FILE/a \conf_file="\"$"${org_name,,}".cnf"\"" $cert_mng
+sed -i "/^def_dir/d" $cert_mng
+sed -i "/^#DEF_DIR/a \def_dir="\"$ca_dir"\"" $cert_mng
+echo "Done ..."
+}
+
+if [[ -n $gencert ]]; then
+gen_user
+fi
+
+if [[ -n $genreq ]]; then
+gen_req
+fi
+
+if [[ -n $certrevoke ]]; then
+certrev_user
+fi
+
+if [[ -d $setup ]] && [[ -n $setup ]]; then
+ca_dir=$(sed -r 's:/:\\\/:g' <<< "$setup")
+echo -ne "CA is aleady setup under this dir $setup ...\n"
+echo -ne "Do you want delete existing CA Authority in $def_dir [Y/n]: "
+read answer
+[[ "$answer" =~ ^([yY][eE][sS]|[yY])$ ]]
+rm -rf "$setup"
+ca_setup
+exit 0
+else
+ca_setup
+exit 0
+fi
+
+if [[ -f $req_file ]] && [[ -n $req_file ]]; then
+sign_req
+else
+echo "Request file not found. Exiting ..."
+exit 1
+fi
+
+if [[ -n "$con" ]]; then
+con
+exit 0
+fi
+
+remove_ext "$setup"/"${org_name,,}".cnf
