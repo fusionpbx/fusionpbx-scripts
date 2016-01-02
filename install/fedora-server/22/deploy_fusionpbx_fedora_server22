@@ -241,7 +241,7 @@ elif [[ "$DB_TYPE" = bdr ]]; then
       cmd_postgres_bdr_hba_fusionpbx > ${find_psql_data_dir}/pg_hba.conf
       systemctl restart postgresql-9.4.service
       echo "Deploying freeswitch schema optimized for PgSQL BDR ..."
-      curl --silent  -o /root/freeswitch-pgsql-bdr-1.6.5.sql http://ftpsrv01.networklab.ca/misc/freeswitch-pgsql-bdr-1.6.5.sql
+      curl --silent -u fusionpbx_Admin:dron12345  -o /root/freeswitch-pgsql-bdr-1.6.5.sql http://ftpsrv01.networklab.ca/misc/freeswitch-pgsql-bdr-1.6.5.sql
       su - postgres -c "psql --command 'CREATE EXTENSION pgcrypto' -d ${DBNAME_FREESWITCH} -W ${DBNAME_FREESWITCH_PASSWD}"
       psql -U postgres -W ${DBNAME_FREESWITCH_PASSWD} -d freeswitch -f ~/freeswitch-pgsql-bdr-1.6.5.sql -L /root/sql.log
       echo -ne "\e[31mI added to pg_hba.conf file only myself please add rest replication members.\e[0m\n"
