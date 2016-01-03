@@ -5,6 +5,7 @@
   1. Fedora 22 Server machine is installed and dnf update with reboot ran OK.
   2. In case of multi server ssh key installed and configured for inter host communication.
   3. Script need run as root only.
+  4. Internet connection is configured.
 
 ###### Usage:
   1. Download scripts.
