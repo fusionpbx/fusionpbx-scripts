@@ -2000,10 +2000,10 @@ if [ $INSFUSION -eq 1 ]; then
 		/usr/bin/apt-get -y install php-db
 	fi
 	if [ $DISTRO = "wheezy" ]; then
-		/usr/bin/apt-get -y install install php5-sqlite php-db
+		/usr/bin/apt-get -y install php5-sqlite php-db
 	fi
         if [ $DISTRO = "jessie" ]; then
-                /usr/bin/apt-get -y install install php5-sqlite php-db
+                /usr/bin/apt-get -y install php5-sqlite php-db
         fi
 	#-----------------
 	# Apache
