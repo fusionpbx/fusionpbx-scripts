@@ -114,7 +114,7 @@ FBPXCHECKOUTVER=false
 #URLSCRIPT="http://fusionpbx.googlecode.com/svn/branches/dev/scripts/install/ubuntu/install_fusionpbx.sh"
 #trunk
 #URLSCRIPT="https://fusionpbx.googlecode.com/svn/trunk/scripts/install/ubuntu/install_fusionpbx.sh"
-URLSCRIPT="https://raw.githubusercontent.com/fusionpbx/fusionpbx-scripts/master/install/ubuntu/install_fusionpbx.sh"
+URLSCRIPT="https://raw.githubusercontent.com/fusionpbx/fusionpbx-scripts/master/install/debian/install_fusionpbx.sh"
 INSFUSION=0
 INSFREESWITCH=0
 UPGFUSION=0
