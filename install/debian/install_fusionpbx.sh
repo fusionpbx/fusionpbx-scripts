@@ -77,7 +77,7 @@ VERSION="Version - using subversion, no longer keeping track. WAF License"
 FSGIT=https://freeswitch.org/stash/scm/fs/freeswitch.git
 
 FSSTABLE=file
-FSStablefile=freeswitch-1.6.5
+FSStablefile=freeswitch-1.6.6
 
 FSDB=p
 
@@ -1179,7 +1179,7 @@ if [ $INSFREESWITCH -eq 1 ]; then
 		    tar -zxvf $FSStablefile.tar.gz
 		    mkdir freeswitch
 		    cp -R $FSStablefile/* /usr/src/freeswitch/
-			cd /usr/src/freeswitch		
+			cd /usr/src/freeswitch
 		else
 			echo "going dev branch."
 			/usr/bin/time /usr/bin/git clone $FSGIT
