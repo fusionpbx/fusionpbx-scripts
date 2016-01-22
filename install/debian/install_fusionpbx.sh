@@ -114,7 +114,7 @@ FBPXCHECKOUTVER=false
 #URLSCRIPT="http://fusionpbx.googlecode.com/svn/branches/dev/scripts/install/ubuntu/install_fusionpbx.sh"
 #trunk
 #URLSCRIPT="https://fusionpbx.googlecode.com/svn/trunk/scripts/install/ubuntu/install_fusionpbx.sh"
-URLSCRIPT="https://raw.githubusercontent.com/fusionpbx/fusionpbx-scripts/master/install/ubuntu/install_fusionpbx.sh"
+URLSCRIPT="https://raw.githubusercontent.com/fusionpbx/fusionpbx-scripts/master/install/debian/install_fusionpbx.sh"
 INSFUSION=0
 INSFREESWITCH=0
 UPGFUSION=0
@@ -2000,10 +2000,10 @@ if [ $INSFUSION -eq 1 ]; then
 		/usr/bin/apt-get -y install php-db
 	fi
 	if [ $DISTRO = "wheezy" ]; then
-		/usr/bin/apt-get -y install install php5-sqlite php-db
+		/usr/bin/apt-get -y install php5-sqlite php-db
 	fi
         if [ $DISTRO = "jessie" ]; then
-                /usr/bin/apt-get -y install install php5-sqlite php-db
+                /usr/bin/apt-get -y install php5-sqlite php-db
         fi
 	#-----------------
 	# Apache
