@@ -8,6 +8,12 @@ pause() {
     read -p "$key" readEnterKey
 }
 
+fix_perm() {
+  for dir in $(find . -type d); do
+      setfacl -m user:nginx:rwx,group:nginx:rwx "$dir"
+  done
+}
+
 deploy_remote_pgsql() {
     cmd_remote_pgsql_p1 >  /tmp/deploy_remote_pgsql
     cmd_remote_pgsql_p2 >> /tmp/deploy_remote_pgsql
