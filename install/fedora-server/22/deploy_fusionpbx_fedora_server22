@@ -388,14 +388,35 @@ chmod 640 /etc/freeswitch/ssl/cafile.pem
 
 echo "Correcting all permissions ..."
 usermod -G daemon nginx
+mkdir -p /etc/fusionpbx
 cp -rp /usr/share/nginx/fusionpbx/resources/install/scripts/* /usr/share/freeswitch/scripts 
 chown -R freeswitch:daemon /etc/freeswitch/ssl
 chown -R freeswitch:daemon /usr/share/freeswitch
 chown -R nginx:nginx /usr/share/nginx/fusionpbx
 chown -R nginx:nginx /var/lib/php/session
+chown -R nginx:nginx /etc/fusionpbx
 rm -f /etc/freeswitch/sip_profiles/{external-ipv6.xml,external.xml,internal-ipv6.xml,internal.xml}
 cd /etc/freeswitch
 find . -type f -exec chmod 0660 {} \;
+find . -type d -exec chmod 0760 {} \;
+# XML Edtior
+fix_perm
+cd /var/lib/freeswitch
+find . -type f -exec chmod 0660 {} \;
+find . -type d -exec chmod 0760 {} \;
+fix_perm
+cd /usr/share/freeswitch/scripts
+find . -type f -exec chmod 0660 {} \;
+find . -type d -exec chmod 0760 {} \;
+fix_perm
+
+for dir in {'/etc/freeswitch','/var/lib/freeswitch','/usr/share/freeswitch/scripts'}; do
+    perm=$(stat -c '%a %n' $dir | awk {'print $1'})
+    if [[ "$perm" != 760 ]]; then
+       chmod 0760 "$dir"
+    fi
+    setfacl -m user:nginx:rwx,group:nginx:rwx "$dir"
+done
 
 echo "Correcting freeswitch configuration file ..."
 line1="<X-PRE-PROCESS cmd=\"set\" data=\"dsn=pgsql://hostaddr=${DB_HOST} dbname=${DBNAME_FREESWITCH} user=${USERNAME_FUSIONPBX} password=${DBNAME_USER_PASSWD}\"/>"
