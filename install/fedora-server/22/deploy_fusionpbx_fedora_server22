@@ -49,13 +49,6 @@ if [[ "$EUID" -ne 0 ]]; then
   exit 1
 fi
 
-# Find pgsql staff
-find_psql_lib=$(find /usr -name psqlodbcw.so)
-find_psql_data_dir=$(find /var/lib/pgsql -type d -name data)
-find_psql_service_file=$(find /usr/lib/systemd/system -type f -name postgresql*.service)
-find_psql_db94_setup=$(find / -type f -name postgresql94-setup)
-my_ip=$(ip -o route get 8.8.8.8 | awk '{print $7}')
-my_name=(hostname -s)
 # Install functions.
 . ./install-functions_fedora_server22
 
@@ -129,22 +122,34 @@ if [[ $answer =~ ^([yY][eE][sS]|[yY])$ ]]; then
    DBNAME_FUSIONPBX="$defDBNAME_FUSIONPBX"
    fi
 
-   read -s -p  "Enter freeswitch database user password: " psql_passwd
+   read -s -p  "Enter database user password: " psql_passwd
    DBNAME_FREESWITCH_PASSWD="$psql_passwd"
+   DBNAME_USER_PASSWD="$psql_passwd"
+   
+   if [[ ${DB_HOST%%.*} -eq 127 ]]; then
+       read -r -p "Do you want deploy database with BDR (PgSQL Multi Master Replication) ? [Y/n] " bdr_answer
+       if [[ $bdr_answer =~ ^([yY][eE][sS]|[yY])$ ]]; then
+           DB_TYPE="bdr"
+       fi
+   fi
 
+   if [[ "$DB_TYPE" != bdr ]]; then
+       dnf -y install postgresql-server
+   else
+      rc=$(rpm -q postgresql-bdr94-2ndquadrant-fedora >/dev/null 2>&1; echo $?)
+      if [[ $rc -ne 0 ]]; then
+         dnf install -y http://packages.2ndquadrant.com/postgresql-bdr94-2ndquadrant/yum-repo-rpms/postgresql-bdr94-2ndquadrant-fedora-1.0-2.noarch.rpm
+         dnf install -y postgresql-bdr94-bdr postgresql-bdr94-contrib
+      else
+         dnf install -y postgresql-bdr94-bdr postgresql-bdr94-contrib
+      fi
+   fi
 else
    echo -ne "\e[31mIf deployed pgpool2 with watchdog enter VIP (Virtual IP/Hostname).\e[0m\n"
    read -r -p "Please enter IP/Hostname of database server: " ip_address
    DB_HOST="$ip_address"
 fi
 
-if [[ ${DB_HOST%%.*} -eq 127 ]]; then
-   read -r -p "Do you want deploy database with BDR (PgSQL Multi Master Replication) ? [Y/n] " bdr_answer 
-   if [[ $bdr_answer =~ ^([yY][eE][sS]|[yY])$ ]]; then
-      DB_TYPE="bdr"
-   fi
-fi
-  
 read -r -p "Are you sure? [Y/n] " response
 if [[ $response =~ ^([yY][eE][sS]|[yY])$ ]]; then
     echo -n "Here we go..."
@@ -155,23 +160,11 @@ fi
 
 ###############
 #install dependencies
-if [[ ${DB_HOST%%.*} -eq 127 ]] && [[ "$DB_TYPE" != bdr ]]; then
-   dnf -y install postgresql-server
-else
-   rc=$(rpm -q postgresql-bdr94-2ndquadrant-fedora >/dev/null 2>&1; echo $?)
-   if [[ $rc -ne 0 ]]; then
-      dnf install -y http://packages.2ndquadrant.com/postgresql-bdr94-2ndquadrant/yum-repo-rpms/postgresql-bdr94-2ndquadrant-fedora-1.0-2.noarch.rpm
-      dnf install -y postgresql-bdr94-bdr postgresql-bdr94-contrib
-   else 
-      dnf install -y postgresql-bdr94-bdr postgresql-bdr94-contrib
-   fi 
-fi
-
 echo "Installing required repository ..."
 dnf -y install http://download1.rpmfusion.org/free/fedora/rpmfusion-free-release-22.noarch.rpm
 dnf -y install http://download1.rpmfusion.org/nonfree/fedora/rpmfusion-nonfree-release-22.noarch.rpm
 cmd_yum_repo_fusionpbx > /etc/yum.repos.d/networklab.repo
-dnf -y install incron chrony ipset git memcached fail2ban fail2ban-firewalld ulogd sudo ghostscript libtiff vim wget net-snmp net-snmp-utils postgresql-odbc nginx freeswitch freeswitch-* php php-common php-pdo php-process php-pgsql php-soap php-odbc php-xml php-xmlrpc php-pgsql php-fpm  php-cli php-pear php-pdo php-gd php-mbstring php-mcrypt 
+dnf -y install freeswitch freeswitch-config-vanilla freeswitch-application-valet_parking freeswitch-sounds-* freeswitch-codec-* freeswitch-application-memcache freeswitch-lang-* freeswitch-lua freeswitch-application-voicemail-ivr freeswitch-application-directory freeswitch-application-voicemail freeswitch-application-db freeswitch-application-callcenter freeswitch-application-limit freeswitch-application-curl freeswitch-xml-cdr freeswitch-format-mod-shout freeswitch-v8 freeswitch-application-enum incron chrony ipset git memcached fail2ban fail2ban-firewalld ulogd sudo ghostscript libtiff vim wget net-snmp net-snmp-utils postgresql-odbc nginx php-common php-pdo php-process php-pgsql php-soap php-odbc php-xml php-xmlrpc php-pgsql php-fpm  php-cli php-pear php-pdo php-gd php-mbstring php-mcrypt 
 if [[ $? -eq 0 ]]; then
    echo "Setting up configuration file ..."
    mv /etc/ulogd.conf /etc/ulogd.conf.orig
@@ -188,7 +181,19 @@ if [[ $? -eq 0 ]]; then
    cmd_service_rtp > /etc/firewalld/services/rtp.xml
    cmd_service_xml_rpc > /etc/firewalld/services/xml-rpc.xml
    cmd_sysconfig_freeswitch > /etc/sysconfig/freeswitch
+else 
+   echo "Something happened, please review it .."
+   pause
 fi
+
+
+# Find pgsql staff
+find_psql_lib=$(find /usr -name psqlodbcw.so)
+find_psql_data_dir=$(find /var/lib/pgsql -type d -name data)
+find_psql_service_file=$(find /usr/lib/systemd/system -type f -name postgresql*.service)
+find_psql_db94_setup=$(find / -type f -name postgresql94-setup)
+my_ip=$(ip -o route get 8.8.8.8 | awk '{print $7}')
+my_name=(hostname -s)
 
 echo "Adjusting firewalld logs ..."
 mkdir -p /var/log/firewalld_log
@@ -210,7 +215,6 @@ if [[ ${DB_HOST%%.*} -eq 127 ]] && [[ "$DB_TYPE" != bdr ]]; then
       echo "PgSQL already initialized continue ..."
       systemctl restart ${find_psql_service_file##*/}
       systemctl status ${find_psql_service_file##*/}
-      cmd_create_db
       mv ${find_psql_data_dir}/data/pg_hba.conf ${find_psql_data_dir}/pg_hba.conf.orig
       mv ${find_psql_data_dir}/postgresql.conf ${find_psql_data_dir}/postgresql.conf.orig
       cmd_odbc_fusionpbx > /etc/odbc.ini
@@ -219,34 +223,43 @@ if [[ ${DB_HOST%%.*} -eq 127 ]] && [[ "$DB_TYPE" != bdr ]]; then
       cmd_postgres_conf_fusionpbx > ${find_psql_data_dir}/postgresql.conf
       chown -R postgres:postgres ${find_psql_data_dir}
       systemctl restart ${find_psql_service_file##*/}
+      su - postgres -c "echo \"*:*:*:${USERNAME_FUSIONPBX}:${DBNAME_USER_PASSWD}\" > ~/.pgpass; chmod 600 ~/.pgpass"
+      cmd_create_db
+      su - postgres -c 'rm -f ~/.pgpass'
     else
       echo "Unknown error is happed ..."
       exit
     fi
 elif [[ "$DB_TYPE" = bdr ]]; then
       updatedb
-      ${find_psql_db94_setup} --initdb
+      ${find_psql_db94_setup} initdb
+      mv ${find_psql_data_dir}/pg_hba.conf ${find_psql_data_dir}/pg_hba.conf.orig
+      mv ${find_psql_data_dir}/postgresql.conf ${find_psql_data_dir}/postgresql.conf.orig
       echo "Setting up SSL certificate for BDR ..."
-      # Local works, not sure about remote deployment yet
+      curl --silent -o /usr/sbin/CertMng http://ftpsrv01.networklab.ca/scripts/CertMng
+      chmod +x /usr/sbin/CertMng
       CertMng --CASetup /etc/pki/pg_bdr
-      echo "\e[31mCA authority has being setup to generate server cert use CertMng --GenCert ${cert_cnf}\e[0m\n"
-      echo "\e[31mWhen generating server certificate please set name as: [${my_name}] \e[0m\n"
-      echo "\e[31mIn order PgSQL to start corectly server private key should have permssions 600\e[0m\n"
-      pause
-      cmd_create_db
-      cmd_odbc_fusionpbx > /etc/odbc.ini
-      cmd_odbc_fusionpbx_p2 >> /etc/odbcinst.ini 
-      cmd_postgres_conf_fusionpbx > ${find_psql_data_dir}/postgresql.conf
-      cmd_postgres_bdr_conf_fusionpbx >> ${find_psql_data_dir}/postgresql.conf
+      find_cert_cnf=$(find /etc/pki/pg_bdr -maxdepth 1 -type f -name '*.cnf')
+      CertMng --GenCert ${find_cert_cnf##*/}
+      rm -f /usr/sbin/CertMng
+      private_key="/etc/pki/pg_bdr/${my_name}/${my_name}-key-nopasswd.pem"
+      chmod 600 "$private_key"
+      cmd_postgres_bdr_conf_fusionpbx > ${find_psql_data_dir}/postgresql.conf
+      cmd_postgres_conf_fusionpbx >> ${find_psql_data_dir}/postgresql.conf
       cmd_postgres_bdr_hba_fusionpbx > ${find_psql_data_dir}/pg_hba.conf
-      systemctl restart postgresql-9.4.service
-      echo "Deploying freeswitch schema optimized for PgSQL BDR ..."
-      curl --silent -u fusionpbx_Admin:dron12345  -o /root/freeswitch-pgsql-bdr-1.6.5.sql http://ftpsrv01.networklab.ca/misc/freeswitch-pgsql-bdr-1.6.5.sql
-      su - postgres -c "psql --command 'CREATE EXTENSION pgcrypto' -d ${DBNAME_FREESWITCH} -W ${DBNAME_FREESWITCH_PASSWD}"
-      psql -U postgres -W ${DBNAME_FREESWITCH_PASSWD} -d freeswitch -f ~/freeswitch-pgsql-bdr-1.6.5.sql -L /root/sql.log
-      echo -ne "\e[31mI added to pg_hba.conf file only myself please add rest replication members.\e[0m\n"
-      sleep 4
       chown -R postgres:postgres ${find_psql_data_dir} /etc/pki/pg_bdr
+      systemctl restart postgresql-9.4.service
+      su - postgres -c "echo \"*:*:*:${USERNAME_FUSIONPBX}:${DBNAME_USER_PASSWD}\" > ~/.pgpass; chmod 600 ~/.pgpass"
+      cmd_create_db
+      curl --silent -u fusionpbx_Admin:dron12345 --silent  -o /tmp/freeswitch-pgsql-bdr-1.6.5.sql http://ftpsrv01.networklab.ca/misc/freeswitch-pgsql-bdr-1.6.5.sql
+      su - postgres -c "psql --command 'CREATE EXTENSION pgcrypto' -d ${DBNAME_FREESWITCH} -w --no-password"
+      chown postgres:postgres /tmp/freeswitch-pgsql-bdr-1.6.5.sql
+      sed -i "s/freeswitch/${USERNAME_FUSIONPBX}/" /tmp/freeswitch-pgsql-bdr-1.6.5.sql
+      su - postgres -c "psql -d ${DBNAME_FREESWITCH} -w --no-password -f /tmp/freeswitch-pgsql-bdr-1.6.5.sql -L /tmp/sql.log"
+      su - postgres -c 'rm -f ~/.pgpass'
+      rm -f /tmp/freeswitch-pgsql-bdr-1.6.5.sql
+      echo -ne "\e[31mI added to pg_hba.conf file only myself please add rest replication members.\e[0m\n"
+   sleep 4
 else
     read -r -p "Do you want me deploy PgSQL on remote host? [Y/n] " answer 
     if [[ $answer =~ ^([yY][eE][sS]|[yY])$ ]]; then
@@ -337,11 +350,9 @@ done
 
 service_file_array=( $(find /etc/firewalld/services -maxdepth 1 -type f -name '*.xml') )
 
-if [[ ${DB_HOST%%.*} -eq 127 ]]; then
-   for file in "${service_file_array[@]##*/}"; do
-       firewall-cmd --permanent --zone "$get_zone" --add-service "${file%.xml}"
-   done
-fi
+ for file in "${service_file_array[@]##*/}"; do
+     firewall-cmd --permanent --zone "$get_zone" --add-service "${file%.xml}"
+ done
 
 firewall-cmd --reload
 
@@ -377,17 +388,38 @@ chmod 640 /etc/freeswitch/ssl/cafile.pem
 
 echo "Correcting all permissions ..."
 usermod -G daemon nginx
+mkdir -p /etc/fusionpbx
 cp -rp /usr/share/nginx/fusionpbx/resources/install/scripts/* /usr/share/freeswitch/scripts 
 chown -R freeswitch:daemon /etc/freeswitch/ssl
 chown -R freeswitch:daemon /usr/share/freeswitch
 chown -R nginx:nginx /usr/share/nginx/fusionpbx
-chown -R nginx:nginx /var/lib/php/sessions
+chown -R nginx:nginx /var/lib/php/session
+chown -R nginx:nginx /etc/fusionpbx
 rm -f /etc/freeswitch/sip_profiles/{external-ipv6.xml,external.xml,internal-ipv6.xml,internal.xml}
 cd /etc/freeswitch
 find . -type f -exec chmod 0660 {} \;
+find . -type d -exec chmod 0760 {} \;
+# XML Edtior
+fix_perm
+cd /var/lib/freeswitch
+find . -type f -exec chmod 0660 {} \;
+find . -type d -exec chmod 0760 {} \;
+fix_perm
+cd /usr/share/freeswitch/scripts
+find . -type f -exec chmod 0660 {} \;
+find . -type d -exec chmod 0760 {} \;
+fix_perm
+
+for dir in {'/etc/freeswitch','/var/lib/freeswitch','/usr/share/freeswitch/scripts'}; do
+    perm=$(stat -c '%a %n' $dir | awk {'print $1'})
+    if [[ "$perm" != 760 ]]; then
+       chmod 0760 "$dir"
+    fi
+    setfacl -m user:nginx:rwx,group:nginx:rwx "$dir"
+done
 
 echo "Correcting freeswitch configuration file ..."
-line1="<X-PRE-PROCESS cmd=\"set\" data=\"dsn=pgsql://hostaddr=${DB_HOST} dbname=${DBNAME_FREESWITCH} user=${USERNAME_FUSIONPBX} password=${DBNAME_FREESWITCH_PASSWD}\"/>"
+line1="<X-PRE-PROCESS cmd=\"set\" data=\"dsn=pgsql://hostaddr=${DB_HOST} dbname=${DBNAME_FREESWITCH} user=${USERNAME_FUSIONPBX} password=${DBNAME_USER_PASSWD}\"/>"
 if [[ "$DB_TYPE" = bdr ]]; then
      line2='<param name="auto-create-schemas" value="false"/>'
 else
@@ -421,9 +453,7 @@ sed -i "40 i \ \ $line8" "$file_add7"
 sed -i "3 i \ \   $line9" "$file_add8"
 sed -i "4 i \ \   $line10" "$file_add8"
 sed -i "6 i \ \   $line11" "$file_add8"
-sed -i "8 i \ \   $line1" "$file_add9"
-sed -i "9 i \ \   $line1" "$file_add12"
-
+sed -i "261 i \ \   $line1" "$file_add9"
 
 echo "Correcting start up services ..."
 if [[ ${DB_HOST%%.*} -eq 127 ]]; then

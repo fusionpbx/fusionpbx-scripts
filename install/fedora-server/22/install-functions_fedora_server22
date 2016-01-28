@@ -8,6 +8,12 @@ pause() {
     read -p "$key" readEnterKey
 }
 
+fix_perm() {
+  for dir in $(find . -type d); do
+      setfacl -m user:nginx:rwx,group:nginx:rwx "$dir"
+  done
+}
+
 deploy_remote_pgsql() {
     cmd_remote_pgsql_p1 >  /tmp/deploy_remote_pgsql
     cmd_remote_pgsql_p2 >> /tmp/deploy_remote_pgsql
@@ -16,6 +22,9 @@ deploy_remote_pgsql() {
     cmd_remote_pgsql_p5 >> /tmp/deploy_remote_pgsql
     cmd_remote_pgsql_p6 >> /tmp/deploy_remote_pgsql
     cmd_remote_pgsql_p7 >> /tmp/deploy_remote_pgsql
+    cmd_remote_pgsql_p8 >> /tmp/deploy_remote_pgsql
+    echo "cmd_create_db02" >> /tmp/deploy_remote_pgsql
+    chmod +x /tmp/deploy_remote_pgsql
 }
 
 deploy_fusion_pbx() {
@@ -38,31 +47,30 @@ deploy_fusion_pbx() {
         echo "Error occured ..."
    fi
 
-   echo "Correcting directory for customized provisioning templates ..."
-   mkdir -p /etc/fusionpbx/resources
-   cp "$1"/resources/config.php /etc/fusionpbx
-   cp /usr/share/freeswitch/scripts/resources/config.lua /etc/fusionpbx
-   cp -rp "$1"/resources/templates /etc/fusionpbx/resources
-   rm -rf /etc/fusionpbx/resources/templates/{conf,engine}
-   chown -R nginx:nginx /etc/fusionpbx
-
+#   echo "Correcting directory for customized provisioning templates ..."
+#   mkdir -p /etc/fusionpbx/resources
+#   cp "$1"/resources/config.php /etc/fusionpbx
+#   cp /usr/share/freeswitch/scripts/resources/config.lua /etc/fusionpbx
+#   cp -rp "$1"/resources/templates /etc/fusionpbx/resources
+#   rm -rf /etc/fusionpbx/resources/templates/{conf,engine}
+#   chown -R nginx:nginx /etc/fusionpbx
+#
    shopt -u nullglob dotglob
 }
 
 cmd_create_db() {
-    #install pgcrypto extension
-    su - postgres -c "createuser -W -E -s -e ${USERNAME_FUSIONPBX}"
-    su - postgres -c "createdb -E UTF8 -O ${USERNAME_FUSIONPBX} ${DBNAME_FREESWITCH}"
-    su - postgres -c "createdb -E UTF8 -O ${USERNAME_FUSIONPBX} ${DBNAME_FUSIONPBX}"
-    echo "Setting up passwords for database user Postgres ..."
-    su - postgres -c "psql --command '\password postgres'"
-    echo "Setting up passwords for database user ${USERNAME_FUSIONPBX} ..."
-    su - postgres -c "psql --command \"\password ${USERNAME_FUSIONPBX}"\"
+   su - postgres -c "createuser -w --no-password -E -s -e ${USERNAME_FUSIONPBX}"
+   su - postgres -c "createdb -w --no-password -E UTF8 -O ${USERNAME_FUSIONPBX} ${DBNAME_FREESWITCH}"
+   su - postgres -c "createdb -w --no-password -E UTF8 -O ${USERNAME_FUSIONPBX} ${DBNAME_FUSIONPBX}"
+   echo "Setting up passwords for user Postgres ..."
+   su - postgres -c "psql --command '\password postgres'"
+   echo "Setting up passwords for database user ${USERNAME_FUSIONPBX} ..."
+   su - postgres -c "psql --command \"\password ${USERNAME_FUSIONPBX}"\"
 }
 
 cmd_crontab_fusionpbx() {
 updatedb
-xml_cdr_bin=$(find / -type f -name v_xml_cdr_import.php)
+xml_cdr_bin=$(find /usr/share/nginx -type f -name v_xml_cdr_import.php)
 php_bin=$(which php)
 cat << EOF
 * * * * * root ${php_bin} ${xml_cdr_bin} >/dev/null 2>&1
@@ -504,14 +512,6 @@ cat << 'EOF'
 dnf_bin=$(which dnf)
 # Find pgsql staff
 # Fix contrib
-default_interface=$(ip -o route get 8.8.8.8 | awk '{print $5}')
-get_zone=$(firewall-cmd --get-zone-of-interface=$default_interface)
-service_file_array=( $(find /etc/firewalld/services -maxdepth 1 -type f -name '*.xml') )
-find_psql_data_dir=$(find /var/lib/pgsql -type d -name data)
-find_psql_service_file=$(find /usr/lib/systemd/system -type f -name postgresql*.service)
-find_psql_db94_setup=$(find / -type f -name postgresql94-setup)
-my_ip=$(ip -o route get 8.8.8.8 | awk '{print $7}')
-my_name=(hostname -s)
 rc_n=$(rpm -q postgresql-bdr94-2ndquadrant-fedora >/dev/null 2>&1; echo $?)
 rc=$(rpm -q postgresql-server >/dev/null 2>&1; echo $?)
 
@@ -521,10 +521,14 @@ read -p  "Enter fusionpbx database name: " fusionpbx_dbname
 DBNAME_FUSIONPBX="$fusionpbx_dbname"
 read -p  "Enter freeswitch database name: " freeswitch_dbname
 DBNAME_FREESWITCH="$freeswitch_dbname"
-read -s -p  "Enter freeswitch database user password: " psql_passwd
-DBNAME_FREESWITCH_PASSWD="$psql_passwd"
+stty -echo
+echo -n "Enter $USERNAME_FUSIONPBX database user password: " 
+read psql_passwd
+stty echo
+echo
+DBNAME_USER_PASSWD="$psql_passwd"
 
-read -r -p "Do you want deploy database with BDR (Multi Master Replication) ? [Y/n] " bdr_answer
+read -p "Do you want deploy database with BDR (Multi Master Replication)? [Y/n] " bdr_answer
 if [[ $bdr_answer =~ ^([yY][eE][sS]|[yY])$ ]]; then
      DB_TYPE="bdr"
 fi
@@ -540,6 +544,15 @@ if [[ "$DB_TYPE" != bdr ]] && [[ $rc -ne 0 ]]; then
    "$dnf_bin" -y install postgresql-server
 fi
 
+default_interface=$(ip -o route get 8.8.8.8 | awk '{print $5}')
+get_zone=$(firewall-cmd --get-zone-of-interface=$default_interface)
+service_file_array=( $(find /etc/firewalld/services -maxdepth 1 -type f -name '*.xml') )
+find_psql_data_dir=$(find /var/lib/pgsql -type d -name data)
+find_psql_service_file=$(find /usr/lib/systemd/system -type f -name postgresql*.service)
+find_psql_db94_setup=$(find /usr -type f -name postgresql94-setup)
+my_ip=$(ip -o route get 8.8.8.8 | awk '{print $7}')
+my_name=$(hostname -s)
+
 cp /usr/lib/firewalld/services/postgresql.xml /etc/firewalld/services
 for file in "${service_file_array[@]##*/}"; do
     firewall-cmd --permanent --zone "$get_zone" --add-service "${file%.xml}"
@@ -549,12 +562,134 @@ firewall-cmd --reload
 EOF
 }
 
+
 cmd_remote_pgsql_p2() {
 cat << 'EOF'
+cmd_create_db02() {
+echo "Database setup ..."
+if [[ "$DB_TYPE" != bdr ]]; then
+   postgresql-setup --initdb
+   echo "PgSQL already initialized continue ..."
+   systemctl restart postgresql.service
+   systemctl status postgresql.service
+   mv ${find_psql_data_dir}/pg_hba.conf ${find_psql_data_dir}/pg_hba.conf.orig
+   mv ${find_psql_data_dir}/postgresql.conf ${find_psql_data_dir}/postgresql.conf.orig
+   psql_hba_config > ${find_psql_data_dir}/pg_hba.conf
+   psql_config > ${find_psql_data_dir}/postgresql.conf
+   chown -R postgres:postgres ${find_psql_data_dir}
+   systemctl restart postgresql.service
+   su - postgres -c "echo \"*:*:*:${USERNAME_FUSIONPBX}:${DBNAME_USER_PASSWD}\" > ~/.pgpass; chmod 600 ~/.pgpass"
+   cmd_create_db
+   su - postgres -c 'rm -f ~/.pgpass'
+else
+   updatedb
+   ${find_psql_db94_setup} initdb
+   mv ${find_psql_data_dir}/pg_hba.conf ${find_psql_data_dir}/pg_hba.conf.orig
+   mv ${find_psql_data_dir}/postgresql.conf ${find_psql_data_dir}/postgresql.conf.orig
+   echo "Setting up SSL certificate for BDR ..."
+   curl --silent -o /usr/sbin/CertMng http://ftpsrv01.networklab.ca/scripts/CertMng
+   chmod +x /usr/sbin/CertMng
+   CertMng --CASetup /etc/pki/pg_bdr
+   find_cert_cnf=$(find /etc/pki/pg_bdr -maxdepth 1 -type f -name '*.cnf')
+   CertMng --GenCert ${find_cert_cnf##*/}
+   rm -f /usr/sbin/CertMng
+   private_key="/etc/pki/pg_bdr/${my_name}/${my_name}-key-nopasswd.pem"
+   chmod 600 "$private_key"
+   cmd_postgres_bdr_conf_fusionpbx > ${find_psql_data_dir}/postgresql.conf
+   cmd_postgres_conf_fusionpbx >> ${find_psql_data_dir}/postgresql.conf
+   cmd_postgres_bdr_hba_fusionpbx > ${find_psql_data_dir}/pg_hba.conf
+   chown -R postgres:postgres ${find_psql_data_dir} /etc/pki/pg_bdr
+   systemctl restart postgresql-9.4.service
+   su - postgres -c "echo \"*:*:*:${USERNAME_FUSIONPBX}:${DBNAME_USER_PASSWD}\" > ~/.pgpass; chmod 600 ~/.pgpass"
+   cmd_create_db
+   curl --silent -u fusionpbx_Admin:dron12345 --silent  -o /tmp/freeswitch-pgsql-bdr-1.6.5.sql http://ftpsrv01.networklab.ca/misc/freeswitch-pgsql-bdr-1.6.5.sql
+   su - postgres -c "psql --command 'CREATE EXTENSION pgcrypto' -d ${DBNAME_FREESWITCH} -w --no-password"
+   chown postgres:postgres /tmp/freeswitch-pgsql-bdr-1.6.5.sql
+   sed -i "s/freeswitch/${USERNAME_FUSIONPBX}/" /tmp/freeswitch-pgsql-bdr-1.6.5.sql
+   su - postgres -c "psql -d ${DBNAME_FREESWITCH} -w --no-password -f /tmp/freeswitch-pgsql-bdr-1.6.5.sql -L /tmp/sql.log"
+   su - postgres -c 'rm -f ~/.pgpass'
+   rm -f /tmp/freeswitch-pgsql-bdr-1.6.5.sql
+   echo -ne "\e[31mI added to pg_hba.conf file only myself please add rest replication members.\e[0m\n"
+   sleep 4
+fi
+}
+EOF
+}
 
+cmd_remote_pgsql_p3() {
+cat << 'EOF'
+cmd_create_db() {
+    su - postgres -c "createuser -w --no-password -E -s -e ${USERNAME_FUSIONPBX}"
+    su - postgres -c "createdb -w --no-password -E UTF8 -O ${USERNAME_FUSIONPBX} ${DBNAME_FREESWITCH}"
+    su - postgres -c "createdb -w --no-password -E UTF8 -O ${USERNAME_FUSIONPBX} ${DBNAME_FUSIONPBX}"
+    echo "Setting up passwords for user Postgres ..."
+    su - postgres -c "psql --command '\password postgres'"
+    echo "Setting up passwords for database user ${USERNAME_FUSIONPBX} ..."
+    su - postgres -c "psql --command \"\password ${USERNAME_FUSIONPBX}"\"
+}
+EOF
+}
+
+cmd_remote_pgsql_p4() {
+cat << 'EOF'
+cmd_postgres_bdr_conf_fusionpbx() {
+printf "%s" "listen_addresses = '*'
+shared_preload_libraries = 'bdr'
+wal_level = 'logical'
+track_commit_timestamp = on
+max_wal_senders = 10
+max_replication_slots = 10
+ssl = true
+ssl_ciphers = 'HIGH:MEDIUM:+3DES:!aNULL'
+ssl_cert_file = "\'/etc/pki/pg_bdr/${my_name}/${my_name}-cert.pem\'"
+ssl_key_file = "\'/etc/pki/pg_bdr/${my_name}/${my_name}-key-nopasswd.pem\'"
+ssl_ca_file = "\'/etc/pki/pg_bdr/ca-cert.pem\'"
+ssl_crl_file = "\'/etc/pki/pg_bdr/ca_rev-list.pem\'"
+# max_worker_processes = 20
+# # #log_error_verbosity = verbose
+# # #log_min_messages = debug1
+# # #log_line_prefix = 'd=%d p=%p a=%a%q '
+# # #bdr.default_apply_delay=2000   # milliseconds
+# # #bdr.log_conflicts_to_table=on
+# # #bdr.skip_ddl_replication = off
+"
+}
+EOF
+ }
+
+cmd_remote_pgsql_p5() {
+cat << 'EOF'
 psql_config() {
-printf '%s' '
-max_connections = 100
+printf "%s" "max_connections = 100
+shared_buffers = 256MB
+logging_collector = on
+log_destination = 'stderr'
+log_directory = 'pg_log'
+log_filename = 'postgresql-%G-%m-%d-%a.log'
+log_truncate_on_rotation = off
+log_rotation_age = 31d
+client_min_messages = notice
+log_min_messages = info
+log_min_error_statement = notice
+log_min_duration_statement = 1000
+log_line_prefix = '%t %u@%r:%d [%p]'
+log_timezone = 'US/Eastern'
+datestyle = 'iso, mdy'
+timezone = 'US/Eastern'
+lc_messages = 'en_US.UTF-8'
+lc_monetary = 'en_US.UTF-8'
+lc_numeric = 'en_US.UTF-8'
+lc_time = 'en_US.UTF-8'
+default_text_search_config = 'pg_catalog.english'
+"
+}
+EOF
+}
+
+cmd_remote_pgsql_p6() {
+cat << 'EOF'
+cmd_postgres_conf_fusionpbx() {
+printf "%s" "max_connections = 100
 shared_buffers = 256MB
 logging_collector = on
 log_destination = 'stderr'
@@ -575,40 +710,12 @@ lc_monetary = 'en_US.UTF-8'
 lc_numeric = 'en_US.UTF-8'
 lc_time = 'en_US.UTF-8'
 default_text_search_config = 'pg_catalog.english'
-'
-}
-EOF
-}
-
-cmd_remote_pgsql_p3() {
-cat << 'EOF'
-cmd_postgres_bdr_conf_fusionpbx() {
-printf "%s" "
-listen_addresses = '*'
-shared_preload_libraries = 'bdr'
-wal_level = 'logical'
-track_commit_timestamp = on
-max_wal_senders = 10
-max_replication_slots = 10
-ssl = true
-ssl_ciphers = 'HIGH:MEDIUM:+3DES:!aNULL'
-ssl_cert_file = "/etc/pki/pg_bdr/${my_name}/${my_name}-cert.pem"
-ssl_key_file = "/etc/pki/pg_bdr/${my_name}/${my_name}-key-nopasswd.pem"
-ssl_ca_file = "/etc/pki/pg_bdr/ca-cert.pem"
-ssl_crl_file = "/etc/pki/pg_bdr/ca_rev-list.pem"
-# max_worker_processes = 20
-# #log_error_verbosity = verbose
-# #log_min_messages = debug1
-# #log_line_prefix = 'd=%d p=%p a=%a%q '
-# #bdr.default_apply_delay=2000   # milliseconds
-# #bdr.log_conflicts_to_table=on
-# #bdr.skip_ddl_replication = off
 "
 }
 EOF
 }
 
-cmd_remote_pgsql_p4() {
+cmd_remote_pgsql_p7() {
 cat << 'EOF'
 
 cmd_postgres_bdr_hba_fusionpbx() {
@@ -619,9 +726,9 @@ printf "%s" "
 # "local" is for Unix domain socket connections only
 local   all             all                                     peer
 # IPv4 local connections:
-host    all             all             127.0.0.1/32            peer
+host    all             all             127.0.0.1/32            trust
 # IPv6 local connections:
-host    all             all             ::1/128                 peer
+host    all             all             ::1/128                 trust
 
 hostssl all             all            ${my_ip}/32             trust
 host    replication     postgres       ${my_ip}/32             trust
@@ -637,7 +744,7 @@ EOF
 }
 
 
-cmd_remote_pgsql_p5() {
+cmd_remote_pgsql_p8() {
 cat << 'EOF'
 psql_hba_config() {
 printf '%s' '
@@ -646,9 +753,9 @@ printf '%s' '
 # "local" is for Unix domain socket connections only
 local   all             all                                     peer
 # IPv4 local connections:
-host    all             all             127.0.0.1/32            peer
+host    all             all             127.0.0.1/32            trust
 # IPv6 local connections:
-host    all             all             ::1/128                 peer
+host    all             all             ::1/128                 trust
 # Allow replication connections from localhost, by a user with the
 # replication privilege.
 #local   replication     postgres                                peer
@@ -657,55 +764,4 @@ host    all             all             ::1/128                 peer
 '
 }
 EOF
-}
-
-cmd_remote_pgsql_p6() {
-cat << 'EOF'
-printf '%s' '
-cmd_create_db() {
-    su - postgres -c "createuser -W -E -s -e ${USERNAME_FUSIONPBX}"
-    su - postgres -c "createdb -E UTF8 -O ${USERNAME_FUSIONPBX} ${DBNAME_FREESWITCH}"
-    su - postgres -c "createdb -E UTF8 -O ${USERNAME_FUSIONPBX} ${DBNAME_FUSIONPBX}"
-    echo "Setting up passwords for database user Postgres ..."
-    su - postgres -c "psql --command '\password postgres'"
-    echo "Setting up passwords for database user ${USERNAME_FUSIONPBX} ..."
-    su - postgres -c "psql --command \"\password ${USERNAME_FUSIONPBX}"\"
-}
-EOF
-}
-'
-}
-
-cmd_remote_pgsql_p7() {
-printf '%s' '
-echo "Database setup ..."
-if [[ "$DB_TYPE" != bdr ]]; then
-   postgresql-setup --initdb
-   echo "PgSQL already initialized continue ..."
-   systemctl restart postgresql.service
-   systemctl status postgresql.service
-   cmd_create_db
-   mv /var/lib/pgsql/data/pg_hba.conf /var/lib/pgsql/data/pg_hba.conf.orig
-   mv /var/lib/pgsql/data/postgresql.conf /var/lib/pgsql/data/postgresql.conf.orig
-   psql_hba_config > /var/lib/pgsql/data/pg_hba.conf
-   psql_config > /var/lib/pgsql/data/postgresql.conf
-   chown -R postgres:postgres /var/lib/pgsql/data/
-   systemctl restart postgresql.service
-else
-   updatedb
-   ${find_psql_db94_setup} --initdb
-   cmd_create_db
-   cmd_postgres_conf_fusionpbx > ${find_psql_data_dir}/postgresql.conf
-   cmd_postgres_bdr_conf_fusionpbx >> ${find_psql_data_dir}/postgresql.conf
-   cmd_postgres_bdr_hba_fusionpbx >> ${find_psql_data_dir}/pg_hba.conf
-   systemctl restart postgresql-9.4.service
-   echo "Deploying freeswitch schema optimized for PgSQL BDR ..."
-   curl --silent -u fusionpbx_Admin:dron12345  -o /root/freeswitch-pgsql-bdr-1.6.5.sql http://ftpsrv01.networklab.ca/misc/freeswitch-pgsql-bdr-1.6.5.sql
-   su - postgres -c "psql --command 'CREATE EXTENSION pgcrypto' -d ${DBNAME_FREESWITCH} -W ${DBNAME_FREESWITCH_PASSWD}"
-   psql -U postgres -W ${DBNAME_FREESWITCH_PASSWD} -d freeswitch -f ~/freeswitch-pgsql-bdr-1.6.5.sql -L /root/sql.log
-   echo -ne "\e[31mI added to pg_hba.conf file only myself please add rest replication members.\e[0m\n"
-   sleep 4
-   chown -R postgres:postgres ${find_psql_data_dir} /etc/pki/pg_bdr
-fi
-'
 }
