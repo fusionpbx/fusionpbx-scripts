@@ -1108,6 +1108,21 @@ if [ $INSFREESWITCH -eq 1 ]; then
 			#  postgresql-client-common postgresql-common
 		fi
 
+                #Fix pg_hba.conf
+                cat > `find / -name pg_hba.conf` <<EOF
+# TYPE  DATABASE        USER            ADDRESS                 METHOD
+# Database administrative login by Unix domain socket
+local   all             postgres                                peer
+local   fusionpbx       all                                     md5
+local   freeswitch      all                                     md5
+# "local" is for Unix domain socket connections only
+local   all             all                                     peer
+# IPv4 local connections:
+host    all             all             127.0.0.1/32            md5
+# IPv6 local connections:
+host    all             all             ::1/128                 md5
+EOF
+                /etc/init.d/postgresql restart
 		/bin/su -l postgres -c "/usr/bin/createuser -s -e fusionpbx"
 		#/bin/su -l postgres -c "/usr/bin/createdb -E UTF8 -O fusionpbx freeswitch"
 		/bin/su -l postgres -c "/usr/bin/createdb -E UTF8 -T template0 -O fusionpbx freeswitch"
@@ -2627,6 +2642,21 @@ DELIM
 			#  postgresql-client-common postgresql-common
 		fi
 
+                #Fix pg_hba.conf
+                cat > `find / -name pg_hba.conf` <<EOF
+# TYPE  DATABASE        USER            ADDRESS                 METHOD
+# Database administrative login by Unix domain socket
+local   all             postgres                                peer
+local   fusionpbx       all                                     md5
+local   freeswitch      all                                     md5
+# "local" is for Unix domain socket connections only
+local   all             all                                     peer
+# IPv4 local connections:
+host    all             all             127.0.0.1/32            md5
+# IPv6 local connections:
+host    all             all             ::1/128                 md5
+EOF
+                /etc/init.d/postgresql restart
 		/bin/su -l postgres -c "/usr/bin/createuser -s -e $GUI_NAME"
 		#/bin/su -l postgres -c "/usr/bin/createdb -E UTF8 -O $GUI_NAME $GUI_NAME"
 		/bin/su -l postgres -c "/usr/bin/createdb -E UTF8 -T template0 -O $GUI_NAME $GUI_NAME"
