@@ -82,8 +82,8 @@ FSStablefile=freeswitch-1.6.6
 FSDB=p
 
 #right now, make -j not working. see: jira FS-3005
-#CORES=$(/bin/grep processor -c /proc/cpuinfo)
-CORES=1
+CORES=$(/bin/grep processor -c /proc/cpuinfo)
+#CORES=1
 FQDN=$(hostname -f)
 #SRCPATH="/usr/src/freeswitch" #DEFAULT
 SRCPATH="/usr/src/freeswitch"
@@ -1379,6 +1379,7 @@ EOF
 			#per anthm compile the freeswitch core first, then the modules.
 			/usr/bin/time /usr/bin/make -j $CORES core
 			/usr/bin/time /usr/bin/make -j $CORES
+			/usr/bin/time /usr/bin/make
 		else 
 			/bin/echo "  singlecore processor detected. Starting compile sans -j"
 			/usr/bin/time /usr/bin/make 
