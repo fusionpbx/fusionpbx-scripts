@@ -1180,7 +1180,7 @@ EOF
 		cd /usr/src
 		if [ "$FSSTABLE" == true ]; then
 			echo "installing $FSStableVer of FreeSWITCH"
-			/usr/bin/time /usr/bin/git clone $FSGIT
+			/usr/bin/git clone $FSGIT
 			cd /usr/src/freeswitch
 			/usr/bin/git checkout $FSStableVer
 			if [ $? -ne 0 ]; then
@@ -1197,7 +1197,7 @@ EOF
 			cd /usr/src/freeswitch
 		else
 			echo "going dev branch."
-			/usr/bin/time /usr/bin/git clone $FSGIT
+			/usr/bin/git clone $FSGIT
 			if [ $? -ne 0 ]; then
 				#git had an error
 				/bin/echo "GIT ERROR"
@@ -1257,14 +1257,14 @@ EOF
 				/bin/echo
 				read -p "Press Enter to continue (check for errors)"
 			fi
-			/usr/bin/time /usr/src/freeswitch/bootstrap.sh -j
+			/usr/src/freeswitch/bootstrap.sh -j
 		else 
 			/bin/echo "  singlecore processor detected. Starting Bootstrap sans -j"
 			if [ $DEBUG -eq 1 ]; then
 				/bin/echo
 				read -p "Press Enter to continue (check for errors)"
 			fi
-			/usr/bin/time /usr/src/freeswitch/bootstrap.sh
+			/usr/src/freeswitch/bootstrap.sh
 		fi
 
 		if [ $? -ne 0 ]; then
@@ -1322,15 +1322,15 @@ EOF
 		/bin/echo -ne " ."
 		case "$FSDB" in
 		[Pp]*)
-			#/usr/bin/time /usr/src/freeswitch/configure --enable-core-pgsql-support --enable-zrtp
+			#/usr/src/freeswitch/configure --enable-core-pgsql-support --enable-zrtp
 			#zrtp busted atm.
-			/usr/bin/time /usr/src/freeswitch/configure --enable-core-pgsql-support
+			/usr/src/freeswitch/configure --enable-core-pgsql-support
 			
 		;;
 		*)
-			#/usr/bin/time /usr/src/freeswitch/configure --enable-zrtp
+			#/usr/src/freeswitch/configure --enable-zrtp
 			#zrtp busted atm
-			/usr/bin/time /usr/src/freeswitch/configure 
+			/usr/src/freeswitch/configure 
 		;;
 		esac
 
@@ -1377,12 +1377,12 @@ EOF
 		if [ $CORES -gt 1 ]; then 
 			/bin/echo "  multicore processor detected. Compiling with -j $CORES"
 			#per anthm compile the freeswitch core first, then the modules.
-			/usr/bin/time /usr/bin/make -j $CORES core
-			/usr/bin/time /usr/bin/make -j $CORES
-			/usr/bin/time /usr/bin/make
+			/usr/bin/make -j $CORES core
+			/usr/bin/make -j $CORES
+			/usr/bin/make
 		else 
 			/bin/echo "  singlecore processor detected. Starting compile sans -j"
-			/usr/bin/time /usr/bin/make 
+			/usr/bin/make 
 		fi
 
 		if [ $? -ne 0 ]; then
@@ -1419,12 +1419,12 @@ EOF
 		cd /usr/src/freeswitch
 		if [ $CORES -gt 1 ]; then 
 			/bin/echo "  multicore processor detected. Installing with -j $CORES"
-			/usr/bin/time /usr/bin/make -j $CORES install
+			/usr/bin/make -j $CORES install
 		else 
 			/bin/echo "  singlecore processor detected. Starting install sans -j"
-			/usr/bin/time /usr/bin/make install
+			/usr/bin/make install
 		fi
-		#/usr/bin/time /usr/bin/make install
+		#/usr/bin/make install
 
 		if [ $? -ne 0 ]; then
 			#previous had an error
@@ -1453,12 +1453,12 @@ EOF
 		cd /usr/src/freeswitch
 		if [ $CORES -gt 1 ]; then 
 			/bin/echo "  multicore processor detected. Installing with -j $CORES"
-			/usr/bin/time /usr/bin/make -j $CORES hd-sounds-install
+			/usr/bin/make -j $CORES hd-sounds-install
 		else 
 			/bin/echo "  singlecore processor detected. Starting install sans -j"
-			/usr/bin/time /usr/bin/make hd-sounds-install
+			/usr/bin/make hd-sounds-install
 		fi
-		#/usr/bin/time /usr/bin/make hd-sounds-install
+		#/usr/bin/make hd-sounds-install
 
 		if [ $? -ne 0 ]; then
 			#previous had an error
@@ -1494,10 +1494,10 @@ EOF
 		cd /usr/src/freeswitch
 		if [ $CORES -gt 1 ]; then 
 			/bin/echo "  multicore processor detected. Installing with -j $CORES"
-			/usr/bin/time /usr/bin/make -j $CORES hd-moh-install
+			/usr/bin/make -j $CORES hd-moh-install
 		else 
 			/bin/echo "  singlecore processor detected. Starting install sans -j"
-			/usr/bin/time /usr/bin/make hd-moh-install
+			/usr/bin/make hd-moh-install
 		fi
 		#/usr/bin/make hd-moh-install
 
@@ -2903,7 +2903,7 @@ if [ $UPGFREESWITCH -eq 1 ]; then
 				fi
 			fi
 
-			#/usr/bin/time /usr/bin/git clone -b $FSStableVer git://stash.freeswitch.org/scm/fs/freeswitch.git
+			#/usr/bin/git clone -b $FSStableVer git://stash.freeswitch.org/scm/fs/freeswitch.git
 			/usr/bin/git pull
 			if [ $? -ne 0 ]; then
 				#git checkout had an error
@@ -2933,10 +2933,10 @@ if [ $UPGFREESWITCH -eq 1 ]; then
 
 		if [ $CORES > "1" ]; then 
 			/bin/echo "  multicore processor detected. Upgrading with -j $CORES"
-			/usr/bin/time /usr/bin/make -j $CORES current
+			/usr/bin/make -j $CORES current
 		else 
 			/bin/echo "  singlecore processor detected. Starting upgrade sans -j"
-			/usr/bin/time /usr/bin/make current
+			/usr/bin/make current
 		fi
 		#/usr/bin/make current
 		if [ $? -ne 0 ]; then
