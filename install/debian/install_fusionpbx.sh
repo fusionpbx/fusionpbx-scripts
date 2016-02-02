@@ -1379,7 +1379,6 @@ EOF
 			#per anthm compile the freeswitch core first, then the modules.
 			/usr/bin/make -j $CORES core
 			/usr/bin/make -j $CORES
-			/usr/bin/make
 		else 
 			/bin/echo "  singlecore processor detected. Starting compile sans -j"
 			/usr/bin/make 
