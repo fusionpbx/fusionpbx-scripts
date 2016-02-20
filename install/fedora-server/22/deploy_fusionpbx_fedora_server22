@@ -133,8 +133,16 @@ if [[ $answer =~ ^([yY][eE][sS]|[yY])$ ]]; then
        fi
    fi
 
+   read -r -p "Are you sure? [Y/n] " response
+   if [[ $response =~ ^([yY][eE][sS]|[yY])$ ]]; then
+      echo -n "Here we go..."
+   else
+      echo "Aborting:"
+      exit
+   fi
+
    if [[ "$DB_TYPE" != bdr ]]; then
-       dnf -y install postgresql-server
+       dnf -y install postgresql-server postgresql-contrib
    else
       rc=$(rpm -q postgresql-bdr94-2ndquadrant-fedora >/dev/null 2>&1; echo $?)
       if [[ $rc -ne 0 ]]; then
@@ -148,14 +156,6 @@ else
    echo -ne "\e[31mIf deployed pgpool2 with watchdog enter VIP (Virtual IP/Hostname).\e[0m\n"
    read -r -p "Please enter IP/Hostname of database server: " ip_address
    DB_HOST="$ip_address"
-fi
-
-read -r -p "Are you sure? [Y/n] " response
-if [[ $response =~ ^([yY][eE][sS]|[yY])$ ]]; then
-    echo -n "Here we go..."
-else
-     echo "Aborting:"
-     exit
 fi
 
 ###############
@@ -190,7 +190,11 @@ fi
 # Find pgsql staff
 find_psql_lib=$(find /usr -name psqlodbcw.so)
 find_psql_data_dir=$(find /var/lib/pgsql -type d -name data)
-find_psql_service_file=$(find /usr/lib/systemd/system -type f -name postgresql*.service)
+if [[ "$DB_TYPE" != bdr ]]; then 
+   find_psql_service_file=$(find /usr/lib/systemd/system -type f -name postgresql.service)
+else
+   find_psql_service_file=$(find /usr/lib/systemd/system -type f -name postgresql*.service)
+fi
 find_psql_db94_setup=$(find / -type f -name postgresql94-setup)
 my_ip=$(ip -o route get 8.8.8.8 | awk '{print $7}')
 my_name=(hostname -s)
@@ -214,8 +218,13 @@ if [[ ${DB_HOST%%.*} -eq 127 ]] && [[ "$DB_TYPE" != bdr ]]; then
    if [[ -d "$find_psql_data_dir" ]]; then
       echo "PgSQL already initialized continue ..."
       systemctl restart ${find_psql_service_file##*/}
-      systemctl status ${find_psql_service_file##*/}
-      mv ${find_psql_data_dir}/data/pg_hba.conf ${find_psql_data_dir}/pg_hba.conf.orig
+      rc_pgsql=$(systemctl is-active ${find_psql_service_file##*/})
+      if [[ "$rc_pgsql" == "failed" ]]; then
+         echo "Postgresql failed to start, please review the logs and start manually, before proceed with database setup."
+         pause
+      fi
+     
+      mv ${find_psql_data_dir}/pg_hba.conf ${find_psql_data_dir}/pg_hba.conf.orig
       mv ${find_psql_data_dir}/postgresql.conf ${find_psql_data_dir}/postgresql.conf.orig
       cmd_odbc_fusionpbx > /etc/odbc.ini
       cmd_odbc_fusionpbx_p2 >> /etc/odbcinst.ini
@@ -390,12 +399,13 @@ echo "Correcting all permissions ..."
 usermod -G daemon nginx
 mkdir -p /etc/fusionpbx
 cp -rp /usr/share/nginx/fusionpbx/resources/install/scripts/* /usr/share/freeswitch/scripts 
-chown -R freeswitch:daemon /etc/freeswitch/ssl
+chown -R freeswitch:daemon /etc/freeswitch
 chown -R freeswitch:daemon /usr/share/freeswitch
 chown -R nginx:nginx /usr/share/nginx/fusionpbx
 chown -R nginx:nginx /var/lib/php/session
 chown -R nginx:nginx /etc/fusionpbx
 rm -f /etc/freeswitch/sip_profiles/{external-ipv6.xml,external.xml,internal-ipv6.xml,internal.xml}
+# Inside directory
 cd /etc/freeswitch
 find . -type f -exec chmod 0660 {} \;
 find . -type d -exec chmod 0760 {} \;
@@ -410,6 +420,7 @@ find . -type f -exec chmod 0660 {} \;
 find . -type d -exec chmod 0760 {} \;
 fix_perm
 
+# Actual directory
 for dir in {'/etc/freeswitch','/var/lib/freeswitch','/usr/share/freeswitch/scripts'}; do
     perm=$(stat -c '%a %n' $dir | awk {'print $1'})
     if [[ "$perm" != 760 ]]; then
