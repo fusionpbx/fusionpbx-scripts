@@ -76,8 +76,9 @@ fi
 VERSION="Version - using subversion, no longer keeping track. WAF License"
 FSGIT=https://freeswitch.org/stash/scm/fs/freeswitch.git
 
-FSSTABLE=file
+FSSTABLE=true
 FSStablefile=freeswitch-1.6.6
+FSStableVer="v1.6"
 
 FSDB=p
 
@@ -1240,6 +1241,36 @@ EOF
 		echo "bootstrap not required"
 	
 	else
+#Attempt to fix build on 1.6.6
+sed -i "40i m4_include(m4/memmove.m4)" /usr/src/freeswitch/libs/spandsp/configure.ac
+cat > /usr/src/freeswitch/libs/spandsp/m4/memmove.m4 <<EOF
+AC_DEFUN([AC_FUNC_MEMMOVE],
+[AC_CHECK_FUNCS(memmove)
+AC_MSG_CHECKING(for working memmove)
+AC_CACHE_VAL(ac_cv_have_working_memmove,
+[AC_TRY_RUN(
+[#include <stdio.h>
+
+int main(void)
+{
+    char buf[10];
+    strcpy (buf, "01234567");
+    memmove (buf, buf + 2, 3);
+    if (strcmp (buf, "23434567"))
+        exit (1);
+    strcpy (buf, "01234567");
+    memmove (buf + 2, buf, 3);
+    if (strcmp (buf, "01012567"))
+        exit (1);
+    exit (0);
+}], ac_cv_have_working_memmove=yes, ac_cv_have_working_memmove=no, ac_cv_have_working_memmove=cross)])
+AC_MSG_RESULT([$ac_cv_have_working_memmove])
+if test x$ac_cv_have_working_memmove != "xyes"; then
+  AC_LIBOBJ(memmove)
+  AC_MSG_WARN([Replacing missing/broken memmove.])
+  AC_DEFINE(PREFER_PORTABLE_MEMMOVE, 1, "enable replacement memmove if system memmove is broken or missing")
+fi])
+EOF
 		#might see about -j option to bootstrap.sh
 		/etc/init.d/ssh start
 		cd /usr/src/freeswitch
