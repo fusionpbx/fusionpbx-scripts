@@ -76,8 +76,9 @@ fi
 VERSION="Version - using subversion, no longer keeping track. WAF License"
 FSGIT=https://freeswitch.org/stash/scm/fs/freeswitch.git
 
-FSSTABLE=file
+FSSTABLE=true
 FSStablefile=freeswitch-1.6.6
+FSStableVer="v1.6"
 
 FSDB=p
 
