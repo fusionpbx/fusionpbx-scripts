@@ -164,7 +164,7 @@ echo "Installing required repository ..."
 dnf -y install http://download1.rpmfusion.org/free/fedora/rpmfusion-free-release-22.noarch.rpm
 dnf -y install http://download1.rpmfusion.org/nonfree/fedora/rpmfusion-nonfree-release-22.noarch.rpm
 cmd_yum_repo_fusionpbx > /etc/yum.repos.d/networklab.repo
-dnf -y install freeswitch freeswitch-config-vanilla freeswitch-application-valet_parking freeswitch-sounds-* freeswitch-codec-* freeswitch-application-memcache freeswitch-lang-* freeswitch-lua freeswitch-application-voicemail-ivr freeswitch-application-directory freeswitch-application-voicemail freeswitch-application-db freeswitch-application-callcenter freeswitch-application-limit freeswitch-application-curl freeswitch-xml-cdr freeswitch-format-mod-shout freeswitch-v8 freeswitch-application-enum incron chrony ipset git memcached fail2ban fail2ban-firewalld ulogd sudo ghostscript libtiff vim wget net-snmp net-snmp-utils postgresql-odbc nginx php-common php-pdo php-process php-pgsql php-soap php-odbc php-xml php-xmlrpc php-pgsql php-fpm  php-cli php-pear php-pdo php-gd php-mbstring php-mcrypt 
+dnf -y install pgtune freeswitch freeswitch-config-vanilla freeswitch-application-valet_parking freeswitch-sounds-* freeswitch-codec-* freeswitch-application-memcache freeswitch-lang-* freeswitch-lua freeswitch-application-voicemail-ivr freeswitch-application-directory freeswitch-application-voicemail freeswitch-application-db freeswitch-application-callcenter freeswitch-application-limit freeswitch-application-curl freeswitch-xml-cdr freeswitch-format-mod-shout freeswitch-v8 freeswitch-application-enum incron chrony ipset git memcached fail2ban fail2ban-firewalld ulogd sudo ghostscript libtiff vim wget net-snmp net-snmp-utils postgresql-odbc nginx php-common php-pdo php-process php-pgsql php-soap php-odbc php-xml php-xmlrpc php-pgsql php-fpm  php-cli php-pear php-pdo php-gd php-mbstring php-mcrypt 
 if [[ $? -eq 0 ]]; then
    echo "Setting up configuration file ..."
    mv /etc/ulogd.conf /etc/ulogd.conf.orig
@@ -212,6 +212,7 @@ fi
 echo "Setting up FusionPBX web app ..."
 deploy_fusion_pbx /usr/share/nginx/fusionpbx
 
+echo "Setting up Database PgSQL ..."
 if [[ ${DB_HOST%%.*} -eq 127 ]] && [[ "$DB_TYPE" != bdr ]]; then
    updatedb
    postgresql-setup --initdb
@@ -230,6 +231,9 @@ if [[ ${DB_HOST%%.*} -eq 127 ]] && [[ "$DB_TYPE" != bdr ]]; then
       cmd_odbc_fusionpbx_p2 >> /etc/odbcinst.ini
       cmd_postgres_hba_fusionpbx > ${find_psql_data_dir}/pg_hba.conf
       cmd_postgres_conf_fusionpbx > ${find_psql_data_dir}/postgresql.conf
+      pgtune -c 600 -i ${find_psql_data_dir}/postgresql.conf >/tmp/pgtune.conf
+      mv ${find_psql_data_dir}/postgresql.conf{,.bak}
+      cp /tmp/pgtune.conf ${find_psql_data_dir}/postgresql.conf
       chown -R postgres:postgres ${find_psql_data_dir}
       systemctl restart ${find_psql_service_file##*/}
       su - postgres -c "echo \"*:*:*:${USERNAME_FUSIONPBX}:${DBNAME_USER_PASSWD}\" > ~/.pgpass; chmod 600 ~/.pgpass"
@@ -256,6 +260,9 @@ elif [[ "$DB_TYPE" = bdr ]]; then
       cmd_postgres_bdr_conf_fusionpbx > ${find_psql_data_dir}/postgresql.conf
       cmd_postgres_conf_fusionpbx >> ${find_psql_data_dir}/postgresql.conf
       cmd_postgres_bdr_hba_fusionpbx > ${find_psql_data_dir}/pg_hba.conf
+      pgtune -c 600 -i ${find_psql_data_dir}/postgresql.conf >/tmp/pgtune.conf
+      mv ${find_psql_data_dir}/postgresql.conf{,.bak}
+      cp /tmp/pgtune.conf ${find_psql_data_dir}/postgresql.conf
       chown -R postgres:postgres ${find_psql_data_dir} /etc/pki/pg_bdr
       systemctl restart postgresql-9.4.service
       su - postgres -c "echo \"*:*:*:${USERNAME_FUSIONPBX}:${DBNAME_USER_PASSWD}\" > ~/.pgpass; chmod 600 ~/.pgpass"
