@@ -389,8 +389,7 @@ EOF
 
 cmd_postgres_conf_fusionpbx() {
 cat << 'EOF'
-max_connections = 100
-shared_buffers = 256MB
+listen_addresses = "*"
 logging_collector = on
 log_destination = 'stderr'
 log_directory = 'pg_log'
@@ -535,13 +534,13 @@ fi
 
 if [[ "$DB_TYPE" = bdr ]] && [[ $rc_n -ne 0 ]]; then
    "$dnf_bin" install -y http://packages.2ndquadrant.com/postgresql-bdr94-2ndquadrant/yum-repo-rpms/postgresql-bdr94-2ndquadrant-fedora-1.0-2.noarch.rpm
-   "$dnf_bin" install -y postgresql-bdr94-bdr postgresql-bdr94-contrib
+   "$dnf_bin" install -y postgresql-bdr94-bdr postgresql-bdr94-contrib pgtune
 else
-    "$dnf_bin" install -y postgresql-bdr94-bdr postgresql-bdr94-contrib
+    "$dnf_bin" install -y postgresql-bdr94-bdr postgresql-bdr94-contrib pgtune
 fi
 
 if [[ "$DB_TYPE" != bdr ]] && [[ $rc -ne 0 ]]; then
-   "$dnf_bin" -y install postgresql-server
+   "$dnf_bin" -y install postgresql-server postgresql-contrib pgtune
 fi
 
 default_interface=$(ip -o route get 8.8.8.8 | awk '{print $5}')
@@ -576,6 +575,9 @@ if [[ "$DB_TYPE" != bdr ]]; then
    mv ${find_psql_data_dir}/postgresql.conf ${find_psql_data_dir}/postgresql.conf.orig
    psql_hba_config > ${find_psql_data_dir}/pg_hba.conf
    psql_config > ${find_psql_data_dir}/postgresql.conf
+   pgtune -c 600 -i ${find_psql_data_dir}/postgresql.conf >/tmp/pgtune.conf
+   mv ${find_psql_data_dir}/postgresql.conf{,.bak}
+   cp /tmp/pgtune.conf ${find_psql_data_dir}/postgresql.conf
    chown -R postgres:postgres ${find_psql_data_dir}
    systemctl restart postgresql.service
    su - postgres -c "echo \"*:*:*:${USERNAME_FUSIONPBX}:${DBNAME_USER_PASSWD}\" > ~/.pgpass; chmod 600 ~/.pgpass"
@@ -598,6 +600,9 @@ else
    cmd_postgres_bdr_conf_fusionpbx > ${find_psql_data_dir}/postgresql.conf
    cmd_postgres_conf_fusionpbx >> ${find_psql_data_dir}/postgresql.conf
    cmd_postgres_bdr_hba_fusionpbx > ${find_psql_data_dir}/pg_hba.conf
+   pgtune -c 600 -i ${find_psql_data_dir}/postgresql.conf >/tmp/pgtune.conf
+   mv ${find_psql_data_dir}/postgresql.conf{,.bak}
+   cp /tmp/pgtune.conf ${find_psql_data_dir}/postgresql.conf
    chown -R postgres:postgres ${find_psql_data_dir} /etc/pki/pg_bdr
    systemctl restart postgresql-9.4.service
    su - postgres -c "echo \"*:*:*:${USERNAME_FUSIONPBX}:${DBNAME_USER_PASSWD}\" > ~/.pgpass; chmod 600 ~/.pgpass"
@@ -660,9 +665,7 @@ EOF
 cmd_remote_pgsql_p5() {
 cat << 'EOF'
 psql_config() {
-printf "%s" "max_connections = 100
-shared_buffers = 256MB
-logging_collector = on
+printf "%s" "logging_collector = on
 log_destination = 'stderr'
 log_directory = 'pg_log'
 log_filename = 'postgresql-%G-%m-%d-%a.log'
@@ -689,9 +692,7 @@ EOF
 cmd_remote_pgsql_p6() {
 cat << 'EOF'
 cmd_postgres_conf_fusionpbx() {
-printf "%s" "max_connections = 100
-shared_buffers = 256MB
-logging_collector = on
+printf "%s" "logging_collector = on
 log_destination = 'stderr'
 log_directory = 'pg_log'
 log_filename = 'postgresql-%G-%m-%d-%a.log'
