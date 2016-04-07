@@ -992,7 +992,7 @@ if [ $INSFREESWITCH -eq 1 ]; then
 	echo "deb http://files.freeswitch.org/repo/deb/freeswitch-1.6/ jessie main" > /etc/apt/sources.list.d/freeswitch.list
 	wget -O - http://files.freeswitch.org/repo/deb/freeswitch-1.6/key.gpg |apt-key add -
 	/usr/bin/apt-get update
-	/usr/bin/apt-get -y install --force-yes liblua5.2-0 liblua5.2-dev libopus-dev libcodec2-dev libyuv-dev libopus-dev libsndfile-dev libvpx-dev libvpx2-dev
+	/usr/bin/apt-get -y install --force-yes liblua5.2-0 liblua5.2-dev libopus-dev libcodec2-dev libyuv-dev libopus-dev libsndfile-dev libvpx-dev libvpx2-dev yasm
 
 	#added libgnutls-dev libgnutls26 for dingaling...
 	#gnutls no longer required for dingaling (git around oct 17 per mailing list..)
