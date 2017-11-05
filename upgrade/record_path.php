@@ -24,17 +24,15 @@
 	$year = '2017';
 	$type = 'wav';  //wav or mp3
 	$execute_sql = true;
+        $document_root = '/var/www/fusionpbx';
 
 //check the permission
-	if(defined('STDIN')) {
-		$document_root = str_replace("\\", "/", $_SERVER["PHP_SELF"]);
-		preg_match("/^(.*)\/app\/.*$/", $document_root, $matches);
-		$document_root = $matches[1];
-		set_include_path($document_root);
-		$_SERVER["DOCUMENT_ROOT"] = $document_root;
-		require_once "resources/require.php";
-		$display_type = 'text'; //html, text
-	}
+        if(defined('STDIN')) {
+                set_include_path($document_root);
+                $_SERVER["DOCUMENT_ROOT"] = $document_root;
+                require_once "resources/require.php";
+                $display_type = 'text'; //html, text
+        }
 	else {
 		include "root.php";
 		require_once "resources/require.php";
@@ -65,9 +63,13 @@
 	}
 
 //send a message
-	if (!$execute_sql) {
+	if ($execute_sql) {
 		echo "\n";
-		echo "-- Run the SQL commands on the database server\n";
+		echo "-- The following SQL command have been executed.\n";
+	}
+	else {
+		echo "\n";
+		echo "-- Run the SQL commands on the database server.\n";
 	}
 
 //include the footer
