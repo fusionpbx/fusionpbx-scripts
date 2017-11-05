@@ -71,6 +71,8 @@
 	}
 
 //include the footer
-	require_once "resources/footer.php";
+	if(!defined('STDIN')) {
+		require_once "resources/footer.php";
+	}
 
 ?>
