@@ -26,10 +26,14 @@
 	$execute_sql = true;
         $document_root = '/var/www/fusionpbx';
 
-//check the permission
+//web server or command line
         if(defined('STDIN')) {
                 set_include_path($document_root);
                 $_SERVER["DOCUMENT_ROOT"] = $document_root;
+                $project_path = $_SERVER["DOCUMENT_ROOT"];
+                define('PROJECT_PATH', $project_path);
+                $_SERVER["PROJECT_ROOT"] = realpath($_SERVER["DOCUMENT_ROOT"] . PROJECT_PATH);
+                set_include_path(get_include_path() . PATH_SEPARATOR . $_SERVER["PROJECT_ROOT"]);
                 require_once "resources/require.php";
                 $display_type = 'text'; //html, text
         }
