@@ -13,7 +13,7 @@
 	The Original Code is FusionPBX
 	The Initial Developer of the Original Code is
 	Mark J Crane <markjcrane@fusionpbx.com>
-	Portions created by the Initial Developer are Copyright (C) 2017
+	Portions created by the Initial Developer are Copyright (C) 2018
 	the Initial Developer. All Rights Reserved.
 	Contributor(s):
 	Mark J Crane <markjcrane@fusionpbx.com>
@@ -21,7 +21,7 @@
 
 //settings
 	$domain_name = '*';
-	$year = '2017';
+	$year = '2018';
 	$type = 'wav';  //wav or mp3
 	$execute_sql = true;
         $document_root = '/var/www/fusionpbx';
