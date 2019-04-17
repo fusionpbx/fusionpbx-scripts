@@ -9,4 +9,4 @@ Note:
 Use `install/Ubuntu/install_fusionpbx.sh` on both Ubuntu and Debian systems.
 
 ## ISSUES
-Get an account on www.fusionpbx.com to report an issue.
+If you find a bug sign up for an account on www.fusionpbx.com to report the issue.
